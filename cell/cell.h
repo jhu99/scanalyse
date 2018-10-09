@@ -5,7 +5,6 @@
 #include<unordered_map>
 using namespace std;
 
-
 class Cells {
 	int n, p;
 	unsigned short **cell;
@@ -29,8 +28,7 @@ public:
 		}
 		delete[] cell;
 	}
-	
-	void readFile();
+	void readFile(string path);
 	void findCell(string cellName);
 	void findGene(string geneName);
 	void findCellAndGene(string cellName, string geneName);
