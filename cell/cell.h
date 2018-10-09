@@ -7,6 +7,7 @@ using namespace std;
 
 
 class Cells {
+	int n, p;
 	unsigned short **cell;
 	unordered_map<string, int> cellToNum;
 	unordered_map<string, int> geneToNum;
@@ -16,15 +17,19 @@ public:
 	Cells() {
 
 	}
-	Cells(int N,int P) {
-		cell = new unsigned short *[N];
-		for (int i = 0; i <= N; i++) {
-			cell[i] = new unsigned short[P];
+	Cells(int nn,int pp):n(nn),p(pp){
+		cell = new unsigned short *[n];
+		for (int i = 0; i <= n; i++) {
+			cell[i] = new unsigned short[p];
 		}
 	}
 	~Cells() {
-		delete cell;
+		for (int i = 0; i <= n; i++) {
+			delete[] cell[i];
+		}
+		delete[] cell;
 	}
+	
 	void readFile();
 	void findCell(string cellName);
 	void findGene(string geneName);
