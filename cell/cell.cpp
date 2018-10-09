@@ -5,8 +5,9 @@
 #include<sstream>
 #include"cell.h"
 using namespace std;
-void Cells::readFile() {
-	ifstream inFile("scimpute-0.01-1-data.csv", ios::in);
+
+void Cells::readFile(string path) {
+	ifstream inFile(path, ios::in);
 	string lineStr;
 	string geneName;
 	string str;
@@ -31,7 +32,7 @@ void Cells::readFile() {
 				flag = 1;
 			}
 			else {
-				cell[i][j] = atoi(str.c_str());
+				cell[i][j] =(unsigned short) atoi(str.c_str());
 				j++;
 			}
 		}
