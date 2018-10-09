@@ -1,18 +1,26 @@
+#ifndef CELL_H
+#define CELL_H
+
 #include<string>
 #include<unordered_map>
 using namespace std;
-#define N 5005
 
 
 class Cells {
-	unsigned short(*cell)[N];
+	unsigned short **cell;
 	unordered_map<string, int> cellToNum;
 	unordered_map<string, int> geneToNum;
 	unordered_map<int, string> numToCell;
 	unordered_map<int, string> numToGene;
 public:
 	Cells() {
-		cell = new unsigned short[N][N];
+
+	}
+	Cells(int N,int P) {
+		cell = new unsigned short *[N];
+		for (int i = 0; i <= N; i++) {
+			cell[i] = new unsigned short[P];
+		}
 	}
 	~Cells() {
 		delete cell;
@@ -22,3 +30,5 @@ public:
 	void findGene(string geneName);
 	void findCellAndGene(string cellName, string geneName);
 };
+
+#endif // !CELL_H
