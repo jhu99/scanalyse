@@ -41,7 +41,7 @@ void Cells::setNumToGene(unordered_map<int, string> numToGene) {
 	this->numToCell = numToCell;
 }
 
-unsigned short **Cells::getCell() {
+unsigned short** Cells::getCell() {
 	return cell;
 }
 unordered_map<string, int> Cells::getCellToNum() {
