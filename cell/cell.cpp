@@ -6,10 +6,10 @@
 #include"cell.h"
 using namespace std;
 
-
 Cells::Cells() {
 
 }
+
 Cells::Cells(int n, int p){
 	this->n = n;
 	this->p = p;
@@ -18,6 +18,7 @@ Cells::Cells(int n, int p){
 		cell[i] = new unsigned short[p];
 	}
 }
+
 Cells::~Cells() {
 	for (int i = 0; i <= n; i++) {
 		delete[] cell[i];
@@ -28,15 +29,19 @@ Cells::~Cells() {
 void Cells::setCell(unsigned short** cell) {
 	this->cell = cell;
 }
+
 void Cells::setCellToNUm(unordered_map<string, int> cellToNum) {
 	this->cellToNum = cellToNum;
 }
+
 void Cells::setGeneToNUm(unordered_map<string, int> geneToNum) {
 	this->geneToNum = geneToNum;
 }
+
 void Cells::setNumTocell(unordered_map<int, string> numToCell) {
 	this->numToCell = numToCell;
 }
+
 void Cells::setNumToGene(unordered_map<int, string> numToGene) {
 	this->numToCell = numToCell;
 }
@@ -44,15 +49,19 @@ void Cells::setNumToGene(unordered_map<int, string> numToGene) {
 unsigned short** Cells::getCell() {
 	return cell;
 }
+
 unordered_map<string, int> Cells::getCellToNum() {
 	return cellToNum;
 }
+
 unordered_map<string, int> Cells::getGeneToNum() {
 	return geneToNum;
 }
+
 unordered_map<int, string> Cells::getNumToCell() {
 	return numToCell;
 }
+
 unordered_map<int, string> Cells::getNumToGene(){
 	return numToGene;
 }
