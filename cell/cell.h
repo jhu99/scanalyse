@@ -16,6 +16,7 @@ public:
 	Cells();
 	Cells(int n, int p);
 	~Cells();
+	
 	void setCell(unsigned short** cell);
 	void setCellToNUm(unordered_map<string, int> cellToNum);
 	void setGeneToNUm(unordered_map<string, int> geneToNum);
