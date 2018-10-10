@@ -7,7 +7,7 @@ using namespace std;
 
 class Cells {
 	int n, p;
-	unsigned short **cell;
+	unsigned short** cell;
 	unordered_map<string, int> cellToNum;
 	unordered_map<string, int> geneToNum;
 	unordered_map<int, string> numToCell;
