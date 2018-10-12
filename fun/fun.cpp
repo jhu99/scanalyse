@@ -11,12 +11,7 @@ using namespace std;
 using namespace Scanalyse;
 
 
-vector<string> files;//存放文件夹中所有文件路径
-int rowCount[100] ;//每个文件的行数
-int columnCount[100] ;//每个文件的列数
-vector<Cells> cellList;//存放每个文件的cells实例
-unordered_map<int, string> allNumToGene;
-unordered_map<string, int> allGeneToNum;
+
 
 void Fun::read()
 {
@@ -41,36 +36,23 @@ void Fun::read()
 		rowCount[i] = CaculateRow(files[i]);
 		columnCount[i] = CaculateColumn(files[i]);
 	}
-	
+	ofn.close();
 	for (int i = 0; i < size; i++)
 	{
-		Cells paraCells(rowCount[i],columnCount[i]);
+		Cells paraCells(rowCount[i], columnCount[i]);
 		paraCells.readFile(files[i]);
 		cellList.push_back(paraCells);
 	}
 
-	Cells testcell = cellList[1];
-	unsigned short **para = testcell.getCell;
-	unsigned short *p;
-	for (int i = 0; i < 47193;i++) {
-		p = *para;
-		for (int j = 0; j < 373;j++) {
-			cout<<*p+j<<' '; 
-		}       
-		cout<<endl;
-	}
-	ofn.close();
 }
 
 int Fun::CaculateRow(string path)
 {
 	ifstream inFile(path, ios::in);
 	string lineStr;
-	string geneName;
-	string str;
 	int row = 0;
 
-	while (getline(inFile, lineStr)) 
+	while (getline(inFile, lineStr))
 	{
 		row++;
 	}
@@ -87,7 +69,7 @@ int Fun::CaculateColumn(string path)
 
 	if (getline(inFile, lineStr)) {
 		stringstream ss(lineStr);
-		while (getline(ss, str, ',')) 
+		while (getline(ss, str, ','))
 		{
 			column++;
 		}
@@ -163,22 +145,94 @@ void Fun::GetAllFormatFiles(string path, vector<string>& files, string format)
 
 void Fun::CreatAllGeneMap()
 {
-	unordered_map<string, int> parageneToNum;
-	unordered_map<int, string> paranumToGene;
-	int i = 0,iter;
+	unordered_map<string, int> paraGeneToNum;
+	unordered_map<int, string> paraNumToGene;
+	int i = 0, iter;
 	Cells paraCell;
 	string paraGene;
-	for (iter = 0; iter <cellList.size; ++iter) {
+	for (iter = 0; iter <cellList.size(); ++iter) {
 		paraCell = cellList[iter];
-		parageneToNum = paraCell.getGeneToNum();
-		paranumToGene = paraCell.getNumToGene();
-		for (int j = 0; j < parageneToNum.size; j++)
+		paraGeneToNum = paraCell.getGeneToNum();
+		paraNumToGene = paraCell.getNumToGene();
+		for (int j = 0; j < paraGeneToNum.size(); j++)
 		{
-			paraGene=paranumToGene[j];
-			allNumToGene[i] = paraGene;
-			allGeneToNum[paraGene] = i;
-			i++;
+			paraGene = paraNumToGene[j];
+			if (!allGeneToNum[paraGene])
+			{
+				allNumToGene[i] = paraGene;
+				allGeneToNum[paraGene] = i;
+				i++;
+			}
+
 		}
 	}
+}
+
+void Fun::replaceEnsemblId()
+{
+	string path1 = "E:\\cell mapping\\GSE52529.csv";
+	string path2 = "E:\\cell mapping\\GSE52529_mapping.csv";
+	unordered_map<string, int> geneToNum;
+	unordered_map<int, string> numToGene;
+	string lineStr;
+	string ensemblId;
+	string str, str1, str2;
+	int i = 0;
+
+	ifstream inFile(path1, ios::in);
+
+	while (getline(inFile, lineStr)) {
+		stringstream ss(lineStr);
+		while (getline(ss, str, ',')) {
+
+
+			geneToNum[str] = i;
+			numToGene[i] = str;
+			i++;
+		}
+
+	}
+	ifstream inFile2(path2, ios::in);
+	while (getline(inFile2, lineStr)) {
+		stringstream ss(lineStr);
+		int  flag = 0;
+		while (getline(ss, str, ',')) {
+			if (flag == 0)
+			{
+				str1 = str;
+				flag = 1;
+			}
+			else
+			{
+				str2 = str;
+				geneSymbolToEnsemblId[str1] = str2;
+			}
+		}
+	}
+	string paraEnsemblId;
+	for (int k = 0; k < geneToNum.size(); k++)
+	{
+		paraEnsemblId = numToGene[k];
+
+		if (geneSymbolToEnsemblId.find(paraEnsemblId) != geneSymbolToEnsemblId.end())
+		{
+			numToGene[k] = geneSymbolToEnsemblId.find(paraEnsemblId)->second;
+			geneToNum[geneSymbolToEnsemblId.find(paraEnsemblId)->second] = k;
+		}
+		else
+		{
+			numToGene[k] = "NaN";
+		}
+	}
+
+	string distAll = "E:\\cell mapping\\GSE52529.txt";
+	ofstream ofn(distAll);
+
+	for (i = 0; i<47193; i++)
+	{
+		ofn << numToGene[i] << endl;
+		cout << numToGene[i] << endl;
+	}
+	ofn.close();
 }
 
