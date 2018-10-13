@@ -14,13 +14,13 @@ Cells::Cells(int n, int p){
 	this->n = n;
 	this->p = p;
 	cell = new unsigned short *[n];
-	for (int i = 0; i <= n; i++) {
+	for (int i = 0; i < n; i++) {
 		cell[i] = new unsigned short[p];
 	}
 }
 
 Cells::~Cells() {
-	for (int i = 0; i <= n; i++) {
+	for (int i = 0; i < n; i++) {
 		delete[] cell[i];
 	}
 	delete[] cell;
