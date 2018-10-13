@@ -7,6 +7,9 @@
 #include <vector>  
 #include<queue>
 #include<sstream>
+
+typedef unsigned short dataType;
+
 using namespace std;
 using namespace Scanalyse;
 
@@ -25,25 +28,29 @@ void Fun::read()
 	Fun fun;
 	fun = Fun();
 	fun.GetAllFormatFiles(filePath, files, format);
-	ofstream ofn(distAll);
+	//ofstream ofn(distAll);
 
 	int size = files.size();
-	ofn << size << endl;
+	//ofn << size << endl;
 	for (int i = 0; i<size; i++)
 	{
-		ofn << files[i] << endl;
+		//ofn << files[i] << endl;
 		cout << files[i] << endl;
 		rowCount[i] = CaculateRow(files[i]);
 		columnCount[i] = CaculateColumn(files[i]);
+		mergeColumnCount += columnCount[i];
 	}
-	ofn.close();
-	for (int i = 0; i < size; i++)
+	//ofn.close();
+	int j = 0;
+	while(j<size)
 	{
-		Cells paraCells(rowCount[i], columnCount[i]);
-		paraCells.readFile(files[i]);
+		cout << "end read";
+		Cells paraCells(rowCount[j], columnCount[j]);
+		paraCells.readFile(files[j]);
 		cellList.push_back(paraCells);
+		j++;
 	}
-
+	
 }
 
 int Fun::CaculateRow(string path)
@@ -156,8 +163,8 @@ void Fun::CreatAllGeneMap()
 		paraNumToGene = paraCell.getNumToGene();
 		for (int j = 0; j < paraGeneToNum.size(); j++)
 		{
-			paraGene = paraNumToGene[j];
-			if (!allGeneToNum[paraGene])
+			paraGene= paraNumToGene[j];
+			if (allGeneToNum.find(paraGene)==allGeneToNum.end())
 			{
 				allNumToGene[i] = paraGene;
 				allGeneToNum[paraGene] = i;
@@ -176,21 +183,21 @@ void Fun::replaceEnsemblId()
 	unordered_map<int, string> numToGene;
 	string lineStr;
 	string ensemblId;
-	string str, str1, str2;
+	string str,str1,str2;
 	int i = 0;
 
 	ifstream inFile(path1, ios::in);
-
+	
 	while (getline(inFile, lineStr)) {
 		stringstream ss(lineStr);
 		while (getline(ss, str, ',')) {
-
-
-			geneToNum[str] = i;
-			numToGene[i] = str;
-			i++;
+			
+				
+				geneToNum[str] = i;
+				numToGene[i] = str;
+				i++;
 		}
-
+		
 	}
 	ifstream inFile2(path2, ios::in);
 	while (getline(inFile2, lineStr)) {
@@ -204,7 +211,7 @@ void Fun::replaceEnsemblId()
 			}
 			else
 			{
-				str2 = str;
+				str2= str;
 				geneSymbolToEnsemblId[str1] = str2;
 			}
 		}
@@ -213,7 +220,7 @@ void Fun::replaceEnsemblId()
 	for (int k = 0; k < geneToNum.size(); k++)
 	{
 		paraEnsemblId = numToGene[k];
-
+		
 		if (geneSymbolToEnsemblId.find(paraEnsemblId) != geneSymbolToEnsemblId.end())
 		{
 			numToGene[k] = geneSymbolToEnsemblId.find(paraEnsemblId)->second;
@@ -236,3 +243,62 @@ void Fun::replaceEnsemblId()
 	ofn.close();
 }
 
+void Fun::initMergeMatrix()
+{
+	mergeMatrix = new dataType *[allGeneToNum.size()];
+	for (int i = 0; i < allGeneToNum.size(); i++) {
+		mergeMatrix[i] = new dataType[mergeColumnCount];
+	}
+	
+	for (int i = 0; i < allGeneToNum.size(); i++)
+	{
+		for (int j = 0; j < mergeColumnCount; j++)
+		{
+			mergeMatrix[i][j] = NAN;
+		}
+	}
+	cout << "end init" << endl;
+}
+
+
+void Fun::mergeMatrixs()
+{
+	Cells paraCell;
+	unordered_map<string, int> paraGeneToNum;
+	unordered_map<int, string> paraNumToGene;
+	unordered_map<string, int> paraCellToNum;
+	unordered_map<int, string> paraNumToCell;
+	int genePosition;
+	int cellCount = 0;
+	dataType** paraCellMatrix;
+	for (int iter = 0; iter < cellList.size(); ++iter) {
+		paraCell = cellList[iter];
+		paraNumToCell = paraCell.getNumToCell();
+		paraNumToGene = paraCell.getNumToGene();
+		paraCellMatrix = paraCell.getCell();
+		for (int i = 0; i < paraNumToCell.size(); i++)
+		{
+			
+			for (int j = 0; j < paraNumToGene.size(); j++)
+			{
+				genePosition = allGeneToNum[paraNumToGene[j]];
+				mergeMatrix[genePosition][cellCount] = paraCellMatrix[j][i];
+				
+			}
+			cellCount++;
+		}
+	}
+	for (int k = 0; k < allGeneToNum.size(); k++)
+	{
+		for (int t = 0; t < mergeColumnCount; t++)
+		{
+			cout << mergeMatrix[k][t]<<" ";
+		}
+		cout << endl;
+	}
+	cout << "end merge" << endl;
+	for (int iter = 0; iter < cellList.size(); ++iter)
+	{
+		cellList[iter].releaseMemory();
+	}
+}
