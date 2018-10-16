@@ -1,15 +1,14 @@
-#ifndef CELLS_H
-#define CELLS_H
+#ifndef CELL_H
+#define CELL_H
 
 #include<string>
 #include<unordered_map>
 
-typedef unsigned short dataType;
 using namespace std;
 
-class Cells {
+template <class T> class Cells {
 	int n, p;
-	unsigned short** cell;
+	T **cell;
 	unordered_map<string, int> cellToNum;
 	unordered_map<string, int> geneToNum;
 	unordered_map<int, string> numToCell;
@@ -18,14 +17,13 @@ public:
 	Cells();
 	Cells(int n, int p);
 	~Cells();
-
-	void setCell(dataType** cell);
+	void setCell(T** cell);
 	void setCellToNUm(unordered_map<string, int> cellToNum);
 	void setGeneToNUm(unordered_map<string, int> geneToNum);
 	void setNumTocell(unordered_map<int, string> numToCell);
 	void setNumToGene(unordered_map<int, string> numToGene);
 
-	dataType** getCell();
+	T** getCell();
 	unordered_map<string, int> getCellToNum();
 	unordered_map<string, int> getGeneToNum();
 	unordered_map<int, string> getNumToCell();
@@ -38,4 +36,4 @@ public:
 	void releaseMemory();
 };
 
-#endif // !CELLS_H
+#endif // !CELL_H

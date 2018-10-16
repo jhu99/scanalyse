@@ -1,4 +1,4 @@
-#include"cell.h"
+#include"cell.cpp"
 #include<iostream>
 using namespace std;
 
