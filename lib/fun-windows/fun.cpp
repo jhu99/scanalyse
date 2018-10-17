@@ -1,19 +1,22 @@
 #include"fun.h"
-#include"cell.h"
-#include <io.h>
+#include"cell/cell.h"
 #include<iostream>
 #include <fstream>  
 #include <string>  
 #include <vector>  
 #include<queue>
 #include<sstream>
-#include"cell.cpp"
-#define WINDOS
+#include"cell/cell.cpp"
+#define WINDOWS
 //#define LINUX 
 #ifdef LINUX
 #include <cstring>
 #include<dirent.h>
 #endif // LINUX
+
+#ifdef WINDOWS
+#include<io.h>
+#endif // WINDOWS
 
 typedef float dataType;
 
@@ -88,7 +91,7 @@ int Fun::CaculateColumn(string path)
 
 void Fun::GetAllFiles(string path, vector<string>& files)
 {
-#ifdef WINDOS
+#ifdef WINDOWS
 	long   hFile = 0;
 	//file information    
 	struct _finddata_t fileinfo;
@@ -112,7 +115,7 @@ void Fun::GetAllFiles(string path, vector<string>& files)
 		} while (_findnext(hFile, &fileinfo) == 0);
 		_findclose(hFile);
 	}
-#endif // WINDOS
+#endif // WINDOWS
 #ifdef LINUX
 	DIR *dir;
 	struct dirent *ptr;

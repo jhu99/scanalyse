@@ -1,8 +1,7 @@
 #pragma once
 #include<string>
 #include<unordered_map>
-#include<vector>
-#include"cell.h"
+#include"cell/cell.h"
 using namespace std;
 typedef float dataType;
 
@@ -22,10 +21,10 @@ namespace Scanalyse
 		unordered_map<string, int> allGeneToNum;
 		unordered_map<int, string> allNumToCell;
 		unordered_map<string, int> allCellToNum;
-		vector<string> files;//存放文件夹中所有文件路径
-		int rowCount[100];//每个文件的行数
-		int columnCount[100];//每个文件的列数
-		vector<Cells<dataType>> cellList;//存放每个文件的cells实例
+		vector<string> files;//store path of each file
+		int rowCount[100];//store row count of each file
+		int columnCount[100];
+		vector<Cells<dataType>> cellList;
 		unordered_map<string, string> geneSymbolToEnsemblId;
 		int mergeColumnCount=0;
 		dataType **mergeMatrix;
