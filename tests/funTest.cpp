@@ -1,5 +1,5 @@
 #include"fun.h"
-#include"cell.cpp"
+#include"cell/cell.cpp"
 #include <io.h>
 #include<iostream>
 #include <fstream>  
