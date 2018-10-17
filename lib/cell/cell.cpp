@@ -108,7 +108,7 @@ template <class T> void Cells<T>::readFile(string path) {
 				flag = 1;
 			}
 			else {
-				cell[i][j] =(unsigned short) atoi(str.c_str());
+				cell[i][j] =(T) atof(str.c_str());
 				j++;
 			}
 		}

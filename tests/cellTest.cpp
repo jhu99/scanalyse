@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-	Cells cells(5005,4001);
+	Cells<short> cells(5005,4001);
 	cells.readFile("scimpute-0.01-1-data.csv");
 	//cells.findCell("AAACCTGAGCCACTAT.1");
 	cells.findGene("ENSMUSG00000037221");
