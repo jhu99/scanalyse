@@ -1,4 +1,4 @@
-#include"cell.cpp"
+#include"cell/cell.cpp"
 #include<iostream>
 using namespace std;
 
@@ -8,7 +8,6 @@ int main() {
 	//cells.findCell("AAACCTGAGCCACTAT.1");
 	cells.findGene("ENSMUSG00000037221");
 	//cells.findCellAndGene("AAACCTGAGCCACTAT.1", "ENSMUSG00000015312");
-	cin.get();
-	cin.get();
+	cout<<"end"<<endl;
 	return 0;
 }
