@@ -1,5 +1,5 @@
 #include"fun.h"
-#include"cell.h"
+#include"cell.cpp"
 #include <io.h>
 #include<iostream>
 #include <fstream>  
@@ -21,8 +21,8 @@ int main()
 	fun.replaceEnsemblId(path1,path2);
 
 	*/
-	string filePath = "E:\\cell";
-	string outpath = "E:\\testcell\\merge.csv";
+	string filePath = "../../cell";
+	string outpath = "../../";
 	fun.read(filePath);
 	fun.CreatAllGeneMap();
 	fun.initMergeMatrix();

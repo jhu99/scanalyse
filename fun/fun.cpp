@@ -7,8 +7,15 @@
 #include <vector>  
 #include<queue>
 #include<sstream>
+#include"cell.cpp"
+#define WINDOS
+//#define LINUX 
+#ifdef LINUX
+#include <cstring>
+#include<dirent.h>
+#endif // LINUX
 
-typedef unsigned short dataType;
+typedef float dataType;
 
 using namespace std;
 using namespace Scanalyse;
@@ -16,36 +23,30 @@ using namespace Scanalyse;
 
 
 
-void Fun::read()
+void Fun::read(string filePath)
 {
-	string filePath = "E:\cell";
-	string distAll = "AllFiles.txt";
-	//读取所有的文件，包括子文件的文件 
-	//GetAllFiles(filePath, files);  
 
-	//读取所有格式为csv的文件  
+	//read all csv file  
 	string format = ".csv";
 	Fun fun;
 	fun = Fun();
-	fun.GetAllFormatFiles(filePath, files, format);
-	//ofstream ofn(distAll);
+	fun.GetAllFiles(filePath, files);
 
 	int size = files.size();
-	//ofn << size << endl;
 	for (int i = 0; i<size; i++)
 	{
-		//ofn << files[i] << endl;
 		cout << files[i] << endl;
 		rowCount[i] = CaculateRow(files[i]);
 		columnCount[i] = CaculateColumn(files[i]);
 		mergeColumnCount += columnCount[i];
+		cout << mergeColumnCount << endl;
 	}
-	//ofn.close();
+	
 	int j = 0;
 	while(j<size)
 	{
 		cout << "end read";
-		Cells paraCells(rowCount[j], columnCount[j]);
+		Cells<dataType> paraCells(rowCount[j], columnCount[j]);
 		paraCells.readFile(files[j]);
 		cellList.push_back(paraCells);
 		j++;
@@ -87,8 +88,9 @@ int Fun::CaculateColumn(string path)
 
 void Fun::GetAllFiles(string path, vector<string>& files)
 {
+#ifdef WINDOS
 	long   hFile = 0;
-	//文件信息    
+	//file information    
 	struct _finddata_t fileinfo;
 	string p;
 	if ((hFile = _findfirst(p.assign(path).append("\\*").c_str(), &fileinfo)) != -1)
@@ -110,18 +112,60 @@ void Fun::GetAllFiles(string path, vector<string>& files)
 		} while (_findnext(hFile, &fileinfo) == 0);
 		_findclose(hFile);
 	}
+#endif // WINDOS
+#ifdef LINUX
+	DIR *dir;
+	struct dirent *ptr;
+	char base[1000];
+	string paraPath;
+	if ((dir = opendir(path.c_str())) == NULL)
+	{
+		perror("Open dir error..."); exit(1);
+	}
+	while ((ptr = readdir(dir)) != NULL)
+	{
+		if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0)
+			///current dir OR parrent dir
+		{
+			continue;
+		}
+		else if (ptr->d_type == 8) ///file 
+		{
+			//printf("d_name:%s/%s\n",basePath,ptr->d_name);
+			files.push_back(paraPath.assign(path).append("/").append(ptr->d_name));
+		}
+		else if (ptr->d_type == 10) ///link file 
+		{
+			//printf("d_name:%s/%s\n",basePath,ptr->d_name); 
+			continue;
+		}
+		else if (ptr->d_type == 4) ///dir 
+		{
+			//files.push_back(ptr->d_name);
+			/* memset(base,'\0',sizeof(base));
+			strcpy(base,basePath);
+			strcat(base,"/");
+			strcat(base,ptr->d_nSame);
+			readFileList(base);
+			*/
+			continue;
+		}
+	}
+	closedir(dir);
+#endif // LINUX
+
+	
 
 }
 
 
 
-//获取特定格式的文件名  
+//obtain specific format file
 void Fun::GetAllFormatFiles(string path, vector<string>& files, string format)
 
-{
-	//文件句柄    
-	long   hFile = 0;
-	//文件信息    
+{ 
+	/*long   hFile = 0;
+	//file information    
 	struct _finddata_t fileinfo;
 	string p;
 	if ((hFile = _findfirst(p.assign(path).append("\\*" + format).c_str(), &fileinfo)) != -1)
@@ -131,8 +175,7 @@ void Fun::GetAllFormatFiles(string path, vector<string>& files, string format)
 			if ((fileinfo.attrib &  _A_SUBDIR))
 			{
 				if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
-				{
-					//files.push_back(p.assign(path).append("\\").append(fileinfo.name) );  
+				{  
 
 					GetAllFormatFiles(p.assign(path).append("\\").append(fileinfo.name), files, format);
 				}
@@ -147,7 +190,7 @@ void Fun::GetAllFormatFiles(string path, vector<string>& files, string format)
 
 		_findclose(hFile);
 
-	}
+	}*/
 }
 
 void Fun::CreatAllGeneMap()
@@ -155,7 +198,7 @@ void Fun::CreatAllGeneMap()
 	unordered_map<string, int> paraGeneToNum;
 	unordered_map<int, string> paraNumToGene;
 	int i = 0, iter;
-	Cells paraCell;
+	Cells<dataType> paraCell;
 	string paraGene;
 	for (iter = 0; iter <cellList.size(); ++iter) {
 		paraCell = cellList[iter];
@@ -175,24 +218,21 @@ void Fun::CreatAllGeneMap()
 	}
 }
 
-void Fun::replaceEnsemblId()
+void Fun::replaceEnsemblId(string path1,string path2)
 {
-	string path1 = "E:\\cell mapping\\GSE52529.csv";
-	string path2 = "E:\\cell mapping\\GSE52529_mapping.csv";
+	
 	unordered_map<string, int> geneToNum;
 	unordered_map<int, string> numToGene;
 	string lineStr;
 	string ensemblId;
 	string str,str1,str2;
 	int i = 0;
-
 	ifstream inFile(path1, ios::in);
 	
 	while (getline(inFile, lineStr)) {
 		stringstream ss(lineStr);
 		while (getline(ss, str, ',')) {
 			
-				
 				geneToNum[str] = i;
 				numToGene[i] = str;
 				i++;
@@ -232,13 +272,12 @@ void Fun::replaceEnsemblId()
 		}
 	}
 
-	string distAll = "E:\\cell mapping\\GSE52529.txt";
+	string distAll = "E:\\cell mapping\\GSE66507.txt";
 	ofstream ofn(distAll);
-
-	for (i = 0; i<47193; i++)
+	int size = CaculateRow(path1);
+	for (i = 0; i<size; i++)
 	{
 		ofn << numToGene[i] << endl;
-		cout << numToGene[i] << endl;
 	}
 	ofn.close();
 }
@@ -254,16 +293,46 @@ void Fun::initMergeMatrix()
 	{
 		for (int j = 0; j < mergeColumnCount; j++)
 		{
-			mergeMatrix[i][j] = NAN;
+			mergeMatrix[i][j] = 0;
 		}
 	}
 	cout << "end init" << endl;
 }
 
+void Scanalyse::Fun::outToCsvFile(string outPath)
+{
+	ofstream ofn(outPath);
+	for (int k = 0; k < allNumToCell.size(); k++)
+	{
+		ofn << allNumToCell[k];
+		ofn << ",";
+	}
+	ofn << "\n";
+	for (int i = 0; i < allGeneToNum.size(); i++)
+	{
+		ofn << allNumToGene[i];
+		ofn << ",";
+		for (int j = 0; j < mergeColumnCount; j++)
+		{
+			if (j != mergeColumnCount - 1)
+			{
+				ofn << mergeMatrix[i][j];
+					ofn<<"," ;
+			}
+			
+		}
+		ofn << "\n";
+	}
+	ofn.close();
+	cout << "end out file" << endl;
+
+
+}
+
 
 void Fun::mergeMatrixs()
 {
-	Cells paraCell;
+	Cells<dataType> paraCell;
 	unordered_map<string, int> paraGeneToNum;
 	unordered_map<int, string> paraNumToGene;
 	unordered_map<string, int> paraCellToNum;
@@ -278,7 +347,8 @@ void Fun::mergeMatrixs()
 		paraCellMatrix = paraCell.getCell();
 		for (int i = 0; i < paraNumToCell.size(); i++)
 		{
-			
+			allNumToCell[cellCount] = paraNumToCell[i];
+			allCellToNum[paraNumToCell[i]] = cellCount;
 			for (int j = 0; j < paraNumToGene.size(); j++)
 			{
 				genePosition = allGeneToNum[paraNumToGene[j]];
@@ -287,8 +357,9 @@ void Fun::mergeMatrixs()
 			}
 			cellCount++;
 		}
+		cout << "finished No." << iter << endl;
 	}
-	for (int k = 0; k < allGeneToNum.size(); k++)
+	/*for (int k = 0; k < allGeneToNum.size(); k++)
 	{
 		for (int t = 0; t < mergeColumnCount; t++)
 		{
@@ -296,6 +367,9 @@ void Fun::mergeMatrixs()
 		}
 		cout << endl;
 	}
+	*/
+	cout << allGeneToNum.size() << endl;
+	cout << mergeColumnCount << endl;
 	cout << "end merge" << endl;
 	for (int iter = 0; iter < cellList.size(); ++iter)
 	{
