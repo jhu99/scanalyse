@@ -18,9 +18,9 @@ else
 CXXFLAGS = -Wall -O3 -ffast-math -Ilib/ -std=c++0x -DNDEBUG
 endif
 # all: cellTest funTest ArgParserTest
-cellTest: tests/cellTest.cpp ./lib/cell.o
+cellTest: tests/cellTest.cpp ./lib/cell/cell.o
 	${CXX} ${CXXFLAGS} -o $@ $^
-funTest: tests/funTest.cpp lib/cell.o
+funTest: tests/funTest.cpp lib/cell/cell.o lib/fun/fun.o
 	${CXX} ${CXXFLAGS} -o $@ $^
 ArgParserTest: test/testargparser.cpp lib/argparser.o
 	${CXX} ${CXXFLAGS} -o $@ $^
