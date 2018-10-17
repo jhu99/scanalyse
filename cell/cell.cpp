@@ -89,7 +89,7 @@ template <class T> void Cells<T>::readFile(string path) {
 	if (getline(inFile, lineStr)) {
 		stringstream ss(lineStr);
 		while (getline(ss, str, separator)) {
-			str = str.substr(1, str.size() - 2);
+			//str = str.substr(1, str.size() - 2);
 			cellToNum[str] = i;
 			numToCell[i] = str;
 			i++;
@@ -102,7 +102,7 @@ template <class T> void Cells<T>::readFile(string path) {
 		int flag = 0, j = 1;
 		while (getline(ss, str, separator)) {
 			if (flag == 0) {
-				str = str.substr(1, str.size() - 2);
+				//str = str.substr(1, str.size() - 2);
 				geneToNum[str] = i;
 				numToGene[i] = str;
 				flag = 1;
