@@ -178,10 +178,10 @@ void Fun::CreatAllGeneMap()
 {
 	unordered_map<string, int> paraGeneToNum;
 	unordered_map<int, string> paraNumToGene;
-	int i = 0, iter;
+	long i = 0;
 	Cells<dataType> paraCell;
 	string paraGene;
-	for (iter = 0; iter <cellList.size(); ++iter) {
+	for (int iter = 0; iter <cellList.size(); ++iter) {
 		paraCell = cellList[iter];
 		paraGeneToNum = paraCell.getGeneToNum();
 		paraNumToGene = paraCell.getNumToGene();
@@ -197,17 +197,18 @@ void Fun::CreatAllGeneMap()
 
 		}
 	}
+	cout << "there are" << i << "genes"<<endl;
 }
 
 void Fun::replaceEnsemblId(string path1,string path2)
 {
 	
-	unordered_map<string, int> geneToNum;
-	unordered_map<int, string> numToGene;
+	unordered_map<string, long> geneToNum;
+	unordered_map<long, string> numToGene;
 	string lineStr;
 	string ensemblId;
 	string str,str1,str2;
-	int i = 0;
+	long i = 0;
 	ifstream inFile(path1, ios::in);
 	
 	while (getline(inFile, lineStr)) {
@@ -238,7 +239,7 @@ void Fun::replaceEnsemblId(string path1,string path2)
 		}
 	}
 	string paraEnsemblId;
-	for (int k = 0; k < geneToNum.size(); k++)
+	for (long k = 0; k < geneToNum.size(); k++)
 	{
 		paraEnsemblId = numToGene[k];
 		
@@ -255,8 +256,8 @@ void Fun::replaceEnsemblId(string path1,string path2)
 
 	string distAll = "E:\\cell mapping\\GSE66507.txt";
 	ofstream ofn(distAll);
-	int size = CaculateRow(path1);
-	for (i = 0; i<size; i++)
+	long size = CaculateRow(path1);
+	for (long i = 0; i<size; i++)
 	{
 		ofn << numToGene[i] << endl;
 	}
@@ -266,14 +267,14 @@ void Fun::replaceEnsemblId(string path1,string path2)
 void Fun::initMergeMatrix()
 {
 	mergeMatrix = new dataType *[allGeneToNum.size()];
-	for (int i = 0; i < allGeneToNum.size(); i++) {
+	for (long i = 0; i < allGeneToNum.size(); i++) {
 		mergeMatrix[i] = new dataType[mergeColumnCount];
 	}
 	typedef std::numeric_limits<float> Info;
     double const NAN_f = Info::quiet_NaN();
-	for (int i = 0; i < allGeneToNum.size(); i++)
+	for (long i = 0; i < allGeneToNum.size(); i++)
 	{
-		for (int j = 0; j < mergeColumnCount; j++)
+		for (long j = 0; j < mergeColumnCount; j++)
 		{
 
 		mergeMatrix[i][j] = NAN_f;
@@ -286,17 +287,17 @@ void Fun::initMergeMatrix()
 void Scanalyse::Fun::outToCsvFile(string outPath)
 {
 	ofstream ofn(outPath);
-	for (int k = 0; k < allNumToCell.size(); k++)
+	for (long k = 0; k < allNumToCell.size(); k++)
 	{
 		ofn << allNumToCell[k];
 		ofn << ",";
 	}
 	ofn << "\n";
-	for (int i = 0; i < allGeneToNum.size(); i++)
+	for (long i = 0; i < allGeneToNum.size(); i++)
 	{
 		ofn << allNumToGene[i];
 		ofn << ",";
-		for (int j = 0; j < mergeColumnCount; j++)
+		for (long j = 0; j < mergeColumnCount; j++)
 		{
 			if (j != mergeColumnCount - 1)
 			{
@@ -310,7 +311,6 @@ void Scanalyse::Fun::outToCsvFile(string outPath)
 	ofn.close();
 	cout << "end out file" << endl;
 
-
 }
 
 
@@ -321,8 +321,8 @@ void Fun::mergeMatrixs()
 	unordered_map<int, string> paraNumToGene;
 	unordered_map<string, int> paraCellToNum;
 	unordered_map<int, string> paraNumToCell;
-	int genePosition;
-	int cellCount = 0;
+	long genePosition;
+	long cellCount = 0;
 	dataType** paraCellMatrix;
 	for (int iter = 0; iter < cellList.size(); ++iter) {
 		paraCell = cellList[iter];

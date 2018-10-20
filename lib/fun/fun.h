@@ -7,8 +7,8 @@
 #include<sstream>
 #include<limits>
 
-#define LINUX
-//#define LINUX 
+//#define WINDOWS
+#define LINUX 
 #ifdef LINUX
 #include <cstring>
 #include<dirent.h>
@@ -36,16 +36,16 @@ namespace Scanalyse
 		~Fun() {
 
 		}
-		unordered_map<int, string> allNumToGene;
-		unordered_map<string, int> allGeneToNum;
-		unordered_map<int, string> allNumToCell;
-		unordered_map<string, int> allCellToNum;
+		unordered_map<long, string> allNumToGene;
+		unordered_map<string, long> allGeneToNum;
+		unordered_map<long, string> allNumToCell;
+		unordered_map<string, long> allCellToNum;
 		vector<string> files;//store path of each file
 		int rowCount[100];//store row count of each file
 		int columnCount[100];
 		vector<Cells<dataType>> cellList;
 		unordered_map<string, string> geneSymbolToEnsemblId;
-		int mergeColumnCount=0;
+		long mergeColumnCount=0;
 		dataType **mergeMatrix;
 
 		void read(string filePath);
