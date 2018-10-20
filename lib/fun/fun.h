@@ -5,7 +5,6 @@
 using namespace std;
 typedef float dataType;
 
-
 namespace Scanalyse
 {
 	class Fun
@@ -40,7 +39,5 @@ namespace Scanalyse
 		void initMergeMatrix();
 		void outToCsvFile(string outPath);
 	};
-	
-		
 }
 
