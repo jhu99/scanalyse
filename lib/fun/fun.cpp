@@ -7,7 +7,7 @@
 #include<queue>
 #include<sstream>
 #include"cell/cell.cpp"
-#define WINDOWS
+#define LINUX
 //#define LINUX 
 #ifdef LINUX
 #include <cstring>
@@ -296,7 +296,14 @@ void Fun::initMergeMatrix()
 	{
 		for (int j = 0; j < mergeColumnCount; j++)
 		{
-			mergeMatrix[i][j] = 0;
+#ifdef LINUX
+		mergeMatrix[i][j] = NaN;
+#endif // LINUX
+#ifdef WINDOWS
+		mergeMatrix[i][j] = NAN;
+#endif // WINDOWS
+
+			
 		}
 	}
 	cout << "end init" << endl;
