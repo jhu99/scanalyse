@@ -25,4 +25,4 @@ funTest: tests/funTest.cpp lib/cell/cell.o lib/fun/fun.o
 ArgParserTest: test/testargparser.cpp lib/argparser.o
 	${CXX} ${CXXFLAGS} -o $@ $^
 clean:
-	rm lib/*.o
+	rm lib/cell/.o lib/fun/*.o

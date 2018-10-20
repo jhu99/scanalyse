@@ -3,6 +3,10 @@
 
 #include<string>
 #include<unordered_map>
+#include<iostream>
+#include<cstdlib>
+#include<fstream>
+#include<sstream>
 
 using namespace std;
 

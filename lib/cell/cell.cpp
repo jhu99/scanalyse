@@ -1,10 +1,7 @@
-#include<iostream>
-#include<cstdlib>
-#include<string>
-#include<fstream>
-#include<sstream>
+// CELL_CPP
+// Created on Sep. 1, 2018
+// Author: Tianwei Liu
 #include"cell.h"
-using namespace std;
 
 template <class T> Cells<T>::Cells() {
 
