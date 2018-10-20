@@ -1,7 +1,5 @@
-#include"fun.h"
-#include"cell/cell.cpp"
+#include"fun/fun.h"
 #include<iostream>
-#include <fstream>  
 #include <string>  
 
 using namespace std;

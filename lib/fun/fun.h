@@ -1,7 +1,27 @@
 #pragma once
 #include<string>
 #include<unordered_map>
+#include <vector>  
+#include<iostream>
+#include <fstream>  
+#include<sstream>
+#include<limits>
+
+#define LINUX
+//#define LINUX 
+#ifdef LINUX
+#include <cstring>
+#include<dirent.h>
+#include"cell/cell.cpp"
 #include"cell/cell.h"
+#endif // LINUX
+
+#ifdef WINDOWS
+#include<io.h>
+#include"cell.cpp"
+#include"cell.h"
+#endif // WINDOWS
+
 using namespace std;
 typedef float dataType;
 

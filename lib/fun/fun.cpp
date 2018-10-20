@@ -1,29 +1,9 @@
 #include"fun.h"
-#include"cell/cell.h"
-#include<iostream>
-#include <fstream>  
-#include <string>  
-#include <vector>  
-#include<queue>
-#include<sstream>
-#include"cell/cell.cpp"
-#define LINUX
-//#define LINUX 
-#ifdef LINUX
-#include <cstring>
-#include<dirent.h>
-#endif // LINUX
-
-#ifdef WINDOWS
-#include<io.h>
-#endif // WINDOWS
 
 typedef float dataType;
 
 using namespace std;
 using namespace Scanalyse;
-
-
 
 
 void Fun::read(string filePath)
@@ -119,7 +99,6 @@ void Fun::GetAllFiles(string path, vector<string>& files)
 #ifdef LINUX
 	DIR *dir;
 	struct dirent *ptr;
-	char base[1000];
 	string paraPath;
 	if ((dir = opendir(path.c_str())) == NULL)
 	{
@@ -156,9 +135,6 @@ void Fun::GetAllFiles(string path, vector<string>& files)
 	}
 	closedir(dir);
 #endif // LINUX
-
-	
-
 }
 
 
@@ -166,8 +142,9 @@ void Fun::GetAllFiles(string path, vector<string>& files)
 //obtain specific format file
 void Fun::GetAllFormatFiles(string path, vector<string>& files, string format)
 
-{ 
-	/*long   hFile = 0;
+{  
+	#ifdef WINDOWS
+	long   hFile = 0;
 	//file information    
 	struct _finddata_t fileinfo;
 	string p;
@@ -193,7 +170,8 @@ void Fun::GetAllFormatFiles(string path, vector<string>& files, string format)
 
 		_findclose(hFile);
 
-	}*/
+	}
+	#endif
 }
 
 void Fun::CreatAllGeneMap()
@@ -291,19 +269,15 @@ void Fun::initMergeMatrix()
 	for (int i = 0; i < allGeneToNum.size(); i++) {
 		mergeMatrix[i] = new dataType[mergeColumnCount];
 	}
-	
+	typedef std::numeric_limits<float> Info;
+    double const NAN_f = Info::quiet_NaN();
 	for (int i = 0; i < allGeneToNum.size(); i++)
 	{
 		for (int j = 0; j < mergeColumnCount; j++)
 		{
-#ifdef LINUX
-		mergeMatrix[i][j] = NaN;
-#endif // LINUX
-#ifdef WINDOWS
-		mergeMatrix[i][j] = NAN;
-#endif // WINDOWS
 
-			
+		mergeMatrix[i][j] = NAN_f;
+
 		}
 	}
 	cout << "end init" << endl;
