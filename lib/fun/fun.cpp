@@ -299,12 +299,8 @@ void Scanalyse::Fun::outToCsvFile(string outPath)
 		ofn << ",";
 		for (long j = 0; j < mergeColumnCount; j++)
 		{
-			if (j != mergeColumnCount - 1)
-			{
 				ofn << mergeMatrix[i][j];
 					ofn<<"," ;
-			}
-			
 		}
 		ofn << "\n";
 	}
