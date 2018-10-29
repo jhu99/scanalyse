@@ -93,10 +93,10 @@ template <class T> void Cells<T>::readFile(string path) {
 		}
 	}
 
-	i = 1;
+	i = 0;
 	while (getline(inFile, lineStr)) {
 		stringstream ss(lineStr);
-		int flag = 0, j = 1;
+		int flag = 0, j = 0;
 		while (getline(ss, str, separator)) {
 			if (flag == 0) {
 				//str = str.substr(1, str.size() - 2);
@@ -115,7 +115,7 @@ template <class T> void Cells<T>::readFile(string path) {
 
 template <class T> void Cells<T>::findCell(string cellName) {
 	int index = cellToNum[cellName];
-	for (int i = 1; i <= geneToNum.size(); i++) {
+	for (int i = 0; i < geneToNum.size(); i++) {
 		if (cell[i][index])
 			cout << numToGene[i] << " " << cell[i][index] << endl;
 	}
@@ -123,7 +123,7 @@ template <class T> void Cells<T>::findCell(string cellName) {
 
 template <class T> void Cells<T>::findGene(string geneName) {
 	int index = geneToNum[geneName];
-	for (int i = 1; i <= cellToNum.size(); i++) {
+	for (int i = 0; i < cellToNum.size(); i++) {
 		if (cell[i][index])
 			cout << numToCell[i] << " " << cell[i][index] << endl;
 	}
@@ -134,7 +134,7 @@ template <class T> void Cells<T>::findCellAndGene(string cellName, string geneNa
 }
 
 template <class T> void Cells<T>::releaseMemory(){
-	for (int i = 1; i < n; i++) {
+	for (int i = 0; i < n; i++) {
 		delete[] cell[i];
 
 	}
