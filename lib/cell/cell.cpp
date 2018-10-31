@@ -1,18 +1,18 @@
 // CELL_CPP
 // Created on Sep. 1, 2018
 // Author: Tianwei Liu
-#include"cell.h"
+#include "cell.h"
 
 template <class T> Cells<T>::Cells() {
 
 }
 
-template <class T> Cells<T>::Cells(int n, int p){
+template <class T> Cells<T>::Cells(int n, int p) {
 	this->n = n;
 	this->p = p;
-	cell = new T *[n];
-	for (int i = 0; i < n; i++) {
-		cell[i] = new T[p];
+	cell = new T *[p];
+	for (int i = 0; i < p; i++) {
+		cell[i] = new T[n];
 	}
 }
 
@@ -61,7 +61,7 @@ template <class T> unordered_map<int, string> Cells<T>::getNumToCell() {
 	return numToCell;
 }
 
-template <class T> unordered_map<int, string> Cells<T>::getNumToGene(){
+template <class T> unordered_map<int, string> Cells<T>::getNumToGene() {
 	return numToGene;
 }
 
@@ -87,8 +87,10 @@ template <class T> void Cells<T>::readFile(string path) {
 		stringstream ss(lineStr);
 		while (getline(ss, str, separator)) {
 			//str = str.substr(1, str.size() - 2);
-			cellToNum[str] = i;
-			numToCell[i] = str;
+			if (i > 0) {
+				cellToNum[str] = i - 1;
+				numToCell[i - 1] = str;
+			}
 			i++;
 		}
 	}
@@ -105,7 +107,7 @@ template <class T> void Cells<T>::readFile(string path) {
 				flag = 1;
 			}
 			else {
-				cell[i][j] =(T) atof(str.c_str());
+				cell[j][i] = (T)atof(str.c_str());
 				j++;
 			}
 		}
@@ -116,8 +118,8 @@ template <class T> void Cells<T>::readFile(string path) {
 template <class T> void Cells<T>::findCell(string cellName) {
 	int index = cellToNum[cellName];
 	for (int i = 0; i < geneToNum.size(); i++) {
-		if (cell[i][index])
-			cout << numToGene[i] << " " << cell[i][index] << endl;
+		if (cell[index][i])
+			cout << numToGene[i] << " " << cell[index][i] << endl;
 	}
 }
 
@@ -130,11 +132,11 @@ template <class T> void Cells<T>::findGene(string geneName) {
 }
 
 template <class T> void Cells<T>::findCellAndGene(string cellName, string geneName) {
-	cout << cell[geneToNum[geneName]][cellToNum[cellName]] << endl;
+	cout << cell[geneToNum[cellName]][cellToNum[geneName]] << endl;
 }
 
-template <class T> void Cells<T>::releaseMemory(){
-	for (int i = 0; i < n; i++) {
+template <class T> void Cells<T>::releaseMemory() {
+	for (int i = 0; i < p; i++) {
 		delete[] cell[i];
 
 	}
