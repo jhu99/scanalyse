@@ -27,7 +27,7 @@ funTest: tests/funTest.cpp lib/cell/cell.o lib/fun/fun.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
 linearRegressionTest: tests/linearRegressionTest.cpp lib/cell/cell.o lib/linearRegression/linearRegressionParameter.o lib/linearRegression/linearRegression.o
 	${CXX} $^ ${CXXGSLFLAGS} -o $@ 
-argParserTest: tests/argParserTest.cpp lib/argparser/argparser.o
+argParserTest: tests/argparsertest.cpp lib/argparser/argparser.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
 clean:
 	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o cellTest funTest linearRegressionTest argParserTest
