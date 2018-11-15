@@ -36,7 +36,7 @@ template <class T> LinearRegressionParameter **LinearRegression<T>::getLinearReg
 	return linearRegressionParameters;
 }
 template <class T>void LinearRegression<T>::calculate(int i) {
-	double c0 = 0, c1 = 0, cov00 = 0, cov01 = 0, cov11 = 0, sumsq = 0, sumtot = 0, sum = 0, avgy = 0;
+	double c0 = 0, c1 = 0, cov00 = 0, cov01 = 0, cov11 = 0, sumsq = 0, sumtot = 0;
 
 	for (int j = 0; j < p; j++) {
 		if(j==i)continue;
@@ -51,7 +51,8 @@ template <class T>void LinearRegression<T>::calculate(int i) {
 			y[k] = cells.getCell()[j][k];
 		}
 
-		sumtot = gsl_stats_tss(y, 1, n);
+		//sumtot = gsl_stats_tss(y, 1, n);
+		sumtot =  gsl_stats_variance(y,1,n)*(n-1);
 		gsl_fit_linear(x, 1, y, 1, n, &c0, &c1, &cov00, &cov01, &cov11, &sumsq);
 		
 		LinearRegressionParameter lrp(c0, c1, cov00, cov01, cov11, sumsq,sumtot,n);
