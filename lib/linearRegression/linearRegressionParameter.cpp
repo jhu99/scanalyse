@@ -14,7 +14,7 @@ LinearRegressionParameter::LinearRegressionParameter(double c0, double c1, doubl
 	this->n = n;
 	r2 = 1 - (sumsq / sumtot);
 	t = sqrt(r2 / (1 - r2)*(n - 2));
-	pvalue = gsl_cdf_tdist_Q(t, n - 1) * 2;
+	pvalue = gsl_cdf_tdist_Q(t, n - 2) * 2;
 
 }
 LinearRegressionParameter::~LinearRegressionParameter() {
