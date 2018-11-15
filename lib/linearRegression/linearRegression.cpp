@@ -69,7 +69,7 @@ template <class T> void LinearRegression<T>::calculateLinearRegression(int nt) {
 	threads = new thread[nt];
 	for (int k = 0; k < p / nt + 1; k++) {
 		for (int i = 0; i < min(nt, p - nt * k); i++) {
-			cout << k * nt + i << endl;
+			//cout << k * nt + i << endl;
 			threads[i] = thread(&LinearRegression<T>::calculate, this, k*nt + i);
 		}
 
