@@ -19,7 +19,7 @@ else
 CXXFLAGS = -Wall -O3 -ffast-math -Ilib/ -std=c++0x -DNDEBUG
 CXXGSLFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -std=c++0x -DNDEBUG -lgsl -lpthread
 endif
-all: cellTest funTest linearRegressionTest argParserTest
+all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest
 #ArgParserTest
 cellTest: tests/cellTest.cpp lib/cell/cell.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
@@ -27,6 +27,8 @@ funTest: tests/funTest.cpp lib/cell/cell.o lib/fun/fun.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
 linearRegressionTest: tests/linearRegressionTest.cpp lib/cell/cell.o lib/linearRegression/linearRegressionParameter.o lib/linearRegression/linearRegression.o
 	${CXX} $^ ${CXXGSLFLAGS} -o $@ 
+linearRegressionParameterTest: tests/linearRegressionParameterTest.cpp lib/linearRegression/linearRegressionParameter.o
+	${CXX} $^ ${CXXGSLFLAGS} -o $@
 argParserTest: tests/argparsertest.cpp lib/argparser/argparser.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
 clean:
