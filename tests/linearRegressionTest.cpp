@@ -16,7 +16,7 @@ int main() {
 	//cell.findGene("ENSMUSG00000037221");
 	LinearRegression<short> linearRegressions(cell);
 	linearRegressions.calculateLinearRegression(5);
-	linearRegressions.writeFile(".data/123.csv");
+	linearRegressions.writeFile("./data/123.csv");
 	cin.get();
 	cin.get();
 	return 0;
