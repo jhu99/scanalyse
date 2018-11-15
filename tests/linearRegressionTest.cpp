@@ -10,7 +10,7 @@ using namespace std;
 
 int main() {
 	Cells<short> cell(6000, 6000);
-	cell.readFile(".data/t.csv");
+	cell.readFile("./data/t.csv");
 	cout << cell.getNumToGene()[0] << endl;
 	//cell.findCell("AAACCTGAGCCACTAT.1");
 	//cell.findGene("ENSMUSG00000037221");
