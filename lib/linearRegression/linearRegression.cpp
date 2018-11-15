@@ -56,7 +56,7 @@ template <class T>void LinearRegression<T>::calculate(int i) {
 		gsl_fit_linear(x, 1, y, 1, n, &c0, &c1, &cov00, &cov01, &cov11, &sumsq);
 		
 		LinearRegressionParameter lrp(c0, c1, cov00, cov01, cov11, sumsq,sumtot,n);
-		lrp.print();
+		//lrp.print();
 		linearRegressionParameters[i][j] = lrp;
 
 		delete[] x;
