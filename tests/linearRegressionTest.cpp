@@ -10,13 +10,13 @@ using namespace std;
 
 int main() {
 	Cells<short> cell(6000, 6000);
-	cell.readFile("normalize69790.csv");
+	cell.readFile(".data/t.csv");
 	cout << cell.getNumToGene()[0] << endl;
 	//cell.findCell("AAACCTGAGCCACTAT.1");
 	//cell.findGene("ENSMUSG00000037221");
 	LinearRegression<short> linearRegressions(cell);
 	linearRegressions.calculateLinearRegression(5);
-	linearRegressions.writeFile("123.csv");
+	linearRegressions.writeFile(".data/123.csv");
 	cin.get();
 	cin.get();
 	return 0;
