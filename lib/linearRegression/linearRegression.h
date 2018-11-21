@@ -4,22 +4,20 @@
 #include<iostream>
 #include<cstdio>
 #include<cstdlib>
-#include<cstring>
-#include<string>
 #include<chrono>    
 #include<thread>  
 #include<mutex>
 #include<algorithm>
 #include<unordered_map>
 #include<gsl/gsl_fit.h>
+#include<gsl/gsl_statistics_double.h>
 #include<fstream>
 #include"cell/cell.h"
-#include"linearRegression/linearRegressionParameter.h"
+#include"linearRegressionParameter.h"
 using namespace std;
 
 template <class T> class LinearRegression {
 	int n, p;
-	int nn = 0;
 	mutex mut;
 	Cells<T> cells;
 	LinearRegressionParameter **linearRegressionParameters;
