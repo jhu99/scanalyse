@@ -41,6 +41,7 @@ template <class T>void LinearRegression<T>::calculate(int i) {
 	for (int j = 0; j < p; j++) {
 		if(j==i)continue;
 		mut.lock();
+		clock_t start = clock();
 		double *x, *y;
 		x = new double[n];
 		y = new double[n];
@@ -61,6 +62,8 @@ template <class T>void LinearRegression<T>::calculate(int i) {
 
 		delete[] x;
 		delete[] y;
+		clock_t ends = clock();
+		cout <<"Running Time : "<<(double)(ends - start)/ CLOCKS_PER_SEC << endl;
 		mut.unlock();
 	}
 }
