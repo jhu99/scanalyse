@@ -11,14 +11,14 @@ int main()
 	string path = "E:\\graduated\\Hdf5data\\ica_cord_blood_h5.h5";
 	hr.readHDF5File(path);
 	char**a = hr.get_barcodes();
-	hr.createStartPosArray();
 	hr.createCellnameMap();
 	int* paraCellVector=hr.createCellVectorByName(a[0]);
 	cout << endl;
-	for (int i = 0; i < gene_count; i++)
+	
+	/*for (int i = 0; i < 1000; i++)
 	{
-		cout << paraCellVector[i]<<" ";
-	}
+		cout << paraCellVector1[i]<<" ";
+	}*/
 	cin.get();
 	cin.get();
 	return 0;

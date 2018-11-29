@@ -1,9 +1,6 @@
 #include <string>
-#include "hdf5.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "H5Fpublic.h"
-#include "hdf5_hl.h"
 #include "H5Cpp.h"
 #include<vector>
 #include<iostream>
@@ -49,10 +46,8 @@ public:
 	}
 	char** get_barcodes();
 	char** get_gene_names();
-	
-
+	int* get_indptr();
 	int readHDF5File(string path);
-	void createStartPosArray();
 	void createCellnameMap();
 	int* createCellVectorByName(string cellname);
 };

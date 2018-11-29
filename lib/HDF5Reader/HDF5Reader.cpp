@@ -97,16 +97,7 @@ int HDF5reader::readHDF5File(string path)
 	return 0;
 }
 
-void HDF5reader::createStartPosArray()
-{
-	int startPos_size = cell_count;
-	startPos = new int[startPos_size];
-	startPos[0] =0;
-	for (int i = 1; i < startPos_size; i++)
-	{
-		startPos[i] = startPos[i - 1] + indptr[i + 1];
-	}
-}
+
 
 void HDF5reader::createCellnameMap()
 {
@@ -128,12 +119,10 @@ int* HDF5reader::createCellVectorByName(string cellname)
 	{
 		singleCellVector[i] = 0;
 	}
-	paraStart = startPos[cellPos];
-	for (int j = 0; j < indptr[cellPos+1]; j++)
+	for (int paraPos = indptr[cellPos]; paraPos < indptr[cellPos+1]; paraPos++)
 	{
-		columPos = indices[paraStart+j];
-		singleCellVector[columPos] = data[columPos];
-		cout << singleCellVector[columPos] << endl;
+		columPos = indices[paraPos];
+		singleCellVector[columPos] = data[paraPos];
 	}
 	return singleCellVector;
 }
@@ -146,4 +135,9 @@ char** HDF5reader::get_barcodes()
 char ** HDF5reader::get_gene_names()
 {
 	return gene_names;
+}
+
+int * HDF5reader::get_indptr()
+{
+	return indptr;
 }
