@@ -1,7 +1,6 @@
-#include"qqNorm.h"
+#include"qqNorm/qqNorm.h"
 #include<iostream> 
 #include <string>  
-#include"argparser.h"
 using namespace std;
 
 int main()
