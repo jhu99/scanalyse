@@ -1,15 +1,15 @@
-#include <string>
+#include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
 #include "H5Cpp.h"
-#include<vector>
 #include<iostream>
 #include<unordered_map>
 using namespace std;
 class HDF5reader
 {
 private:
-	int *data, *indices, *indptr;
+	int *data;
+	long long *indptr,*indices;
 	char** barcodes;
 	char** gene_names;
 	int *startPos;
@@ -20,12 +20,6 @@ private:
 
 public:
 	HDF5reader() {
-	}
-	HDF5reader(int gene_c, int cell_c, int data_c)
-	{
-		gene_count = gene_c;
-		cell_count = cell_c;
-		data_count = data_c;
 	}
 	~HDF5reader()
 	{
@@ -46,7 +40,7 @@ public:
 	}
 	char** get_barcodes();
 	char** get_gene_names();
-	int* get_indptr();
+	long long* get_indptr();
 	int readHDF5File(string path);
 	void createCellnameMap();
 	int* createCellVectorByName(string cellname);

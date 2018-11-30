@@ -2,93 +2,162 @@
 #define _CRT_SECURE_NO_WARNINGS
 using namespace std;
 using namespace H5;
+
 int HDF5reader::readHDF5File(string path)
 {
-	hid_t       fileId, space, datasetId,type,groupId; 
+	hid_t       fileId, space, datasetId,type,groupId,attriId; 
 	herr_t      status;
-
-	data = new int[data_count];
-	indices = new int[data_count];
-	indptr = new int[cell_count+1];
-	char* para_barcodes;
-	para_barcodes = new char[40 * cell_count];
-	char*para_genenames;
-	para_genenames = new char[19 * gene_count];
-	barcodes = new char*[cell_count];
-	for (int i = 0; i < cell_count; i++)
-	{
-		barcodes[i] = new char[40];
-	}
-	gene_names = new char*[gene_count];
-	for (int i = 0; i < gene_count; i++)
-	{
-		gene_names[i] = new char[19];
-	}
+	DataSet ds;
+	H5T_class_t type_class;
+	string paraCellName;
+	DataType datatype;
+	//open file
 	const char*p = path.data();
+	fileId = H5Fopen(p, H5F_ACC_RDONLY, H5P_DEFAULT);
+
+	//open group
 	string groupName = "/GRCh38";
 	const char*group_name = groupName.data();
-	string dataSetName = "/GRCh38/data";
-	const char* dataset_name=dataSetName.data();
-	string paraCellName;
-	
-	fileId = H5Fopen(p, H5F_ACC_RDONLY, H5P_DEFAULT);
 	status = H5Lget_info(fileId, group_name, NULL, H5P_DEFAULT);
 	printf("/GRCh38': ");
 	if (status == 0)
 	{
 		printf("The group exists.\n");
 		groupId= H5Gopen2(fileId, group_name, H5P_DEFAULT);
+		Group group = Group(groupId);
 	}
 	else
 	{
 		printf("The group either does NOT exist or some other error occurred.\n");
 	}
-	string info;
-	status = H5Lget_info(fileId, dataset_name,NULL, H5P_DEFAULT);
-	printf("/GRCh38/genes': ");
+
+	//open dataset-gene_names
+	status = H5Lget_info(fileId, "/GRCh38/gene_names",NULL, H5P_DEFAULT);
+	printf("/GRCh38/gene_names: ");
 	if (status == 0)
 	{
 		printf("The dataset exists.\n");
-		datasetId = H5Dopen(fileId, dataset_name, H5P_DEFAULT);
+		datasetId = H5Dopen(fileId, "/GRCh38/gene_names", H5P_DEFAULT);
+		ds = DataSet(datasetId);
+		datatype = ds.getDataType();
+		size_t str_gene_names_len = datatype.getSize();
+		size_t s = ds.getInMemDataSize();
+		DataSpace dataspace = ds.getSpace();
+		hsize_t genenum;
+		dataspace.getSimpleExtentDims(&genenum, NULL);
+		gene_count = genenum;
+		gene_names = new char*[gene_count];
+		for (int i = 0; i < gene_count; i++)
+		{
+			gene_names[i] = new char[str_gene_names_len];
+		}
+		char*para_genenames;
+		para_genenames = new char[str_gene_names_len * gene_count];
+		hid_t str_genenames = H5Tcopy(H5T_C_S1);
+		H5Tset_size(str_genenames, str_gene_names_len);
+		status = H5Dread(datasetId, str_genenames, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_genenames);
+		for (int i = 0; i < gene_count; i++)
+		{
+			strncpy(gene_names[i], para_genenames + i * 19, 19);
+		}
+		cout << "finish read gene_names" << endl;
 	}
 	else
 	{
 		printf("The dataset either does NOT exist or some other error occurred.\n");
 	}
-	//read cellname
-	hid_t str40 = H5Tcopy(H5T_C_S1);
-	H5Tset_size(str40, 40);
-	datasetId = H5Dopen(fileId, "/GRCh38/barcodes", H5P_DEFAULT);
-	status = H5Dread(datasetId, str40, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_barcodes);
-	for (int i = 0; i < cell_count; i++)
+	//read dataset-cellname
+	status = H5Lget_info(fileId,"/GRCh38/barcodes", NULL, H5P_DEFAULT);
+	printf("/GRCh38/barcodes': ");
+	if (status == 0)
 	{
-		strncpy(barcodes[i], para_barcodes+i*40, 40);
+		printf("The dataset exists.\n");
+		datasetId = H5Dopen(fileId, "/GRCh38/barcodes", H5P_DEFAULT);
+		ds = DataSet(datasetId);
+		datatype = ds.getDataType();
+		size_t str_cell_names_len = datatype.getSize();
+		size_t s = ds.getInMemDataSize();
+		DataSpace dataspace = ds.getSpace();
+		hsize_t cellnum;
+		dataspace.getSimpleExtentDims(&cellnum, NULL);
+		cell_count = cellnum;
+		char* para_barcodes;
+		para_barcodes = new char[str_cell_names_len * cell_count];
+		barcodes = new char*[cell_count];
+		for (int i = 0; i < cell_count; i++)
+		{
+			barcodes[i] = new char[str_cell_names_len];
+		}
+		hid_t str_cell_names = H5Tcopy(H5T_C_S1);
+		H5Tset_size(str_cell_names, str_cell_names_len);
+		status = H5Dread(datasetId, str_cell_names, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_barcodes);
+		for (int i = 0; i < cell_count; i++)
+		{
+			strncpy(barcodes[i], para_barcodes + i * 40, 40);
+		}
+		cout << "finish read barcodes" << endl;
 	}
-	//read genenames
+	else
+	{
+		printf("The dataset either does NOT exist or some other error occurred.\n");
+	}
 	
-	hid_t str_genenames = H5Tcopy(H5T_C_S1);
-	H5Tset_size(str_genenames, 19);
-	datasetId = H5Dopen(fileId, "/GRCh38/gene_names", H5P_DEFAULT);
-	status = H5Dread(datasetId, str_genenames, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_genenames);
-	for (int i = 0; i < gene_count; i++)
-	{
-		strncpy(gene_names[i], para_genenames + i * 19, 19);
-	}
-
-
-	cout << "finish read barcodes" << endl;
 	//read data
-	datasetId = H5Dopen(fileId, dataset_name, H5P_DEFAULT);
-	status = H5Dread(datasetId, H5T_NATIVE_INT32, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
-	cout << "finish read data" << endl;
+	status = H5Lget_info(fileId, "/GRCh38/data", NULL, H5P_DEFAULT);
+	printf("/GRCh38/data ");
+	if (status == 0)
+	{
+		printf("The dataset-data exists.\n");
+		datasetId = H5Dopen(fileId, "/GRCh38/data", H5P_DEFAULT);
+		ds = DataSet(datasetId);
+		datatype = ds.getDataType();
+
+		size_t s = ds.getInMemDataSize();
+		DataSpace dataspace = ds.getSpace();
+		hsize_t datanum;
+		dataspace.getSimpleExtentDims(&datanum, NULL);
+		data_count = datanum;
+		data = new int[data_count];
+		status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+		cout << "finish read data" << endl;
+	}
+	else
+	{
+		printf("The dataset either does NOT exist or some other error occurred.\n");
+	}
+	
 	//read indices
-	datasetId = H5Dopen(fileId, "/GRCh38/indices", H5P_DEFAULT);
-	status = H5Dread(datasetId, H5T_NATIVE_INT32, H5S_ALL, H5S_ALL, H5P_DEFAULT, indices);
-	cout << "finish read indices" << endl;
+	status = H5Lget_info(fileId, "/GRCh38/indices", NULL, H5P_DEFAULT);
+	printf("/GRCh38/indices: ");
+	if (status == 0)
+	{
+		indices = new long long[data_count];
+		datasetId = H5Dopen(fileId, "/GRCh38/indices", H5P_DEFAULT);
+		ds = DataSet(datasetId);
+		datatype = ds.getDataType();
+		status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, indices);
+		cout << "finish read indices" << endl;
+	}
+	else
+	{
+		printf("The dataset either does NOT exist or some other error occurred.\n");
+	}
 	//read indptr
-	datasetId = H5Dopen(fileId, "/GRCh38/indptr", H5P_DEFAULT);
-	status = H5Dread(datasetId, H5T_NATIVE_INT32, H5S_ALL, H5S_ALL, H5P_DEFAULT, indptr);
-	cout << "finish read indptr" << endl;
+	status = H5Lget_info(fileId, "/GRCh38/indptr", NULL, H5P_DEFAULT);
+	printf("/GRCh38/indptr': ");
+	if (status == 0)
+	{
+		indptr = new long long[cell_count+1];
+		datasetId = H5Dopen(fileId, "/GRCh38/indptr", H5P_DEFAULT);
+		ds = DataSet(datasetId);
+		datatype = ds.getDataType();
+		status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, indptr);
+		cout << "finish read indptr" << endl;
+	}
+	else
+	{
+		printf("The dataset either does NOT exist or some other error occurred.\n");
+	}
 	//close
 	H5Fclose(fileId);
 	H5Fclose(datasetId);
@@ -119,7 +188,7 @@ int* HDF5reader::createCellVectorByName(string cellname)
 	{
 		singleCellVector[i] = 0;
 	}
-	for (int paraPos = indptr[cellPos]; paraPos < indptr[cellPos+1]; paraPos++)
+	for (long long paraPos = indptr[cellPos]; paraPos < indptr[cellPos+1]; paraPos++)
 	{
 		columPos = indices[paraPos];
 		singleCellVector[columPos] = data[paraPos];
@@ -137,7 +206,7 @@ char ** HDF5reader::get_gene_names()
 	return gene_names;
 }
 
-int * HDF5reader::get_indptr()
+long long * HDF5reader::get_indptr()
 {
 	return indptr;
 }
