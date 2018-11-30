@@ -20,7 +20,7 @@ else
 CXXFLAGS = -Wall -O3 -ffast-math -Ilib/ -std=c++0x -DNDEBUG
 CXXGSLFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -std=c++0x -DNDEBUG -lgsl -lgslcblas -lpthread
 endif
-all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest
+all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest HDF5ReaderTest
 #ArgParserTest
 cellTest: tests/cellTest.cpp lib/cell/cell.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
