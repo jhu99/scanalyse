@@ -32,8 +32,8 @@ linearRegressionParameterTest: tests/linearRegressionParameterTest.cpp lib/linea
 	${CXX} $^ ${CXXGSLFLAGS} -o $@
 argParserTest: tests/argparsertest.cpp lib/argparser/argparser.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
-qqNormTest:tests/qqNormTest.cpp lib/qqNorm/qqNorm.o
-	${CXX} $^ ${CXXGSLFLAGS } -o $@ 
+qqNormTest:tests/qqNormTest.cpp lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface.o
+	${CXX} $^ ${CXXGSLFLAGS} -o $@ 
 HDF5ReaderTest:tests/testHDF5Reader.cpp lib/HDF5Reader/HDF5Reader.o
 	${HDF5XX} $^ ${CXXFLAGS} -o $@ 
 clean:
