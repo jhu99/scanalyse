@@ -1,5 +1,6 @@
 OS = $(shell uname -s)
 CXX = g++
+HDF5XX=h5c++
 DEBUG = yes
 
 # Default mode is "Release"
@@ -31,5 +32,9 @@ linearRegressionParameterTest: tests/linearRegressionParameterTest.cpp lib/linea
 	${CXX} $^ ${CXXGSLFLAGS} -o $@
 argParserTest: tests/argparsertest.cpp lib/argparser/argparser.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
+qqNormTest:tests/qqNormTest.cpp lib/qqNorm/qqNorm.o
+	${CXX} $^ ${CXXFLAGS} -o $@ 
+HDF5ReaderTest:test/testHDF5Reader.cpp lib/HDF5Reader/HDF5Reader.o
+	${HDF5XX} $^ ${CXXFLAGS} -o $@ 
 clean:
-	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o cellTest funTest linearRegressionTest argParserTest
+	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/HDF5Reader/*.o cellTest funTest linearRegressionTest argParserTest qqNormTest HDF5ReaderTest
