@@ -40,4 +40,4 @@ HDF5Reader.o:lib/HDF5Reader/HDF5Reader.cpp
 HDF5ReaderTest:tests/testHDF5Reader.cpp HDF5Reader.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@  
 clean:
-	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/HDF5Reader/*.o cellTest funTest linearRegressionTest argParserTest qqNormTest HDF5ReaderTest
+	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/HDF5Reader/*.o *.o cellTest funTest linearRegressionTest argParserTest qqNormTest HDF5ReaderTest
