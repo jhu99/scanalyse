@@ -26,7 +26,7 @@ public:
 	}
 	~HDF5reader()
 	{
-		delete[] indices;
+		/*delete[] indices;
 		delete[] data;
 		delete[] indptr;
 		delete[] startPos;
@@ -39,7 +39,7 @@ public:
 		{
 			delete[] gene_names[i];
 		}
-		delete[] gene_names;
+		delete[] gene_names;*/
 	}
 	char** get_barcodes();
 	char** get_gene_names();
@@ -54,4 +54,5 @@ public:
 	void createCellnameMap();
 	int* createCellVectorByName(string cellname);
 	unordered_map<int, int> cellFiltration();
+	void deleteHDF();
 };
