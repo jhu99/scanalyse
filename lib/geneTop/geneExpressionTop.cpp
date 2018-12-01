@@ -16,6 +16,7 @@ geneExpressionTop::geneExpressionTop(HDF5reader hr,int topNum) {
 geneExpressionTop::~geneExpressionTop() {
 	delete[] gc;
 	delete[] top;
+	hr.deleteHDF5();
 }
 
 void geneExpressionTop::setHDF5reader(HDF5reader hr) {
