@@ -1,6 +1,6 @@
 OS = $(shell uname -s)
 CXX = g++
-HDF5XX=h5c++
+H5CXX = h5c++
 DEBUG = yes
 
 # Default mode is "Release"
@@ -18,6 +18,7 @@ CXXFLAGS = -Wall -g3 -DDEBUG -std=c++0x -DVERBOSE -Ilib/ -I/usr/local/include/
 CXXGSLFLAGS = -Wall -g3 -DDEBUG -std=c++0x -DVERBOSE -Ilib/ -I/usr/local/include/ -lgsl -lgslcblas -lpthread
 else
 CXXFLAGS = -Wall -O3 -ffast-math -Ilib/ -std=c++0x -DNDEBUG
+H5CXXFLAGS = -std=c++0x -Ilib/
 CXXGSLFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -std=c++0x -DNDEBUG -lgsl -lgslcblas -lpthread
 endif
 all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest HDF5ReaderTest
@@ -34,7 +35,9 @@ argParserTest: tests/argparsertest.cpp lib/argparser/argparser.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
 qqNormTest:tests/qqNormTest.cpp lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface.o
 	${CXX} $^ ${CXXGSLFLAGS} -o $@ 
-HDF5ReaderTest:tests/testHDF5Reader.cpp lib/HDF5Reader/HDF5Reader.o
-	${HDF5XX} $^ ${CXXFLAGS} -o $@ 
+HDF5Reader.o:lib/HDF5Reader/HDF5Reader.cpp 
+	${H5CXX} $^ ${H5CXXFLAGS} -c -o $@
+HDF5ReaderTest:tests/testHDF5Reader.cpp HDF5Reader.o
+	h5c++ $^ ${CXXFLAGS} -o $@  
 clean:
 	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/HDF5Reader/*.o cellTest funTest linearRegressionTest argParserTest qqNormTest HDF5ReaderTest
