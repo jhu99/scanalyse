@@ -5,7 +5,7 @@ using namespace H5;
 
 int HDF5reader::readHDF5File(string path)
 {
-	hid_t       fileId, space, datasetId,type,groupId,attriId; 
+	hid_t       fileId, space, datasetId, type, groupId, attriId;
 	herr_t      status;
 	DataSet ds;
 	H5T_class_t type_class;
@@ -23,7 +23,7 @@ int HDF5reader::readHDF5File(string path)
 	if (status == 0)
 	{
 		printf("The group exists.\n");
-		groupId= H5Gopen2(fileId, group_name, H5P_DEFAULT);
+		groupId = H5Gopen2(fileId, group_name, H5P_DEFAULT);
 		Group group = Group(groupId);
 	}
 	else
@@ -32,7 +32,7 @@ int HDF5reader::readHDF5File(string path)
 	}
 
 	//open dataset-gene_names
-	status = H5Lget_info(fileId, "/GRCh38/gene_names",NULL, H5P_DEFAULT);
+	status = H5Lget_info(fileId, "/GRCh38/gene_names", NULL, H5P_DEFAULT);
 	printf("/GRCh38/gene_names: ");
 	if (status == 0)
 	{
@@ -81,7 +81,7 @@ int HDF5reader::readHDF5File(string path)
 		datatype = ds.getDataType();
 		size_t str_genes_len = datatype.getSize();
 		size_t s = ds.getInMemDataSize();
-		
+
 		genes = new char*[gene_count];
 		for (int i = 0; i < gene_count; i++)
 		{
@@ -107,7 +107,7 @@ int HDF5reader::readHDF5File(string path)
 		printf("The dataset either does NOT exist or some other error occurred.\n");
 	}
 	//read dataset-cellname
-	status = H5Lget_info(fileId,"/GRCh38/barcodes", NULL, H5P_DEFAULT);
+	status = H5Lget_info(fileId, "/GRCh38/barcodes", NULL, H5P_DEFAULT);
 	printf("/GRCh38/barcodes': ");
 	if (status == 0)
 	{
@@ -141,7 +141,7 @@ int HDF5reader::readHDF5File(string path)
 	{
 		printf("The dataset either does NOT exist or some other error occurred.\n");
 	}
-	
+
 	//read data
 	status = H5Lget_info(fileId, "/GRCh38/data", NULL, H5P_DEFAULT);
 	printf("/GRCh38/data ");
@@ -165,7 +165,7 @@ int HDF5reader::readHDF5File(string path)
 	{
 		printf("The dataset either does NOT exist or some other error occurred.\n");
 	}
-	
+
 	//read indices
 	status = H5Lget_info(fileId, "/GRCh38/indices", NULL, H5P_DEFAULT);
 	printf("/GRCh38/indices: ");
@@ -187,7 +187,7 @@ int HDF5reader::readHDF5File(string path)
 	printf("/GRCh38/indptr': ");
 	if (status == 0)
 	{
-		indptr = new long long[cell_count+1];
+		indptr = new long long[cell_count + 1];
 		datasetId = H5Dopen(fileId, "/GRCh38/indptr", H5P_DEFAULT);
 		ds = DataSet(datasetId);
 		datatype = ds.getDataType();
@@ -228,7 +228,7 @@ int* HDF5reader::createCellVectorByName(string cellname)
 	{
 		singleCellVector[i] = 0;
 	}
-	for (long long paraPos = indptr[cellPos]; paraPos < indptr[cellPos+1]; paraPos++)
+	for (long long paraPos = indptr[cellPos]; paraPos < indptr[cellPos + 1]; paraPos++)
 	{
 		columPos = indices[paraPos];
 		singleCellVector[columPos] = data[paraPos];
@@ -240,7 +240,7 @@ unordered_map<int, int> HDF5reader::cellFiltration()
 {
 	unordered_map<int, int> cellIdToNum;
 	long long *genecount;
-	genecount = new long long [cell_count];
+	genecount = new long long[cell_count];
 	for (int i = 0; i < cell_count; i++)
 	{
 		genecount[i] = indptr[i + 1] - indptr[i];
@@ -248,7 +248,7 @@ unordered_map<int, int> HDF5reader::cellFiltration()
 		{
 			cellIdToNum[i] = 1;
 		}
-	 }
+	}
 	return cellIdToNum;
 }
 
@@ -261,7 +261,16 @@ char ** HDF5reader::get_gene_names()
 {
 	return gene_names;
 }
-
+char ** HDF5reader::get_genes()
+{
+	return genes;
+}
+long long* HDF5reader::get_indices() {
+	return indices;
+}
+int* HDF5reader::get_data() {
+	return data;
+}
 int HDF5reader::get_cell_count()
 {
 	return cell_count;
@@ -270,6 +279,11 @@ int HDF5reader::get_cell_count()
 int HDF5reader::get_gene_count()
 {
 	return gene_count;
+}
+
+int HDF5reader::get_data_count()
+{
+	return data_count;
 }
 
 long long * HDF5reader::get_indptr()
