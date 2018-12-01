@@ -1,6 +1,6 @@
 #include<iostream>
-#include"geneTops/geneExpressionTop.h"
-#include"geneTops/HDF5Reader.h"
+#include"geneTop/geneExpressionTop.h"
+#include"geneTop/HDF5Reader.h"
 using namespace std;
 
 int main() {
