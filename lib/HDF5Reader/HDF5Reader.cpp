@@ -290,3 +290,20 @@ long long * HDF5reader::get_indptr()
 {
 	return indptr;
 }
+
+void HDF5reader::deleteHDF5(){
+	delete[] indices;
+	delete[] data;
+	delete[] indptr;
+	delete[] startPos;
+	for (int i = 0; i < cell_count; i++)
+	{
+		delete[] barcodes[i];
+	}
+	delete[] barcodes;
+	for (int i = 0; i < gene_count; i++)
+	{
+		delete[] gene_names[i];
+	}
+	delete[] gene_names;
+}
