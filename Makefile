@@ -38,6 +38,6 @@ qqNormTest:tests/qqNormTest.cpp lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface
 HDF5Reader.o:lib/HDF5Reader/HDF5Reader.cpp 
 	${H5CXX} $^ ${H5CXXFLAGS} -c -o $@
 HDF5ReaderTest:tests/testHDF5Reader.cpp HDF5Reader.o
-	h5c++ $^ ${CXXFLAGS} -o $@  
+	${H5CXX} $^ ${CXXFLAGS} -o $@  
 clean:
 	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/HDF5Reader/*.o cellTest funTest linearRegressionTest argParserTest qqNormTest HDF5ReaderTest
