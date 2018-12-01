@@ -17,4 +17,5 @@ int main() {
 	geneTops.printTop();
 	cin.get();
 	cin.get();
+	hr.deleteHDF5();
 }
