@@ -1,4 +1,4 @@
-#include "HDF5Reader.h"
+#include "HDF5Reader/HDF5Reader.h"
 
 #include<iostream>
 using namespace std;
