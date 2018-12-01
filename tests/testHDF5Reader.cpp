@@ -2,6 +2,7 @@
 
 #include<iostream>
 using namespace std;
+
 int main(int argc, const char ** argv)
 {
 	int gene_count;
@@ -10,6 +11,9 @@ int main(int argc, const char ** argv)
 	HDF5reader hr;
 	string path = argv[1];
 	hr.readHDF5File(path);
+	unordered_map<int,int>c=hr.cellFiltration();
+	cout << "Before filtration, there are " << hr.get_cell_count() << " cells." << endl;
+	cout <<"After filtration, there are " <<c.size()<<" cells left." << endl;
 	char**a = hr.get_barcodes();
 	hr.createCellnameMap();
 	int* paraCellVector1=hr.createCellVectorByName(a[0]);
@@ -24,11 +28,6 @@ int main(int argc, const char ** argv)
 	cout << paraCellVector2[32919]<<" "<< paraCellVector2[31978] << " " << paraCellVector2[31763] << " " << paraCellVector2[31453] << " " << paraCellVector2[31365] << " " << paraCellVector2[30936] << " " << paraCellVector2[30740] << " " << paraCellVector2[30434] << " " << paraCellVector2[30420] << " " << paraCellVector2[29944];
 	cout << endl;
 	
-	
-	/*for (int i = 0; i < 1000; i++)
-	{
-		cout << paraCellVector1[i]<<" ";
-	}*/
 	cin.get();
 	cin.get();
 	return 0;

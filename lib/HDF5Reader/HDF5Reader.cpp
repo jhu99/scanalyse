@@ -58,9 +58,49 @@ int HDF5reader::readHDF5File(string path)
 		status = H5Dread(datasetId, str_genenames, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_genenames);
 		for (int i = 0; i < gene_count; i++)
 		{
-			strncpy(gene_names[i], para_genenames + i * 19, 19);
+			strncpy(gene_names[i], para_genenames + i * str_gene_names_len, str_gene_names_len);
+		}
+		for (int i = 0; i < 10; i++)
+		{
+			cout << gene_names[i] << endl;
 		}
 		cout << "finish read gene_names" << endl;
+	}
+	else
+	{
+		printf("The dataset either does NOT exist or some other error occurred.\n");
+	}
+	//read dataset-genes
+	status = H5Lget_info(fileId, "/GRCh38/genes", NULL, H5P_DEFAULT);
+	printf("/GRCh38/genes: ");
+	if (status == 0)
+	{
+		printf("The dataset exists.\n");
+		datasetId = H5Dopen(fileId, "/GRCh38/genes", H5P_DEFAULT);
+		ds = DataSet(datasetId);
+		datatype = ds.getDataType();
+		size_t str_genes_len = datatype.getSize();
+		size_t s = ds.getInMemDataSize();
+		
+		genes = new char*[gene_count];
+		for (int i = 0; i < gene_count; i++)
+		{
+			genes[i] = new char[str_genes_len];
+		}
+		char*para_genes;
+		para_genes = new char[str_genes_len * gene_count];
+		hid_t str_genes = H5Tcopy(H5T_C_S1);
+		H5Tset_size(str_genes, str_genes_len);
+		status = H5Dread(datasetId, str_genes, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_genes);
+		for (int i = 0; i < gene_count; i++)
+		{
+			strncpy(genes[i], para_genes + i * str_genes_len, str_genes_len);
+		}
+		for (int i = 0; i < 10; i++)
+		{
+			cout << genes[i] << endl;
+		}
+		cout << "finish read genes" << endl;
 	}
 	else
 	{
@@ -93,7 +133,7 @@ int HDF5reader::readHDF5File(string path)
 		status = H5Dread(datasetId, str_cell_names, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_barcodes);
 		for (int i = 0; i < cell_count; i++)
 		{
-			strncpy(barcodes[i], para_barcodes + i * 40, 40);
+			strncpy(barcodes[i], para_barcodes + i * str_cell_names_len, str_cell_names_len);
 		}
 		cout << "finish read barcodes" << endl;
 	}
@@ -196,6 +236,22 @@ int* HDF5reader::createCellVectorByName(string cellname)
 	return singleCellVector;
 }
 
+unordered_map<int, int> HDF5reader::cellFiltration()
+{
+	unordered_map<int, int> cellIdToNum;
+	long long *genecount;
+	genecount = new long long [cell_count];
+	for (int i = 0; i < cell_count; i++)
+	{
+		genecount[i] = indptr[i + 1] - indptr[i];
+		if (genecount[i] < 0.1*gene_count)
+		{
+			cellIdToNum[i] = 1;
+		}
+	 }
+	return cellIdToNum;
+}
+
 char** HDF5reader::get_barcodes()
 {
 	return barcodes;
@@ -204,6 +260,16 @@ char** HDF5reader::get_barcodes()
 char ** HDF5reader::get_gene_names()
 {
 	return gene_names;
+}
+
+int HDF5reader::get_cell_count()
+{
+	return cell_count;
+}
+
+int HDF5reader::get_gene_count()
+{
+	return gene_count;
 }
 
 long long * HDF5reader::get_indptr()

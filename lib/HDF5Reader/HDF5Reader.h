@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "H5Cpp.h"
 #include<iostream>
+
 #include<unordered_map>
 using namespace std;
 class HDF5reader
@@ -12,6 +13,7 @@ private:
 	long long *indptr,*indices;
 	char** barcodes;
 	char** gene_names;
+	char** genes;
 	int *startPos;
 	unordered_map<int, string> numToCell;
 	unordered_map<string, int> cellToNum;
@@ -40,8 +42,11 @@ public:
 	}
 	char** get_barcodes();
 	char** get_gene_names();
+	int get_cell_count();
+	int get_gene_count();
 	long long* get_indptr();
 	int readHDF5File(string path);
 	void createCellnameMap();
 	int* createCellVectorByName(string cellname);
+	unordered_map<int,int> cellFiltration();
 };
