@@ -1,3 +1,4 @@
+#pragma once
 #include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +11,7 @@ class HDF5reader
 {
 private:
 	int *data;
-	long long *indptr,*indices;
+	long long *indptr, *indices;
 	char** barcodes;
 	char** gene_names;
 	char** genes;
@@ -42,11 +43,15 @@ public:
 	}
 	char** get_barcodes();
 	char** get_gene_names();
+	char** get_genes();
+	long long* get_indices();
+	int* get_data();
 	int get_cell_count();
 	int get_gene_count();
+	int get_data_count();
 	long long* get_indptr();
 	int readHDF5File(string path);
 	void createCellnameMap();
 	int* createCellVectorByName(string cellname);
-	unordered_map<int,int> cellFiltration();
+	unordered_map<int, int> cellFiltration();
 };
