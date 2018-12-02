@@ -241,10 +241,11 @@ unordered_map<int, int> HDF5reader::cellFiltration()
 	unordered_map<int, int> cellIdToNum;
 	long long *genecount;
 	genecount = new long long[cell_count];
+	int min_count = gene_count / 100;
 	for (int i = 0; i < cell_count; i++)
 	{
 		genecount[i] = indptr[i + 1] - indptr[i];
-		if (genecount[i] < 0.1*gene_count)
+		if (genecount[i] <min_count)
 		{
 			cellIdToNum[i] = 1;
 		}
@@ -291,7 +292,7 @@ long long * HDF5reader::get_indptr()
 	return indptr;
 }
 
-void HDF5reader::deleteHDF5(){
+void HDF5reader::deleteHDF(){
 	delete[] indices;
 	delete[] data;
 	delete[] indptr;
