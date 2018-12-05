@@ -41,5 +41,7 @@ HDF5ReaderTest:tests/testHDF5Reader.cpp HDF5Reader.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@  
 geneTopsTest:tests/geneTopsTest.cpp lib/geneTop/geneExpressionTop.o lib/geneTop/geneCount.o HDF5Reader.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
+rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o HDF5Reader.o
+	${H5CXX} $^ ${CXXFLAGS} -o $@ 
 clean:
-	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/HDF5Reader/*.o lib/geneTop/*.o *.o cellTest funTest linearRegressionTest argParserTest qqNormTest geneTopsTest HDF5ReaderTest
+	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/HDF5Reader/*.o lib/geneTop/*.o lib/rank/*.o *.o cellTest funTest linearRegressionTest argParserTest qqNormTest geneTopsTest HDF5ReaderTest rankTest
