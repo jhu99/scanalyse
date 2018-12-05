@@ -5,6 +5,7 @@ geneInfo::geneInfo(int data, long long indices) {
 	this->data = data;
 	this->indices = indices;
 }
+geneInfo::~geneInfo(){}
 
 int  geneInfo::getData() {
 	return data;
@@ -12,7 +13,7 @@ int  geneInfo::getData() {
 long long geneInfo::getIndices() {
 	return indices;
 }
-double geneInfo::getRank() {
+unsigned short geneInfo::getRank() {
 	return rank;
 }
 
@@ -22,6 +23,6 @@ void geneInfo::setData(int data) {
 void geneInfo::setIndices(long long indices) {
 	this->indices = indices;
 }
-void geneInfo::setRank(double rank) {
+void geneInfo::setRank(unsigned short rank) {
 	this->rank = rank;
 }
