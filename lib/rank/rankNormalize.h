@@ -19,7 +19,7 @@ class rankNormalize
 	long long n;
 	HDF5reader hr;
 	geneInfo *geneInfos;
-	double *rank;
+	unsigned short *rank;
 public:
 	rankNormalize();
 	rankNormalize(HDF5reader hr);
@@ -28,12 +28,12 @@ public:
 	void setN(long long n);
 	void setHr(HDF5reader hr);
 	void setGeneInfos(geneInfo *geneInfos);
-	void setRank(double *rank);
+	void setRank(unsigned short *rank);
 
 	long long getN();
 	HDF5reader getHr();
 	geneInfo* getGeneInfos();
-	double* getRank();
+	unsigned short* getRank();
 
 	void setGeneInfoByHr();
 	bool cmp1(geneInfo x, geneInfo y);
