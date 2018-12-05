@@ -3,17 +3,18 @@
 class geneInfo {
 	int data;
 	long long indices;
-	double rank;
+	unsigned short rank;
 public:
 	geneInfo();
 	geneInfo(int data, long long indices);
+	~geneInfo();
 	
 	int getData();
 	long long getIndices();
-	double getRank();
+	unsigned short getRank();
 
 	void setData(int data);
 	void setIndices(long long indices);
-	void setRank(double rank);
+	void setRank(unsigned short rank);
 };
 #endif // !GENEINFO
