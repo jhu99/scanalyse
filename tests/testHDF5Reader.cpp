@@ -26,7 +26,7 @@ int main(int argc, const char ** argv)
 	char**a = hr.get_barcodes();
 	hr.createCellnameMap();
 	int* paraCellVector1=hr.createCellVectorByName(a[0]);
-
+	hr.deleteHDF();
 	
 	cin.get();
 	cin.get();

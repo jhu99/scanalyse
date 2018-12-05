@@ -296,7 +296,6 @@ void HDF5reader::deleteHDF(){
 	delete[] indices;
 	delete[] data;
 	delete[] indptr;
-	delete[] startPos;
 	for (int i = 0; i < cell_count; i++)
 	{
 		delete[] barcodes[i];
@@ -307,4 +306,9 @@ void HDF5reader::deleteHDF(){
 		delete[] gene_names[i];
 	}
 	delete[] gene_names;
+	for (int i = 0; i < gene_count; i++)
+	{
+		delete[] genes[i];
+	}
+	delete[] genes;
 }
