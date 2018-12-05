@@ -7,7 +7,7 @@ rankNormalize::rankNormalize(HDF5reader hr) {
 	this->hr = hr;
 	n = hr.get_data_count();
 	geneInfos = new geneInfo[n];
-	rank = new double[n];
+	rank = new unsigned short[n];
 	setGeneInfoByHr();
 }
 rankNormalize::~rankNormalize() {
@@ -24,7 +24,7 @@ void rankNormalize::setHr(HDF5reader hr) {
 void rankNormalize::setGeneInfos(geneInfo *geneInfos) {
 	this->geneInfos = geneInfos;
 }
-void rankNormalize::setRank(double *rank) {
+void rankNormalize::setRank(unsigned short *rank) {
 	this->rank = rank;
 }
 
@@ -37,7 +37,7 @@ HDF5reader rankNormalize::getHr() {
 geneInfo* rankNormalize::getGeneInfos() {
 	return geneInfos;
 }
-double* rankNormalize::getRank() {
+unsigned short* rankNormalize::getRank() {
 	return rank;
 }
 
@@ -101,7 +101,7 @@ void rankNormalize::ranksThread(int i) {
 				cnt++;
 				j++;
 			}
-			double value = (k + (b - begin) + k + (j - begin))*1.0 / 2;
+			unsigned short value = (unsigned short)((k + (b - begin) + k + (j - begin)) / 2);
 			//cout << k + b << " " << k + j << endl;
 			for (int p = b; p <= j; p++) {
 				geneInfos[p].setRank(value);
