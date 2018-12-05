@@ -17,6 +17,6 @@ public:
 
 	}
 
-	double * caculateTheoryQuantiles(short *p,int size);
+	double * caculateTheoryQuantiles(unsigned short *p,int size);
 
 };

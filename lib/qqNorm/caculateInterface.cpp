@@ -1,6 +1,6 @@
-#include "caculateInterface.h"
+//#include "caculateInterface.h"
 #include "qqNorm.h"
-double ** cacuTheoryQ::cacuQByColumn(short ** rankMatrix, int rowCount, int columnCount)
+double ** cacuTheoryQ::cacuQByColumn(unsigned short **rankMatrix, int rowCount, int columnCount)
 {
 	double** theoryQMatix;
 	theoryQMatix = new double*[rowCount];

@@ -1,7 +1,7 @@
 #include"qqNorm.h"
 using namespace std;
 
-double* qqNorm::caculateTheoryQuantiles(short* p,int size)
+double* qqNorm::caculateTheoryQuantiles(unsigned short* p,int size)
 {
 	typedef std::numeric_limits<double> Info;
 	double const NAN_d = Info::quiet_NaN();

@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-
+#include "qqNorm.h"
 using namespace std;
 
 // base class
@@ -8,7 +8,7 @@ class caculateInterface
 {
 public:
 	// provide virtual function for interface
-	virtual double** cacuQByColumn(short**rankMatrix, int rowCount, int columnCount)=0;
+	virtual double** cacuQByColumn(unsigned short **rankMatrix, int rowCount, int columnCount)=0;
 protected:
 
 };
@@ -22,5 +22,5 @@ public:
 	}
 	~cacuTheoryQ() {
 	}
-	double** cacuQByColumn(short**rankMatrix,int rowCount,int columnCount);
+	double** cacuQByColumn(unsigned short**rankMatrix,int rowCount,int columnCount);
 };

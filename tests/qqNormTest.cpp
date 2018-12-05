@@ -1,17 +1,18 @@
 #include"qqNorm/qqNorm.h"
 #include<iostream> 
 #include <string>  
+#include"qqNorm/caculateInterface.h"
 using namespace std;
 
 int main()
 {
 	qqNorm qq;
-	short **test;
+	unsigned short **test;
 	int columCount=12, rowCount=2;
-	test = new short*[rowCount];
+	test = new unsigned short*[rowCount];
 	for (int i = 0; i < rowCount; i++)
 	{
-		test[i] =new short [columCount];
+		test[i] =new unsigned short [columCount];
 	}
 	for (int i = 0; i < rowCount; i++)
 	{
