@@ -1,16 +1,56 @@
-#include "HDF5Reader.h"
+#include "SparseMatrix.h"
 #define _CRT_SECURE_NO_WARNINGS
 using namespace std;
 using namespace H5;
 
-int HDF5reader::readHDF5File(string path)
+char** SparseMatrix::get_barcodes()
 {
-	hid_t       fileId, space, datasetId, type, groupId, attriId;
+	return barcodes;
+}
+
+
+char ** SparseMatrix::get_genes()
+{
+	return genes;
+}
+
+long long* SparseMatrix::get_indices() {
+	return indices;
+}
+
+int* SparseMatrix::get_data() {
+	return data;
+}
+
+int SparseMatrix::get_cell_count()
+{
+	return cell_count;
+}
+
+int SparseMatrix::get_gene_count()
+{
+	return gene_count;
+}
+
+int SparseMatrix::get_data_count()
+{
+	return data_count;
+}
+
+long long * SparseMatrix::get_indptr()
+{
+	return indptr;
+}
+
+int SparseMatrix::readHDF5File(string path)
+{
+	hid_t       fileId, datasetId, groupId;
 	herr_t      status;
 	DataSet ds;
 	H5T_class_t type_class;
 	string paraCellName;
 	DataType datatype;
+	DataSpace dataspace;
 	//open file
 	const char*p = path.data();
 	fileId = H5Fopen(p, H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -31,45 +71,6 @@ int HDF5reader::readHDF5File(string path)
 		printf("The group either does NOT exist or some other error occurred.\n");
 	}
 
-	//open dataset-gene_names
-	status = H5Lget_info(fileId, "/GRCh38/gene_names", NULL, H5P_DEFAULT);
-	printf("/GRCh38/gene_names: ");
-	if (status == 0)
-	{
-		printf("The dataset exists.\n");
-		datasetId = H5Dopen(fileId, "/GRCh38/gene_names", H5P_DEFAULT);
-		ds = DataSet(datasetId);
-		datatype = ds.getDataType();
-		size_t str_gene_names_len = datatype.getSize();
-		size_t s = ds.getInMemDataSize();
-		DataSpace dataspace = ds.getSpace();
-		hsize_t genenum;
-		dataspace.getSimpleExtentDims(&genenum, NULL);
-		gene_count = genenum;
-		gene_names = new char*[gene_count];
-		for (int i = 0; i < gene_count; i++)
-		{
-			gene_names[i] = new char[str_gene_names_len];
-		}
-		char*para_genenames;
-		para_genenames = new char[str_gene_names_len * gene_count];
-		hid_t str_genenames = H5Tcopy(H5T_C_S1);
-		H5Tset_size(str_genenames, str_gene_names_len);
-		status = H5Dread(datasetId, str_genenames, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_genenames);
-		for (int i = 0; i < gene_count; i++)
-		{
-			strncpy(gene_names[i], para_genenames + i * str_gene_names_len, str_gene_names_len);
-		}
-		for (int i = 0; i < 10; i++)
-		{
-			cout << gene_names[i] << endl;
-		}
-		cout << "finish read gene_names" << endl;
-	}
-	else
-	{
-		printf("The dataset either does NOT exist or some other error occurred.\n");
-	}
 	//read dataset-genes
 	status = H5Lget_info(fileId, "/GRCh38/genes", NULL, H5P_DEFAULT);
 	printf("/GRCh38/genes: ");
@@ -78,6 +79,11 @@ int HDF5reader::readHDF5File(string path)
 		printf("The dataset exists.\n");
 		datasetId = H5Dopen(fileId, "/GRCh38/genes", H5P_DEFAULT);
 		ds = DataSet(datasetId);
+		dataspace = ds.getSpace();
+		hsize_t genenum;
+		dataspace.getSimpleExtentDims(&genenum, NULL);
+		gene_count = genenum;
+
 		datatype = ds.getDataType();
 		size_t str_genes_len = datatype.getSize();
 		size_t s = ds.getInMemDataSize();
@@ -117,7 +123,7 @@ int HDF5reader::readHDF5File(string path)
 		datatype = ds.getDataType();
 		size_t str_cell_names_len = datatype.getSize();
 		size_t s = ds.getInMemDataSize();
-		DataSpace dataspace = ds.getSpace();
+		dataspace = ds.getSpace();
 		hsize_t cellnum;
 		dataspace.getSimpleExtentDims(&cellnum, NULL);
 		cell_count = cellnum;
@@ -153,7 +159,7 @@ int HDF5reader::readHDF5File(string path)
 		datatype = ds.getDataType();
 
 		size_t s = ds.getInMemDataSize();
-		DataSpace dataspace = ds.getSpace();
+		dataspace = ds.getSpace();
 		hsize_t datanum;
 		dataspace.getSimpleExtentDims(&datanum, NULL);
 		data_count = datanum;
@@ -200,15 +206,15 @@ int HDF5reader::readHDF5File(string path)
 	}
 	//close
 	H5Fclose(fileId);
-	H5Fclose(datasetId);
-	H5Fclose(groupId);
-	H5Fclose(status);
+	H5Dclose(datasetId);
+	H5Gclose(groupId);
+	ds.close();
+	datatype.close();
+	dataspace.close();
 	return 0;
 }
 
-
-
-void HDF5reader::createCellnameMap()
+void SparseMatrix::createCellnameMap()
 {
 	for (int i = 0; i < cell_count; i++)
 	{
@@ -217,7 +223,7 @@ void HDF5reader::createCellnameMap()
 	}
 }
 
-int* HDF5reader::createCellVectorByName(string cellname)
+int* SparseMatrix::createCellVectorByName(string cellname)
 {
 	int cellPos = cellToNum[cellname];
 	int *singleCellVector;
@@ -236,7 +242,7 @@ int* HDF5reader::createCellVectorByName(string cellname)
 	return singleCellVector;
 }
 
-unordered_map<int, int> HDF5reader::cellFiltration()
+unordered_map<int, int> SparseMatrix::cellFiltration()
 {
 	unordered_map<int, int> cellIdToNum;
 	long long *genecount;
@@ -253,46 +259,79 @@ unordered_map<int, int> HDF5reader::cellFiltration()
 	return cellIdToNum;
 }
 
-char** HDF5reader::get_barcodes()
+void SparseMatrix::write2HDF5(string path)
 {
-	return barcodes;
+
+	const H5std_string FILE_NAME(path);
+	const H5std_string GROUP_NAME("GRCh38");
+	const int RANK = 1;
+	H5File file(FILE_NAME, H5F_ACC_TRUNC);
+	Group group = file.createGroup(GROUP_NAME);
+	
+	//write Dataset
+	hsize_t dims[RANK];
+	DataSpace *dataspace;
+	//write barcodes
+	char *para_barcodes;
+	int cell_name_str_len = 40;
+	para_barcodes = new char[cell_count * cell_name_str_len];
+	for (int i = 0; i < cell_count; i++)
+	{
+		strncpy(para_barcodes + i * cell_name_str_len, barcodes[i], cell_name_str_len);
+	}
+	dims[0] = cell_count;
+	dataspace = new DataSpace(RANK, dims);
+	size_t str_cell_names_len = cell_name_str_len;
+	hid_t barcodes_type = H5Tcopy(H5T_C_S1);
+	H5Tset_size(barcodes_type, str_cell_names_len);
+	DataSet *dataset_barcodes = new DataSet(group.createDataSet("barcodes", barcodes_type, *dataspace));
+	dataset_barcodes->write(para_barcodes, barcodes_type);
+	cout << "finish write barcodes" << endl;
+	//write data
+	dims[0] = data_count;
+	dataspace = new DataSpace(RANK, dims);
+	DataSet *dataset_data = new DataSet(group.createDataSet("data", H5T_NATIVE_INT, *dataspace));
+	H5Dwrite(dataset_data->getId(), H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+	cout << "finish write data" << endl;
+	//write genes
+	char *para_genes;
+	int genes_str_len = 15;
+	para_genes = new char[gene_count * genes_str_len];
+	for (int i = 0; i < gene_count; i++)
+	{
+		strncpy(para_genes + i * genes_str_len, genes[i], genes_str_len);
+	}
+	dims[0] = gene_count;
+	dataspace = new DataSpace(RANK, dims);
+	size_t str_genes_len = genes_str_len;
+	hid_t genes_type = H5Tcopy(H5T_C_S1);
+	H5Tset_size(genes_type, str_genes_len);
+	DataSet *dataset_genes = new DataSet(group.createDataSet("genes", genes_type, *dataspace));
+	dataset_genes->write(para_genes, genes_type);
+	cout << "finish write genes" << endl;
+	//write indices
+	dims[0] = data_count;
+	dataspace = new DataSpace(RANK, dims);
+	DataSet *dataset_indices = new DataSet(group.createDataSet("indices", H5T_NATIVE_LONG, *dataspace));
+	H5Dwrite(dataset_indices->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indices);
+	cout << "finish write indices" << endl;
+	//write indptr
+	dims[0] = cell_count;
+	dataspace = new DataSpace(RANK, dims);
+	DataSet *dataset_indptr = new DataSet(group.createDataSet("indptr", H5T_NATIVE_LONG, *dataspace));
+	H5Dwrite(dataset_indptr->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indptr);
+	cout << "finish write indptr" << endl;
+	delete dataspace;
+	delete dataset_barcodes;
+	delete dataset_data;
+	delete dataset_genes;
+	delete dataset_indices;
+	delete dataset_indptr;
+	group.close();
+	file.close();
 }
 
-char ** HDF5reader::get_gene_names()
-{
-	return gene_names;
-}
-char ** HDF5reader::get_genes()
-{
-	return genes;
-}
-long long* HDF5reader::get_indices() {
-	return indices;
-}
-int* HDF5reader::get_data() {
-	return data;
-}
-int HDF5reader::get_cell_count()
-{
-	return cell_count;
-}
-
-int HDF5reader::get_gene_count()
-{
-	return gene_count;
-}
-
-int HDF5reader::get_data_count()
-{
-	return data_count;
-}
-
-long long * HDF5reader::get_indptr()
-{
-	return indptr;
-}
-
-void HDF5reader::deleteHDF(){
+void SparseMatrix::deleteSparseMatrix(){
 	delete[] indices;
 	delete[] data;
 	delete[] indptr;
@@ -303,12 +342,8 @@ void HDF5reader::deleteHDF(){
 	delete[] barcodes;
 	for (int i = 0; i < gene_count; i++)
 	{
-		delete[] gene_names[i];
-	}
-	delete[] gene_names;
-	for (int i = 0; i < gene_count; i++)
-	{
 		delete[] genes[i];
 	}
 	delete[] genes;
+	cout << "finish delete" << endl;
 }

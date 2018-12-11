@@ -4,42 +4,26 @@
 #include <stdlib.h>
 #include "H5Cpp.h"
 #include<iostream>
-
 #include<unordered_map>
 using namespace std;
-class HDF5reader
+class SparseMatrix
 {
 private:
 	int *data;
 	long long *indptr, *indices;
 	char** barcodes;
-	char** gene_names;
 	char** genes;
-	int *startPos;
 	unordered_map<int, string> numToCell;
 	unordered_map<string, int> cellToNum;
 	int gene_count;
 	int cell_count, data_count;
 
 public:
-	HDF5reader() {
+	SparseMatrix() {
 	}
-	~HDF5reader()
+	~SparseMatrix()
 	{
-		/*delete[] indices;
-		delete[] data;
-		delete[] indptr;
-		delete[] startPos;
-		for (int i = 0; i < cell_count; i++)
-		{
-			delete[] barcodes[i];
-		}
-		delete[] barcodes;
-		for (int i = 0; i < gene_count; i++)
-		{
-			delete[] gene_names[i];
-		}
-		delete[] gene_names;*/
+		
 	}
 	char** get_barcodes();
 	char** get_gene_names();
@@ -53,6 +37,7 @@ public:
 	int readHDF5File(string path);
 	void createCellnameMap();
 	int* createCellVectorByName(string cellname);
-	unordered_map<int, int> cellFiltration();
-	void deleteHDF();
+	unordered_map<int,int> cellFiltration();
+	void write2HDF5(string path);
+	void deleteSparseMatrix();
 };
