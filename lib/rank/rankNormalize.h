@@ -1,6 +1,6 @@
 #ifndef RANKNORMALIZE
 #define RANKNORMALIZE
-#include"HDF5Reader/HDF5Reader.h"
+#include"SparseMatrix/SparseMatrix.h"
 #include"geneInfo.h"
 #include <iostream>
 #include <algorithm>
@@ -17,21 +17,21 @@ class rankNormalize
 {
 	mutex mut;
 	long long n;
-	HDF5reader hr;
+	SparseMatrix hr;
 	geneInfo *geneInfos;
 	unsigned short *rank;
 public:
 	rankNormalize();
-	rankNormalize(HDF5reader hr);
+	rankNormalize(SparseMatrix hr);
 	~rankNormalize();
 
 	void setN(long long n);
-	void setHr(HDF5reader hr);
+	void setHr(SparseMatrix hr);
 	void setGeneInfos(geneInfo *geneInfos);
 	void setRank(unsigned short *rank);
 
 	long long getN();
-	HDF5reader getHr();
+	SparseMatrix getHr();
 	geneInfo* getGeneInfos();
 	unsigned short* getRank();
 

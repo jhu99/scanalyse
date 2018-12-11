@@ -3,7 +3,7 @@
 rankNormalize::rankNormalize() {
 
 }
-rankNormalize::rankNormalize(HDF5reader hr) {
+rankNormalize::rankNormalize(SparseMatrix hr) {
 	this->hr = hr;
 	n = hr.get_data_count();
 	geneInfos = new geneInfo[n];
@@ -18,7 +18,7 @@ rankNormalize::~rankNormalize() {
 void rankNormalize::setN(long long n) {
 	this->n = n;
 }
-void rankNormalize::setHr(HDF5reader hr) {
+void rankNormalize::setHr(SparseMatrix hr) {
 	this->hr = hr;
 }
 void rankNormalize::setGeneInfos(geneInfo *geneInfos) {
@@ -31,7 +31,7 @@ void rankNormalize::setRank(unsigned short *rank) {
 long long rankNormalize::getN() {
 	return n;
 }
-HDF5reader rankNormalize::getHr() {
+SparseMatrix rankNormalize::getHr() {
 	return hr;
 }
 geneInfo* rankNormalize::getGeneInfos() {

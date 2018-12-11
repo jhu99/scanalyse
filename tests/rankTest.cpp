@@ -1,5 +1,5 @@
 #include<iostream>
-#include"HDF5Reader/HDF5Reader.h"
+#include"SparseMatrix/SparseMatrix.h"
 #include"rank/rankNormalize.h"
 #include<ctime>
 using namespace std;
@@ -16,5 +16,5 @@ int main() {
 	//cout<<"Total time:"<<endtime<<endl;		
 	//rn.print();
 	cout<<"Total time:"<<endtime<<endl;		
-	hr.deleteHDF5();
+	hr.deleteSparseMatrix();
 }
