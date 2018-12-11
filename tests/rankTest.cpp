@@ -6,7 +6,7 @@ using namespace std;
 
 int main() {
 	clock_t start,end;
-	HDF5reader hr;
+	SparseMatrix hr;
 	hr.readHDF5File("./data/ica_cord_blood_h5.h5");
 	start=clock();
 	rankNormalize rn(hr);
