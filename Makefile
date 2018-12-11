@@ -35,13 +35,13 @@ argParserTest: tests/argparsertest.cpp lib/argparser/argparser.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
 qqNormTest:tests/qqNormTest.cpp lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface.o
 	${CXX} $^ ${CXXGSLFLAGS} -o $@ 
-HDF5Reader.o:lib/HDF5Reader/HDF5Reader.cpp 
+SparseMatrix.o:lib/SparseMatrix/SparseMatrix.cpp 
 	${H5CXX} $^ ${H5CXXFLAGS} -c -o $@
-HDF5ReaderTest:tests/testHDF5Reader.cpp HDF5Reader.o
+SparseMatrixTest:tests/SparseMatrixTest.cpp SparseMatrix.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@  
-geneTopsTest:tests/geneTopsTest.cpp lib/geneTop/geneExpressionTop.o lib/geneTop/geneCount.o HDF5Reader.o
+geneTopsTest:tests/geneTopsTest.cpp lib/geneTop/geneExpressionTop.o lib/geneTop/geneCount.o SparseMatrix.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
-rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o HDF5Reader.o
+rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o SparseMatrix.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
 clean:
 	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/HDF5Reader/*.o lib/geneTop/*.o lib/rank/*.o *.o cellTest funTest linearRegressionTest argParserTest qqNormTest geneTopsTest HDF5ReaderTest rankTest
