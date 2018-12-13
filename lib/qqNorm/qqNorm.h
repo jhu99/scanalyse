@@ -1,5 +1,6 @@
 #pragma once
-#include<list>
+#include <list>
+#include <limits>
 #include <iostream>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_randist.h>
