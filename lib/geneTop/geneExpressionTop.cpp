@@ -19,7 +19,7 @@ geneExpressionTop::~geneExpressionTop() {
 	sm.deleteHDF5();
 }
 
-void geneExpressionTop::setHDF5reader(SparseMatrix sm) {
+void geneExpressionTop::setSparseMatrix(SparseMatrix sm) {
 	this->sm = sm;
 }
 void geneExpressionTop::setTopNum(int topNum) {
@@ -35,7 +35,7 @@ void geneExpressionTop::setTop(string *top) {
 	this->top = top;
 }
 
-HDF5reader geneExpressionTop::getSparseMatrix() {
+SparseMatrix geneExpressionTop::getSparseMatrix() {
 	return sm;
 }
 int geneExpressionTop::getTopNum() {
