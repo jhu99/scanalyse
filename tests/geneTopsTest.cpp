@@ -1,6 +1,6 @@
 #include<iostream>
 #include"geneTop/geneExpressionTop.h"
-#include"HDF5Reader/HDF5Reader.h"
+#include"SparseMatrix/SparseMatrix.h"
 using namespace std;
 
 int main() {
@@ -17,5 +17,5 @@ int main() {
 	geneTops.printTop();
 	cin.get();
 	cin.get();
-	hr.deleteSparseMatrix();
+	sm.deleteSparseMatrix();
 }
