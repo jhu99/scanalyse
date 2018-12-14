@@ -16,7 +16,6 @@ geneExpressionTop::geneExpressionTop(SparseMatrix sm,int topNum) {
 geneExpressionTop::~geneExpressionTop() {
 	delete[] gc;
 	delete[] top;
-	sm.deleteHDF5();
 }
 
 void geneExpressionTop::setSparseMatrix(SparseMatrix sm) {
