@@ -17,7 +17,7 @@ public:
 	void setGeneCount(geneCount *gc);
 	void setTop(string *top);
 
-	HDF5reader getSparseMatrix();
+	SparseMatrix getSparseMatrix();
 	int getTopNum();
 	int getNum();
 	geneCount* getGeneCount();
