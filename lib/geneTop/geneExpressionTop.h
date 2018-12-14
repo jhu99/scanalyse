@@ -1,7 +1,7 @@
 #ifndef GENEEXPRESSIONTOP
 #define GENEEXPRESSIONTOP
 #include"geneCount.h"
-#include"HDF5Reader/HDF5Reader.h"
+#include"SparseMatrix/SparseMatrix.h"
 #include<algorithm>
 class geneExpressionTop {
 	int topNum = 0, num=0;
