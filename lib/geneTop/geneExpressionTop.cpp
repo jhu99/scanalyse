@@ -35,8 +35,8 @@ void geneExpressionTop::setTop(string *top) {
 	this->top = top;
 }
 
-HDF5reader geneExpressionTop::getHDF5reader() {
-	return hr;
+HDF5reader geneExpressionTop::getSparseMatrix() {
+	return sm;
 }
 int geneExpressionTop::getTopNum() {
 	return topNum;
