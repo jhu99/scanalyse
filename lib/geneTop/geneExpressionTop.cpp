@@ -1,26 +1,26 @@
 #include"geneExpressionTop.h"
 
-geneExpressionTop::geneExpressionTop(HDF5reader hr,int topNum) {
-	num = hr.get_gene_count();
-	int n = hr.get_data_count();
+geneExpressionTop::geneExpressionTop(SparseMatrix sm,int topNum) {
+	num = sm.get_gene_count();
+	int n = sm.get_data_count();
 	this->topNum = topNum;
 	gc = new geneCount[num];
 	top = new string[topNum];
 	for (int i = 0; i < num; i++) {
-		gc[i].setGeneName(hr.get_genes()[i]);
+		gc[i].setGeneName(sm.get_genes()[i]);
 	}
 	for (int i = 0; i < n; i++) {
-		gc[hr.get_indices()[i]].countAdd(hr.get_data()[i]);
+		gc[sm.get_indices()[i]].countAdd(sm.get_data()[i]);
 	}
 }
 geneExpressionTop::~geneExpressionTop() {
 	delete[] gc;
 	delete[] top;
-	hr.deleteHDF5();
+	sm.deleteHDF5();
 }
 
-void geneExpressionTop::setHDF5reader(HDF5reader hr) {
-	this->hr = hr;
+void geneExpressionTop::setHDF5reader(SparseMatrix sm) {
+	this->sm = sm;
 }
 void geneExpressionTop::setTopNum(int topNum) {
 	this->topNum = topNum;
