@@ -267,11 +267,11 @@ void SparseMatrix::write2HDF5(string path)
 	const int RANK = 1;
 	H5File file(FILE_NAME, H5F_ACC_TRUNC);
 	Group group = file.createGroup(GROUP_NAME);
-	
+
 	//write Dataset
-	hsize_t dims[RANK];
-	DataSpace *dataspace;
+	hsize_t dims[RANK], chunk_size[1];
 	//write barcodes
+	chunk_size[0] = 3276;
 	char *para_barcodes;
 	int cell_name_str_len = 40;
 	para_barcodes = new char[cell_count * cell_name_str_len];
@@ -280,17 +280,17 @@ void SparseMatrix::write2HDF5(string path)
 		strncpy(para_barcodes + i * cell_name_str_len, barcodes[i], cell_name_str_len);
 	}
 	dims[0] = cell_count;
-	dataspace = new DataSpace(RANK, dims);
+	DataSpace *dataspace_barcodes = new DataSpace(RANK, dims);
 	size_t str_cell_names_len = cell_name_str_len;
 	hid_t barcodes_type = H5Tcopy(H5T_C_S1);
 	H5Tset_size(barcodes_type, str_cell_names_len);
-	DataSet *dataset_barcodes = new DataSet(group.createDataSet("barcodes", barcodes_type, *dataspace));
+	DataSet *dataset_barcodes = new DataSet(group.createDataSet("barcodes", barcodes_type, *dataspace_barcodes));
 	dataset_barcodes->write(para_barcodes, barcodes_type);
 	cout << "finish write barcodes" << endl;
 	//write data
 	dims[0] = data_count;
-	dataspace = new DataSpace(RANK, dims);
-	DataSet *dataset_data = new DataSet(group.createDataSet("data", H5T_NATIVE_INT, *dataspace));
+	DataSpace *dataspace_data = new DataSpace(RANK, dims);
+	DataSet *dataset_data = new DataSet(group.createDataSet("data", H5T_NATIVE_INT, *dataspace_data));
 	H5Dwrite(dataset_data->getId(), H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
 	cout << "finish write data" << endl;
 	//write genes
@@ -302,26 +302,30 @@ void SparseMatrix::write2HDF5(string path)
 		strncpy(para_genes + i * genes_str_len, genes[i], genes_str_len);
 	}
 	dims[0] = gene_count;
-	dataspace = new DataSpace(RANK, dims);
+	DataSpace *dataspace_genes = new DataSpace(RANK, dims);
 	size_t str_genes_len = genes_str_len;
 	hid_t genes_type = H5Tcopy(H5T_C_S1);
 	H5Tset_size(genes_type, str_genes_len);
-	DataSet *dataset_genes = new DataSet(group.createDataSet("genes", genes_type, *dataspace));
+	DataSet *dataset_genes = new DataSet(group.createDataSet("genes", genes_type, *dataspace_genes));
 	dataset_genes->write(para_genes, genes_type);
 	cout << "finish write genes" << endl;
 	//write indices
 	dims[0] = data_count;
-	dataspace = new DataSpace(RANK, dims);
-	DataSet *dataset_indices = new DataSet(group.createDataSet("indices", H5T_NATIVE_LONG, *dataspace));
+	DataSpace *dataspace_indices = new DataSpace(RANK, dims);
+	DataSet *dataset_indices = new DataSet(group.createDataSet("indices", H5T_NATIVE_LONG, *dataspace_indices));
 	H5Dwrite(dataset_indices->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indices);
 	cout << "finish write indices" << endl;
 	//write indptr
-	dims[0] = cell_count;
-	dataspace = new DataSpace(RANK, dims);
-	DataSet *dataset_indptr = new DataSet(group.createDataSet("indptr", H5T_NATIVE_LONG, *dataspace));
+	dims[0] = cell_count+1;
+	DataSpace *dataspace_indptr = new DataSpace(RANK, dims);
+	DataSet *dataset_indptr = new DataSet(group.createDataSet("indptr", H5T_NATIVE_LONG, *dataspace_indptr));
 	H5Dwrite(dataset_indptr->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indptr);
 	cout << "finish write indptr" << endl;
-	delete dataspace;
+	delete dataspace_data;
+	delete dataspace_barcodes;
+	delete dataspace_genes;
+	delete dataspace_indices;
+	delete dataspace_indptr;
 	delete dataset_barcodes;
 	delete dataset_data;
 	delete dataset_genes;
