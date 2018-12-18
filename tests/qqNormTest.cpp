@@ -1,9 +1,9 @@
-#include"qqNorm.h"
+#include"qqNorm/qqNorm.h"
 #include<iostream> 
-#include"SparseMatrix.h"
-#include"rankNormalize.h"
+#include"SparseMatrix/SparseMatrix.h"
+#include"rankNormalize/rankNormalize.h"
 #include <string>  
-#include"caculateInterface.h"
+#include"qqNorm/caculateInterface.h"
 using namespace std;
 
 int main(int argc, const char ** argv)
