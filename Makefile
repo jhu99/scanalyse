@@ -37,8 +37,9 @@ qqNormTest:tests/qqNormTest.cpp lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface
 	${CXX} $^ ${CXXGSLFLAGS} -o $@ 
 SparseMatrix.o:lib/SparseMatrix/SparseMatrix.cpp 
 	${H5CXX} $^ ${H5CXXFLAGS} -c -o $@
-SparseMatrixTest:tests/SparseMatrixTest.cpp SparseMatrix.o
-	${H5CXX} $^ ${CXXFLAGS} -o $@  
+SparseMatrixTest:tests/SparseMatrixTest.cpp SparseMatrix.o lib/rank/geneInfo.o lib/rank/rankNormalize.o lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface.o
+
+	${H5CXX} $^ ${CXXGSLFLAGS} -o $@  
 geneTopsTest:tests/geneTopsTest.cpp lib/geneTop/geneExpressionTop.o lib/geneTop/geneCount.o SparseMatrix.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
 rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o SparseMatrix.o
