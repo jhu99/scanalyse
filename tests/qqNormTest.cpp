@@ -1,28 +1,31 @@
-#include"qqNorm/qqNorm.h"
+#include"qqNorm.h"
 #include<iostream> 
+#include"SparseMatrix.h"
+#include"rankNormalize.h"
 #include <string>  
-#include"qqNorm/caculateInterface.h"
+#include"caculateInterface.h"
 using namespace std;
 
-int main()
+int main(int argc, const char ** argv)
 {
 	qqNorm qq;
-	unsigned short **test;
-	int columCount=12, rowCount=2;
-	test = new unsigned short*[rowCount];
-	for (int i = 0; i < rowCount; i++)
+	SparseMatrix sm;
+	string path_read = argv[1];
+	sm.readHDF5File(path_read);
+	unordered_map<int, string> numToCell = sm.get_numToCell();
+	int columnCount = sm.get_gene_count();
+	rankNormalize rn(sm);
+	rn.ranks(5);
+	unsigned short *rank= rn.getRank();
+	sm.set_rank(rank);
+	unsigned short *test = sm.createCellVectorByName(numToCell[0]);
+
+	qqNorm q;
+	double *result = q.caculateTheoryQuantiles(test, columnCount);
+	for (int i = 0; i < columnCount; i++)
 	{
-		test[i] =new unsigned short [columCount];
+		cout << result[i] << " ";
 	}
-	for (int i = 0; i < rowCount; i++)
-	{
-		for (int j = 0; j < columCount; j++)
-		{
-			test[i][j] = (short)(j+1);
-		}
-	}
-	cacuTheoryQ c;
-	double** result = c.cacuQByColumn(test,rowCount,columCount);
 	cin.get();
 	cin.get();
 	return 0;

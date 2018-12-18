@@ -3,6 +3,11 @@
 using namespace std;
 using namespace H5;
 
+void SparseMatrix::set_rank(unsigned short *rank)
+{
+	rankedData = rank;
+}
+
 char** SparseMatrix::get_barcodes()
 {
 	return barcodes;
@@ -40,6 +45,11 @@ int SparseMatrix::get_data_count()
 long long * SparseMatrix::get_indptr()
 {
 	return indptr;
+}
+
+unordered_map<int, string> SparseMatrix::get_numToCell()
+{
+	return numToCell;
 }
 
 int SparseMatrix::readHDF5File(string path)
@@ -223,21 +233,21 @@ void SparseMatrix::createCellnameMap()
 	}
 }
 
-int* SparseMatrix::createCellVectorByName(string cellname)
+unsigned short* SparseMatrix::createCellVectorByName(string cellname)
 {
 	int cellPos = cellToNum[cellname];
-	int *singleCellVector;
-	singleCellVector = new int[gene_count];
+	unsigned short *singleCellVector;
+	singleCellVector = new unsigned short[gene_count];
 	int columPos;
 	int paraStart = 0;
 	for (int i = 0; i < gene_count; i++)
 	{
-		singleCellVector[i] = 0;
+		singleCellVector[i] = (unsigned short)0;
 	}
 	for (long long paraPos = indptr[cellPos]; paraPos < indptr[cellPos + 1]; paraPos++)
 	{
 		columPos = indices[paraPos];
-		singleCellVector[columPos] = data[paraPos];
+		singleCellVector[columPos] = rankedData[paraPos];
 	}
 	return singleCellVector;
 }

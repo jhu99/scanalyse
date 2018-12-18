@@ -13,6 +13,7 @@ private:
 	long long *indptr, *indices;
 	char** barcodes;
 	char** genes;
+	unsigned short *rankedData;
 	unordered_map<int, string> numToCell;
 	unordered_map<string, int> cellToNum;
 	int gene_count;
@@ -25,8 +26,8 @@ public:
 	{
 		
 	}
+	void set_rank(unsigned short *rank);
 	char** get_barcodes();
-	char** get_gene_names();
 	char** get_genes();
 	long long* get_indices();
 	int* get_data();
@@ -34,9 +35,10 @@ public:
 	int get_gene_count();
 	int get_data_count();
 	long long* get_indptr();
+	unordered_map<int, string> get_numToCell();
 	int readHDF5File(string path);
 	void createCellnameMap();
-	int* createCellVectorByName(string cellname);
+	unsigned short* createCellVectorByName(string cellname);
 	unordered_map<int,int> cellFiltration();
 	void write2HDF5(string path);
 	void deleteSparseMatrix();
