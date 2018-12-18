@@ -5,6 +5,7 @@
 #include "H5Cpp.h"
 #include<iostream>
 #include<unordered_map>
+#include "qqNorm/qqNorm.h"
 using namespace std;
 class SparseMatrix
 {
@@ -13,7 +14,10 @@ private:
 	long long *indptr, *indices;
 	char** barcodes;
 	char** genes;
-	unsigned short *rankedData;
+	unsigned short *rankData;
+	double *qqNormedData;
+	double *qqNormedZero;
+	long long *zeroPosPerCell;
 	unordered_map<int, string> numToCell;
 	unordered_map<string, int> cellToNum;
 	int gene_count;
@@ -40,6 +44,8 @@ public:
 	void createCellnameMap();
 	unsigned short* createCellVectorByName(string cellname);
 	unordered_map<int,int> cellFiltration();
+	void createZeroPosPerCell();
+	void qqNormedData2HDF5Format();
 	void write2HDF5(string path);
 	void deleteSparseMatrix();
 };

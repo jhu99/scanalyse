@@ -5,7 +5,7 @@ using namespace H5;
 
 void SparseMatrix::set_rank(unsigned short *rank)
 {
-	rankedData = rank;
+	rankData = rank;
 }
 
 char** SparseMatrix::get_barcodes()
@@ -240,14 +240,16 @@ unsigned short* SparseMatrix::createCellVectorByName(string cellname)
 	singleCellVector = new unsigned short[gene_count];
 	int columPos;
 	int paraStart = 0;
+	int zeroCount = indptr[cellPos + 1]- indptr[cellPos];
+
 	for (int i = 0; i < gene_count; i++)
 	{
-		singleCellVector[i] = (unsigned short)0;
+		singleCellVector[i] = (unsigned short)zeroCount/2;
 	}
 	for (long long paraPos = indptr[cellPos]; paraPos < indptr[cellPos + 1]; paraPos++)
 	{
 		columPos = indices[paraPos];
-		singleCellVector[columPos] = rankedData[paraPos];
+		singleCellVector[columPos] = rankData[paraPos];
 	}
 	return singleCellVector;
 }
@@ -267,6 +269,50 @@ unordered_map<int, int> SparseMatrix::cellFiltration()
 		}
 	}
 	return cellIdToNum;
+}
+
+void SparseMatrix::createZeroPosPerCell()
+{
+	cout << "start find zero_gene position for each cell." << endl;
+	int startPos; 
+	int randPos;
+	for (int i = 0; i < cell_count; i++)
+	{
+		while (true)
+		{
+			randPos = rand() % gene_count;
+			if (find(indices + indptr[i], indices + indptr[i + 1], randPos)!= indices + indptr[i + 1])
+			{
+				zeroPosPerCell[i] = randPos;
+				break;
+			}
+		}
+	}
+	
+	cout << "end find zero_gene position for each cell." << endl;
+}
+
+void SparseMatrix::qqNormedData2HDF5Format()
+{
+	qqNorm qq;
+	unsigned short *test;
+	double *result;
+	int paraPos;
+	qqNormedData = new double[data_count];
+	qqNormedZero = new double[cell_count];
+	createZeroPosPerCell();
+	cout << "start use rank to qqnorm." << endl;
+	for (int i = 0; i < cell_count; i++)
+	{
+		test = createCellVectorByName(numToCell[i]);
+		result = qq.caculateTheoryQuantiles(test, gene_count);
+		for (paraPos = indptr[i]; paraPos < indptr[i + 1]; paraPos++)
+		{
+			qqNormedData[paraPos] = result[indices[paraPos]];
+		}
+		qqNormedZero[i] = result[zeroPosPerCell[i]];
+	}
+	cout << "end use rank to qqnorm." << endl;
 }
 
 void SparseMatrix::write2HDF5(string path)
@@ -300,8 +346,8 @@ void SparseMatrix::write2HDF5(string path)
 	//write data
 	dims[0] = data_count;
 	DataSpace *dataspace_data = new DataSpace(RANK, dims);
-	DataSet *dataset_data = new DataSet(group.createDataSet("data", H5T_NATIVE_INT, *dataspace_data));
-	H5Dwrite(dataset_data->getId(), H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+	DataSet *dataset_data = new DataSet(group.createDataSet("data", H5T_NATIVE_DOUBLE, *dataspace_data));
+	H5Dwrite(dataset_data->getId(), H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, qqNormedData);
 	cout << "finish write data" << endl;
 	//write genes
 	char *para_genes;
@@ -331,16 +377,25 @@ void SparseMatrix::write2HDF5(string path)
 	DataSet *dataset_indptr = new DataSet(group.createDataSet("indptr", H5T_NATIVE_LONG, *dataspace_indptr));
 	H5Dwrite(dataset_indptr->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indptr);
 	cout << "finish write indptr" << endl;
+	//write qqNormedZero
+	dims[0] = cell_count;
+	DataSpace *dataspace_zero_value = new DataSpace(RANK, dims);
+	DataSet *dataset_zero_value = new DataSet(group.createDataSet("zero_value", H5T_NATIVE_DOUBLE, *dataspace_zero_value));
+	H5Dwrite(dataset_zero_value->getId(), H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, qqNormedZero);
+	cout << "finish write zero_value" << endl;
+
 	delete dataspace_data;
 	delete dataspace_barcodes;
 	delete dataspace_genes;
 	delete dataspace_indices;
 	delete dataspace_indptr;
+	delete dataspace_zero_value;
 	delete dataset_barcodes;
 	delete dataset_data;
 	delete dataset_genes;
 	delete dataset_indices;
 	delete dataset_indptr;
+	delete dataset_zero_value;
 	group.close();
 	file.close();
 }
@@ -349,6 +404,10 @@ void SparseMatrix::deleteSparseMatrix(){
 	delete[] indices;
 	delete[] data;
 	delete[] indptr;
+	delete[] zeroPosPerCell;
+	delete[] qqNormedZero;
+	delete[] qqNormedData;
+	delete[] rankData;
 	for (int i = 0; i < cell_count; i++)
 	{
 		delete[] barcodes[i];
