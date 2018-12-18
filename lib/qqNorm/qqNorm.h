@@ -1,10 +1,10 @@
 #pragma once
-#include <list>
-#include <limits>
+#include<list>
 #include <iostream>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_randist.h>
 #include "caculateInterface.h"
+#include <limits>
 
 class qqNorm
 {
