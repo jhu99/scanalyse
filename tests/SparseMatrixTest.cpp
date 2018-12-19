@@ -11,7 +11,8 @@ int main(int argc, const char ** argv)
 	qqNorm qq;
 	SparseMatrix sm;
 	string path_read = argv[1];
-	sm.readHDF5File(path_read);
+	string type = "original";
+	sm.readHDF5File(path_read, type);
 	rankNormalize rn(sm);
 	rn.ranks(5);
 	unsigned short *rank = rn.getRank();
