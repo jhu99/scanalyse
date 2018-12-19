@@ -6,19 +6,19 @@
 #include<iostream>
 #include<unordered_map>
 #include <algorithm>
-#include "qqNorm/qqNorm.h"
+#include "qqNorm.h"
 using namespace std;
 class SparseMatrix
 {
 private:
 	int *data;
-	long long *indptr, *indices;
+	long *indptr, *indices;
 	char** barcodes;
 	char** genes;
 	unsigned short *rankData;
 	double *qqNormedData;
 	double *qqNormedZero;
-	long long *zeroPosPerCell;
+	long *zeroPosPerCell;
 	unordered_map<int, string> numToCell;
 	unordered_map<string, int> cellToNum;
 	int gene_count;
@@ -34,12 +34,12 @@ public:
 	void set_rank(unsigned short *rank);
 	char** get_barcodes();
 	char** get_genes();
-	long long* get_indices();
+	long* get_indices();
 	int* get_data();
 	int get_cell_count();
 	int get_gene_count();
 	int get_data_count();
-	long long* get_indptr();
+	long* get_indptr();
 	unordered_map<int, string> get_numToCell();
 	int readHDF5File(string path);
 	void createCellnameMap();

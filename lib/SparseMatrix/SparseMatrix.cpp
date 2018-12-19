@@ -19,7 +19,7 @@ char ** SparseMatrix::get_genes()
 	return genes;
 }
 
-long long* SparseMatrix::get_indices() {
+long* SparseMatrix::get_indices() {
 	return indices;
 }
 
@@ -42,7 +42,7 @@ int SparseMatrix::get_data_count()
 	return data_count;
 }
 
-long long * SparseMatrix::get_indptr()
+long* SparseMatrix::get_indptr()
 {
 	return indptr;
 }
@@ -187,7 +187,7 @@ int SparseMatrix::readHDF5File(string path)
 	printf("/GRCh38/indices: ");
 	if (status == 0)
 	{
-		indices = new long long[data_count];
+		indices = new long[data_count];
 		datasetId = H5Dopen(fileId, "/GRCh38/indices", H5P_DEFAULT);
 		ds = DataSet(datasetId);
 		datatype = ds.getDataType();
@@ -203,7 +203,7 @@ int SparseMatrix::readHDF5File(string path)
 	printf("/GRCh38/indptr': ");
 	if (status == 0)
 	{
-		indptr = new long long[cell_count + 1];
+		indptr = new long[cell_count + 1];
 		datasetId = H5Dopen(fileId, "/GRCh38/indptr", H5P_DEFAULT);
 		ds = DataSet(datasetId);
 		datatype = ds.getDataType();
@@ -240,11 +240,11 @@ unsigned short* SparseMatrix::createCellVectorByName(string cellname)
 	singleCellVector = new unsigned short[gene_count];
 	int columPos;
 	int paraStart = 0;
-	int zeroCount = indptr[cellPos + 1] - indptr[cellPos];
+	int zeroCount = indptr[cellPos + 1]- indptr[cellPos];
 
 	for (int i = 0; i < gene_count; i++)
 	{
-		singleCellVector[i] = (unsigned short)zeroCount / 2;
+		singleCellVector[i] = (unsigned short)zeroCount/2;
 	}
 	for (long long paraPos = indptr[cellPos]; paraPos < indptr[cellPos + 1]; paraPos++)
 	{
@@ -274,22 +274,22 @@ unordered_map<int, int> SparseMatrix::cellFiltration()
 void SparseMatrix::createZeroPosPerCell()
 {
 	cout << "start find zero_gene position for each cell." << endl;
-	int startPos;
+	int startPos; 
 	int randPos;
-	zeroPosPerCell = new long long[cell_count];
+	zeroPosPerCell = new long[cell_count];
 	for (int i = 0; i < cell_count; i++)
 	{
 		while (true)
 		{
 			randPos = rand() % gene_count;
-			if (find(indices + indptr[i], indices + indptr[i + 1], randPos) == indices + indptr[i + 1])
+			if (find(indices + indptr[i], indices + indptr[i + 1], randPos)== indices + indptr[i + 1])
 			{
 				zeroPosPerCell[i] = randPos;
 				break;
 			}
 		}
 	}
-
+	
 	cout << "end find zero_gene position for each cell." << endl;
 }
 
@@ -312,9 +312,7 @@ void SparseMatrix::qqNormedData2HDF5Format()
 			qqNormedData[paraPos] = result[indices[paraPos]];
 		}
 		qqNormedZero[i] = result[zeroPosPerCell[i]];
-		//cout << i << " ";
 	}
-	cout << endl;
 	cout << "end use rank to qqnorm." << endl;
 }
 
@@ -375,7 +373,7 @@ void SparseMatrix::write2HDF5(string path)
 	H5Dwrite(dataset_indices->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indices);
 	cout << "finish write indices" << endl;
 	//write indptr
-	dims[0] = cell_count + 1;
+	dims[0] = cell_count+1;
 	DataSpace *dataspace_indptr = new DataSpace(RANK, dims);
 	DataSet *dataset_indptr = new DataSet(group.createDataSet("indptr", H5T_NATIVE_LONG, *dataspace_indptr));
 	H5Dwrite(dataset_indptr->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indptr);
@@ -403,7 +401,7 @@ void SparseMatrix::write2HDF5(string path)
 	file.close();
 }
 
-void SparseMatrix::deleteSparseMatrix() {
+void SparseMatrix::deleteSparseMatrix(){
 	delete[] indices;
 	delete[] data;
 	delete[] indptr;
