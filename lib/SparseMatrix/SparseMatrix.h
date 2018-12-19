@@ -6,7 +6,7 @@
 #include<iostream>
 #include<unordered_map>
 #include <algorithm>
-#include "qqNorm.h"
+#include "qqNorm/qqNorm.h"
 using namespace std;
 class SparseMatrix
 {
