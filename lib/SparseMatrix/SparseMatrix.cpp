@@ -182,7 +182,7 @@ int SparseMatrix::readHDF5File(string path, string type)
 		{
 			qqNormedData = new double[data_count];
 			status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, qqNormedData);
-			cout << "finish read data" << endl;
+			cout << "finish read qqnorm_data" << endl;
 		}
 		
 	}
@@ -427,14 +427,27 @@ void SparseMatrix::write2HDF5(string path)
 	file.close();
 }
 
-void SparseMatrix::deleteSparseMatrix(){
+void SparseMatrix::deleteSparseMatrix(string type){
 	delete[] indices;
-	delete[] data;
 	delete[] indptr;
-	delete[] zeroPosPerCell;
-	delete[] qqNormedZero;
-	delete[] qqNormedData;
-	delete[] rankData;
+	if (type == "orignal")
+	{
+		delete[] data;
+	}
+	else if (type == "fetch_batch")
+	{
+		delete[] qqNormedData;
+		delete[] qqNormedZero;
+	}
+	else if(type=="write_qqnorm_data")
+	{
+		delete[] data;
+		delete[] qqNormedData;
+		delete[] rankData;
+		delete[] zeroPosPerCell;
+		delete[] qqNormedZero;
+		delete[] rankData;
+	}
 	for (int i = 0; i < cell_count; i++)
 	{
 		delete[] barcodes[i];
@@ -467,7 +480,7 @@ double ** SparseMatrix::fetch_batch(int batch_index, int batch_size)
 		for (long paraPos = indptr[i]; paraPos < indptr[i + 1]; paraPos++)
 		{
 			columnPos = indices[paraPos];
-			inputMatrix[i][columnPos]= rankData[paraPos];
+			inputMatrix[i][columnPos]= qqNormedData[paraPos];
 		}
 	}
 

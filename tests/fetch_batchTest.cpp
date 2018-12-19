@@ -10,7 +10,7 @@ int main(int argc, const char ** argv)
 	string type = "qqnorm";
 	sm.readHDF5File(path_read, type);
 	int gene_count = sm.get_gene_count();
-	double** inputMtrix = sm.fetch_batch(1);
+	double** inputMtrix = sm.fetch_batch(5);
 	for (int i = 0; i < 128; i++)
 	{
 		for (int j = 0; j < 100; j++)
@@ -19,7 +19,8 @@ int main(int argc, const char ** argv)
 		}
 		cout << endl;
 	}
-	sm.deleteSparseMatrix();
+	string deleteType = "fetch_batch";
+	sm.deleteSparseMatrix(deleteType);
 	cin.get();
 	cin.get();
 	return 0;

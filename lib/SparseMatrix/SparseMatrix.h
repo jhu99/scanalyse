@@ -6,7 +6,7 @@
 #include<iostream>
 #include<unordered_map>
 #include <algorithm>
-#include "qqNorm/qqNorm.h"
+#include "qqNorm.h"
 using namespace std;
 class SparseMatrix
 {
@@ -48,6 +48,6 @@ public:
 	void createZeroPosPerCell();
 	void qqNormedData2HDF5Format();
 	void write2HDF5(string path);
-	void deleteSparseMatrix();
+	void deleteSparseMatrix(string type);
 	double** fetch_batch(int batch_index,int batch_size=128);
 };
