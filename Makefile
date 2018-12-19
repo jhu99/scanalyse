@@ -44,7 +44,7 @@ geneTopsTest:tests/geneTopsTest.cpp lib/geneTop/geneExpressionTop.o lib/geneTop/
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
 rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o SparseMatrix.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
-fetch_batchTest:tests/fetch_batchTest.cpp SparseMatrix.o
-	${H5CXX} $^ ${CXXFLAGS} -o $@ 
+fetch_batchTest:tests/fetch_batchTest.cpp SparseMatrix.o lib/qqNorm/qqNorm.o
+	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
 clean:
 	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/SparseMatrix/*.o lib/geneTop/*.o lib/rank/*.o *.o cellTest funTest linearRegressionTest argParserTest qqNormTest geneTopsTest HDF5ReaderTest rankTest fetch_batchTest
