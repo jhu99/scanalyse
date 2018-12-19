@@ -471,13 +471,13 @@ double ** SparseMatrix::fetch_batch(int batch_index, int batch_size)
 		inputMatrix[i] = new double[gene_count];
 	}
 	int startPos = (batch_index - 1)*batch_size;
-	for (int i = startPos; i < startPos+batch_size; i++)
+	for (int i =0; i < batch_size; i++)
 	{
 		for (int j = 0; j < gene_count; j++)
 		{
-			inputMatrix[i][j] = qqNormedZero[i];
+			inputMatrix[i][j] = qqNormedZero[i+startPos];
 		}
-		for (long paraPos = indptr[i]; paraPos < indptr[i + 1]; paraPos++)
+		for (long paraPos = indptr[startPos+i]; paraPos < indptr[startPos+i + 1]; paraPos++)
 		{
 			columnPos = indices[paraPos];
 			inputMatrix[i][columnPos]= qqNormedData[paraPos];
