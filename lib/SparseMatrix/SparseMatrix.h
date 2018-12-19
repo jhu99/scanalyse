@@ -6,7 +6,7 @@
 #include<iostream>
 #include<unordered_map>
 #include <algorithm>
-#include "qqNorm/qqNorm.h"
+#include "qqNorm.h"
 using namespace std;
 class SparseMatrix
 {
@@ -41,7 +41,7 @@ public:
 	int get_data_count();
 	long* get_indptr();
 	unordered_map<int, string> get_numToCell();
-	int readHDF5File(string path);
+	int readHDF5File(string path, string type);
 	void createCellnameMap();
 	unsigned short* createCellVectorByName(string cellname);
 	unordered_map<int,int> cellFiltration();
@@ -49,4 +49,5 @@ public:
 	void qqNormedData2HDF5Format();
 	void write2HDF5(string path);
 	void deleteSparseMatrix();
+	double** fetch_batch(int batch_index,int batch_size=128);
 };

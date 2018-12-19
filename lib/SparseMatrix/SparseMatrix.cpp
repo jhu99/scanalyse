@@ -52,7 +52,7 @@ unordered_map<int, string> SparseMatrix::get_numToCell()
 	return numToCell;
 }
 
-int SparseMatrix::readHDF5File(string path)
+int SparseMatrix::readHDF5File(string path, string type)
 {
 	hid_t       fileId, datasetId, groupId;
 	herr_t      status;
@@ -167,15 +167,24 @@ int SparseMatrix::readHDF5File(string path)
 		datasetId = H5Dopen(fileId, "/GRCh38/data", H5P_DEFAULT);
 		ds = DataSet(datasetId);
 		datatype = ds.getDataType();
-
 		size_t s = ds.getInMemDataSize();
 		dataspace = ds.getSpace();
 		hsize_t datanum;
 		dataspace.getSimpleExtentDims(&datanum, NULL);
 		data_count = datanum;
-		data = new int[data_count];
-		status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
-		cout << "finish read data" << endl;
+		if (type == "original")
+		{
+			data = new int[data_count];
+			status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+			cout << "finish read data" << endl;
+		}
+		else
+		{
+			qqNormedData = new double[data_count];
+			status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, qqNormedData);
+			cout << "finish read data" << endl;
+		}
+		
 	}
 	else
 	{
@@ -214,6 +223,23 @@ int SparseMatrix::readHDF5File(string path)
 	{
 		printf("The dataset either does NOT exist or some other error occurred.\n");
 	}
+	//if it is qqnorm_data read dataset zero_value
+
+	status = H5Lget_info(fileId, "/GRCh38/zero_value", NULL, H5P_DEFAULT);
+	printf("/GRCh38/zero_value': ");
+	if (status == 0)
+	{
+		qqNormedZero = new double[cell_count];
+		datasetId = H5Dopen(fileId, "/GRCh38/zero_value", H5P_DEFAULT);
+		ds = DataSet(datasetId);
+		datatype = ds.getDataType();
+		status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, qqNormedZero);
+		cout << "finish read zero_value" << endl;
+	}
+	else
+	{
+		printf("The dataset zero_value does NOT exist or some other error occurred.\n");
+	}
 	//close
 	H5Fclose(fileId);
 	H5Dclose(datasetId);
@@ -246,7 +272,7 @@ unsigned short* SparseMatrix::createCellVectorByName(string cellname)
 	{
 		singleCellVector[i] = (unsigned short)zeroCount/2;
 	}
-	for (long long paraPos = indptr[cellPos]; paraPos < indptr[cellPos + 1]; paraPos++)
+	for (long paraPos = indptr[cellPos]; paraPos < indptr[cellPos + 1]; paraPos++)
 	{
 		columPos = indices[paraPos];
 		singleCellVector[columPos] = rankData[paraPos];
@@ -257,8 +283,8 @@ unsigned short* SparseMatrix::createCellVectorByName(string cellname)
 unordered_map<int, int> SparseMatrix::cellFiltration()
 {
 	unordered_map<int, int> cellIdToNum;
-	long long *genecount;
-	genecount = new long long[cell_count];
+	long *genecount;
+	genecount = new long[cell_count];
 	int min_count = gene_count / 100;
 	for (int i = 0; i < cell_count; i++)
 	{
@@ -420,4 +446,30 @@ void SparseMatrix::deleteSparseMatrix(){
 	}
 	delete[] genes;
 	cout << "finish delete" << endl;
+}
+
+double ** SparseMatrix::fetch_batch(int batch_index, int batch_size)
+{
+	double **inputMatrix;
+	long columnPos;
+	inputMatrix = new double* [batch_size];
+	for (int i = 0; i < batch_size; i++)
+	{
+		inputMatrix[i] = new double[gene_count];
+	}
+	int startPos = (batch_index - 1)*batch_size;
+	for (int i = startPos; i < startPos+batch_size; i++)
+	{
+		for (int j = 0; j < gene_count; j++)
+		{
+			inputMatrix[i][j] = qqNormedZero[i];
+		}
+		for (long paraPos = indptr[i]; paraPos < indptr[i + 1]; paraPos++)
+		{
+			columnPos = indices[paraPos];
+			inputMatrix[i][columnPos]= rankData[paraPos];
+		}
+	}
+
+	return inputMatrix;
 }

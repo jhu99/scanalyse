@@ -21,7 +21,7 @@ CXXFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/include/hdf5/serial/ -std=c++0x -
 H5CXXFLAGS = -std=c++0x -Ilib/
 CXXGSLFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -std=c++0x -DNDEBUG -lgsl -lgslcblas -lpthread
 endif
-all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest
+all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest fetch_batchTest
 #ArgParserTest
 cellTest: tests/cellTest.cpp lib/cell/cell.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
@@ -44,5 +44,7 @@ geneTopsTest:tests/geneTopsTest.cpp lib/geneTop/geneExpressionTop.o lib/geneTop/
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
 rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o SparseMatrix.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
+fetch_batchTest:tests/fetch_batchTest.cpp SparseMatrix.o
+	${H5CXX} $^ ${CXXFLAGS} -o $@ 
 clean:
-	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/HDF5Reader/*.o lib/geneTop/*.o lib/rank/*.o *.o cellTest funTest linearRegressionTest argParserTest qqNormTest geneTopsTest HDF5ReaderTest rankTest
+	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/SparseMatrix/*.o lib/geneTop/*.o lib/rank/*.o *.o cellTest funTest linearRegressionTest argParserTest qqNormTest geneTopsTest HDF5ReaderTest rankTest fetch_batchTest
