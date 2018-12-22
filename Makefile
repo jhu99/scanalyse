@@ -41,8 +41,8 @@ SparseMatrixTest:tests/SparseMatrixTest.cpp SparseMatrix.o lib/rank/geneInfo.o l
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@  
 geneTopsTest:tests/geneTopsTest.cpp lib/geneTop/geneExpressionTop.o lib/geneTop/geneCount.o SparseMatrix.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
-rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o SparseMatrix.o
-	${H5CXX} $^ ${CXXFLAGS} -o $@ 
+rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o SparseMatrix.o lib/qqNorm/qqNorm.o
+	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
 fetch_batchTest:tests/fetch_batchTest.cpp SparseMatrix.o lib/qqNorm/qqNorm.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
 geneVariationTest:tests/geneVariationTest.cpp lib/geneVariationTop/geneVariation.o lib/geneTop/geneCount.o SparseMatrix.o
