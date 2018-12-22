@@ -38,13 +38,14 @@ qqNormTest:tests/qqNormTest.cpp lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface
 SparseMatrix.o:lib/SparseMatrix/SparseMatrix.cpp 
 	${H5CXX} $^ ${H5CXXFLAGS} -c -o $@
 SparseMatrixTest:tests/SparseMatrixTest.cpp SparseMatrix.o lib/rank/geneInfo.o lib/rank/rankNormalize.o lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface.o
-
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@  
 geneTopsTest:tests/geneTopsTest.cpp lib/geneTop/geneExpressionTop.o lib/geneTop/geneCount.o SparseMatrix.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
 rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o SparseMatrix.o
 	${H5CXX} $^ ${CXXFLAGS} -o $@ 
 fetch_batchTest:tests/fetch_batchTest.cpp SparseMatrix.o lib/qqNorm/qqNorm.o
+	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
+geneVariationTest:tests/geneVariationTest.cpp lib/geneVariationTop/geneVariation.o lib/geneTop/geneCount.o SparseMatrix.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
 clean:
 	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/SparseMatrix/*.o lib/geneTop/*.o lib/rank/*.o *.o cellTest funTest linearRegressionTest argParserTest qqNormTest geneTopsTest HDF5ReaderTest rankTest fetch_batchTest
