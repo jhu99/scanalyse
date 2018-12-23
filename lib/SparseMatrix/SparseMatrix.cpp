@@ -19,7 +19,7 @@ char ** SparseMatrix::get_genes()
 	return genes;
 }
 
-long* SparseMatrix::get_indices() {
+long long* SparseMatrix::get_indices() {
 	return indices;
 }
 
@@ -42,7 +42,7 @@ int SparseMatrix::get_data_count()
 	return data_count;
 }
 
-long* SparseMatrix::get_indptr()
+long long* SparseMatrix::get_indptr()
 {
 	return indptr;
 }
@@ -196,7 +196,7 @@ int SparseMatrix::readHDF5File(string path, string type)
 	printf("/GRCh38/indices: ");
 	if (status == 0)
 	{
-		indices = new long[data_count];
+		indices = new long long[data_count];
 		datasetId = H5Dopen(fileId, "/GRCh38/indices", H5P_DEFAULT);
 		ds = DataSet(datasetId);
 		datatype = ds.getDataType();
@@ -212,7 +212,7 @@ int SparseMatrix::readHDF5File(string path, string type)
 	printf("/GRCh38/indptr': ");
 	if (status == 0)
 	{
-		indptr = new long[cell_count + 1];
+		indptr = new long long[cell_count + 1];
 		datasetId = H5Dopen(fileId, "/GRCh38/indptr", H5P_DEFAULT);
 		ds = DataSet(datasetId);
 		datatype = ds.getDataType();
@@ -465,22 +465,22 @@ double ** SparseMatrix::fetch_batch(int batch_index, int batch_size)
 {
 	double **inputMatrix;
 	long columnPos;
-	inputMatrix = new double* [batch_size];
+	inputMatrix = new double*[batch_size];
 	for (int i = 0; i < batch_size; i++)
 	{
 		inputMatrix[i] = new double[gene_count];
 	}
 	int startPos = (batch_index - 1)*batch_size;
-	for (int i =0; i < batch_size; i++)
+	for (int i = 0; i < batch_size; i++)
 	{
 		for (int j = 0; j < gene_count; j++)
 		{
-			inputMatrix[i][j] = qqNormedZero[i+startPos];
+			inputMatrix[i][j] = qqNormedZero[i + startPos];
 		}
-		for (long paraPos = indptr[startPos+i]; paraPos < indptr[startPos+i + 1]; paraPos++)
+		for (long paraPos = indptr[startPos + i]; paraPos < indptr[startPos + i + 1]; paraPos++)
 		{
 			columnPos = indices[paraPos];
-			inputMatrix[i][columnPos]= qqNormedData[paraPos];
+			inputMatrix[i][columnPos] = qqNormedData[paraPos];
 		}
 	}
 
