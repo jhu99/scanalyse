@@ -7,7 +7,7 @@ int main() {
 	SparseMatrix sm;
 	//freopen("C:/Users/ltw/Desktop/1.txt", "w", stdout);
 	string path = "./data/ica_cord_blood_h5.h5";
-	sm.readHDF5File(path);
+	sm.readHDF5File(path,"original");
 	/*for (int i = 0; i < hr.get_gene_count(); i++) {
 		cout << i<<" "<<hr.get_genes()[i] << endl;
 	}*/
@@ -17,5 +17,5 @@ int main() {
 	geneTops.printTop();
 	cin.get();
 	cin.get();
-	sm.deleteSparseMatrix();
+	sm.deleteSparseMatrix("original");
 }
