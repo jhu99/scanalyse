@@ -53,7 +53,7 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=No
     inputs = {'count': adata.X, 'size_factors': adata.obs.size_factors}
 
 
-    output = adata.X
+    output = adata.raw.X
 
     loss = model.fit(inputs, output,
                      epochs=epochs,
@@ -74,6 +74,7 @@ def train_model(data_path):
     # delete gene and cell with all 0 value
     sc.pp.filter_genes(adata, min_counts=1)
     sc.pp.filter_cells(adata, min_counts=1)
+    adata.raw = adata.copy()
     # split test dataset
     train_idx, test_idx = train_test_split(np.arange(adata.n_obs), test_size=0.1, random_state=42)
     spl = pd.Series(['train'] * adata.n_obs)
@@ -81,7 +82,7 @@ def train_model(data_path):
     adata.obs['dca_split'] = spl.values
     adata.obs['dca_split'] = adata.obs['dca_split'].astype('category')
     # calculate side factors
-    sc.pp.normalize_per_cell(adata)
+    #sc.pp.normalize_per_cell(adata)
     adata.obs['size_factors'] = adata.obs.n_counts / np.median(adata.obs.n_counts)
     # log transfer and normalization
     sc.pp.log1p(adata)
@@ -111,4 +112,7 @@ def train_model(data_path):
     losses = train(adata[adata.obs.dca_split == 'train'], net,
                    output_dir="./result",)
 
+    predict_columns = adata.var_names
+    net.predict(adata, mode='full', return_info=True)
+    net.write(adata, "./result", mode='full', colnames=predict_columns)
 
