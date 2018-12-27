@@ -80,6 +80,8 @@ def train_model(data_path):
     # calculate size factors
     sc.pp.normalize_per_cell(adata)
     adata.obs['size_factors'] = adata.obs.n_counts / np.median(adata.obs.n_counts)
+    for i in range(len(adata.obs['size_factors'])):
+        adata.X[i, :] = adata.X[i, :] / adata.obs['size_factors'][i]
     # log transfer and normalization
     sc.pp.log1p(adata)
     sc.pp.scale(adata)
