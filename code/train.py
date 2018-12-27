@@ -78,6 +78,7 @@ def train_model(data_path):
     adata.obs['dca_split'] = spl.values
     adata.obs['dca_split'] = adata.obs['dca_split'].astype('category')
     # calculate size factors
+    # normalization
     sc.pp.normalize_per_cell(adata)
     adata.obs['size_factors'] = adata.obs.n_counts / np.median(adata.obs.n_counts)
     # log transfer and normalization
