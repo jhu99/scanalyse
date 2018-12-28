@@ -16,7 +16,7 @@ def getAnnData(path):
     gene_names = h5['/GRCh38/gene_names']
     shape = h5['/GRCh38/shape']
 
-    X = csr_matrix((data,indices,indptr),shape=(shape.value[1],shape.value[0]))
+    X = csr_matrix((data,indices,indptr),shape=(shape.value[1],shape.value[0]),dtype='float32')
     adata = AnnData(X,
 		   obs=pd.DataFrame(index=barcodes.value),
 		   var=pd.DataFrame(index=genes.value),
