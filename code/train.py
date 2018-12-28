@@ -71,14 +71,9 @@ def train_model(data_path):
     sc.pp.filter_genes(adata, min_counts=1)
     sc.pp.filter_cells(adata, min_counts=1)
     adata.raw = adata.copy()
-    # split test dataset
-    train_idx, test_idx = train_test_split(np.arange(adata.n_obs), test_size=0.1, random_state=42)
-    spl = pd.Series(['train'] * adata.n_obs)
-    spl.iloc[test_idx] = 'test'
-    adata.obs['dca_split'] = spl.values
-    adata.obs['dca_split'] = adata.obs['dca_split'].astype('category')
+  
     # calculate size factors
-    sc.pp.normalize_per_cell(adata)
+    #sc.pp.normalize_per_cell(adata)
     adata.obs['size_factors'] = adata.obs.n_counts / np.median(adata.obs.n_counts)
     for i in range(len(adata.obs['size_factors'])):
         adata.X[i, :] = adata.X[i, :] / adata.obs['size_factors'][i]
