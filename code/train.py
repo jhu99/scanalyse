@@ -102,9 +102,9 @@ def train_model(data_path):
             file_path=False)
     net.build()
     losses = train(adata, net,
-                   output_dir="./result",)
+                   output_dir="../result",)
 
     predict_columns = adata.var_names
     net.predict(adata, mode='full', return_info=True)
-    net.write(adata, "./result", mode='full', colnames=predict_columns)
+    net.write(adata, "../result", mode='full', colnames=predict_columns)
 
