@@ -11,7 +11,7 @@ from model import ZINBAutoencoder
 from getAnnData import getAnnData
 
 def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.001,
-          epochs=2, reduce_lr=10, output_subset=None, use_raw_as_output=True,
+          epochs=300, reduce_lr=10, output_subset=None, use_raw_as_output=True,
           early_stop=15, batch_size=32, clip_grad=5., save_weights=False,
           validation_split=0.1, tensorboard=False, verbose=True, threads=None,
           **kwds):
@@ -71,7 +71,12 @@ def train_model(data_path):
     sc.pp.filter_genes(adata, min_counts=1)
     sc.pp.filter_cells(adata, min_counts=1)
     adata.raw = adata.copy()
-  
+    # split test dataset
+    train_idx, test_idx = train_test_split(np.arange(adata.n_obs), test_size=0.1, random_state=42)
+    spl = pd.Series(['train'] * adata.n_obs)
+    spl.iloc[test_idx] = 'test'
+    adata.obs['dca_split'] = spl.values
+    adata.obs['dca_split'] = adata.obs['dca_split'].astype('category')
     # calculate size factors
     # normalization
     sc.pp.normalize_per_cell(adata)
