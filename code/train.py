@@ -11,7 +11,7 @@ from model import ZINBAutoencoder
 from getAnnData import getAnnData
 
 def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.001,
-          epochs=2, reduce_lr=10, output_subset=None, use_raw_as_output=True,
+          epochs=1, reduce_lr=10, output_subset=None, use_raw_as_output=True,
           early_stop=15, batch_size=32, clip_grad=5., save_weights=False,
           validation_split=0.1, tensorboard=False, verbose=True, threads=None,
           **kwds):
@@ -106,5 +106,5 @@ def train_model(data_path):
 
     predict_columns = adata.var_names
     net.predict(adata, mode='full', return_info=True)
-    net.write(adata, "../result", mode='full', colnames=predict_columns)
+    net.write(adata, "../result", mode='full')
 

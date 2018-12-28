@@ -13,16 +13,7 @@ import pandas as pd
 MeanAct = lambda x: tf.clip_by_value(K.exp(x), 1e-5, 1e6)
 DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)
 
-def write_text_matrix(matrix, filename, rownames=None, colnames=None, transpose=False):
-    #if transpose:
-        #matrix = matrix.aa
-        #rownames, colnames = colnames, rownames
 
-    pd.DataFrame(matrix, index=rownames, columns=colnames).to_csv(filename,
-                                                                  sep='\t',
-                                                                  index=(rownames is not None),
-                                                                  header=(colnames is not None),
-                                                                  float_format='%.6f')
 class ZINBAutoencoder():
     def __init__(self,
                  input_size,
@@ -145,16 +136,7 @@ class ZINBAutoencoder():
 
         self.model = Model(inputs=[self.input_layer, self.sf_layer], outputs=output)
 
-        self.encoder = self.get_encoder()
 
-    def get_encoder(self, activation=False):
-        if activation:
-            ret = Model(inputs=self.model.input,
-                        outputs=self.model.get_layer('center_act').output)
-        else:
-            ret = Model(inputs=self.model.input,
-                        outputs=self.model.get_layer('center').output)
-        return ret
 
     def predict(self, adata, mode='denoise', return_info=False, copy=False):
 
@@ -168,35 +150,18 @@ class ZINBAutoencoder():
             adata.X = self.model.predict({'count': adata.X,
                                           'size_factors': adata.obs.size_factors})
 
-            adata.uns['dca_loss'] = self.model.test_on_batch({'count': adata.X,
-                                                              'size_factors': adata.obs.size_factors},
-                                                             adata.raw.X)
-        if mode in ('latent', 'full'):
-            print('dca: Calculating low dimensional representations...')
 
-            adata.obsm['X_dca'] = self.encoder.predict({'count': adata.X,
-                                                        'size_factors': adata.obs.size_factors})
-        if mode == 'latent':
-            adata.X = adata.raw.X.copy() #recover normalized expression values
+        return adata
 
-        return adata if copy else None
+    def write(self, adata, file_path, mode='denoise'):
 
-    def write(self, adata, file_path, mode='denoise', colnames=None):
-
-        colnames = adata.var_names.values if colnames is None else colnames
-        rownames = adata.obs_names.values
+        colnames = adata.obs_names.values
+        rownames = adata.var_names.values
 
         print('dca: Saving output(s)...')
         os.makedirs(file_path, exist_ok=True)
 
         if mode in ('denoise', 'full'):
             print('dca: Saving denoised expression...')
-            write_text_matrix(adata.X,
-                              os.path.join(file_path, 'mean.tsv'),
-                              rownames=rownames, colnames=colnames, transpose=True)
-
-        if mode in ('latent', 'full'):
-            print('dca: Saving latent representations...')
-            write_text_matrix(adata.obsm['X_dca'],
-                              os.path.join(file_path, 'latent.tsv'),
-                              rownames=rownames, transpose=False)
+            matrix = adata.X.T
+            pd.DataFrame(matrix, index=rownames, columns=colnames).to_csv(os.path.join(file_path, 'mean.csv'),sep=',',index=(rownames is not None),header=(colnames is not None),float_format='%.6f')
