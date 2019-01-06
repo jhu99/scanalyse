@@ -11,58 +11,6 @@ from model import ZINBAutoencoder
 from getAnnData import getAnnData
 
 
-def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.001,
-          epochs=1, reduce_lr=10, output_subset=None, use_raw_as_output=True,
-          early_stop=15, batch_size=32, clip_grad=5., save_weights=False,
-          validation_split=0.1, tensorboard=False, verbose=True, threads=None,
-          **kwds):
-    K.set_session(
-        tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=threads, inter_op_parallelism_threads=threads)))
-    model = network.model
-    loss = network.loss
-    if output_dir is not None:
-        os.makedirs(output_dir, exist_ok=True)
-
-    optimizer = opt.rmsprop(lr=learning_rate, clipvalue=clip_grad)
-    model.compile(loss=loss, optimizer=optimizer)
-
-    # Callbacks
-    callbacks = []
-
-    checkpointer = ModelCheckpoint(filepath="%s/weights.hdf5" % output_dir,
-                                   verbose=verbose,
-                                   save_weights_only=True,
-                                   save_best_only=True)
-    callbacks.append(checkpointer)
-    if reduce_lr:
-        lr_cb = ReduceLROnPlateau(monitor='val_loss', patience=reduce_lr, verbose=verbose)
-        callbacks.append(lr_cb)
-    if early_stop:
-        es_cb = EarlyStopping(monitor='val_loss', patience=early_stop, verbose=verbose)
-        callbacks.append(es_cb)
-    if tensorboard:
-        tb_log_dir = os.path.join(output_dir, 'tb')
-        tb_cb = TensorBoard(log_dir=tb_log_dir, histogram_freq=1, write_grads=True)
-        callbacks.append(tb_cb)
-
-    if verbose: model.summary()
-
-    inputs = {'count': adata.X, 'size_factors': adata.obs.size_factors}
-
-    output = adata.raw.X
-
-    loss = model.fit(inputs, output,
-                     epochs=epochs,
-                     batch_size=batch_size,
-                     shuffle=True,
-                     callbacks=callbacks,
-                     validation_split=validation_split,
-                     verbose=verbose,
-                     **kwds)
-
-    return loss
-
-
 def train_model(data_path):
     K.set_session(tf.Session())
     # load data
