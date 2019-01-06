@@ -9,6 +9,7 @@ from loss import ZINB
 import tensorflow as tf
 import numpy as np
 import pandas as pd
+import  pickle
 
 MeanAct = lambda x: tf.clip_by_value(K.exp(x), 1e-5, 1e6)
 DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)
@@ -153,15 +154,19 @@ class ZINBAutoencoder():
 
         return adata
 
-    def write(self, adata, file_path, mode='denoise'):
+    def write(self, adata, mode='denoise'):
 
         colnames = adata.obs_names.values
         rownames = adata.var_names.values
 
         print('dca: Saving output(s)...')
-        os.makedirs(file_path, exist_ok=True)
+        os.makedirs(self.file_path, exist_ok=True)
 
         if mode in ('denoise', 'full'):
             print('dca: Saving denoised expression...')
             matrix = adata.X.T
-            pd.DataFrame(matrix, index=rownames, columns=colnames).to_csv(os.path.join(file_path, 'mean.csv'),sep=',',index=(rownames is not None),header=(colnames is not None),float_format='%.6f')
+            pd.DataFrame(matrix, index=rownames, columns=colnames).to_csv(os.path.join(self.file_path, 'mean.csv'),sep=',',index=(rownames is not None),header=(colnames is not None),float_format='%.6f')
+
+
+    def load_weights(self, filename):
+        self.model.load_weights(filename)
