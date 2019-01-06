@@ -11,7 +11,7 @@ from model import ZINBAutoencoder
 from getAnnData import getAnnData
 
 def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.001,
-          epochs=1, reduce_lr=10, output_subset=None, use_raw_as_output=True,
+          epochs=10, reduce_lr=10, output_subset=None, use_raw_as_output=True,
           early_stop=15, batch_size=32, clip_grad=5., save_weights=False,
           validation_split=0.1, tensorboard=False, verbose=True, threads=None,
           **kwds):
@@ -28,12 +28,12 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.
     # Callbacks
     callbacks = []
 
-    if save_weights and output_dir is not None:
-        checkpointer = ModelCheckpoint(filepath="%s/weights.hdf5" % output_dir,
-                                       verbose=verbose,
-                                       save_weights_only=True,
-                                       save_best_only=True)
-        callbacks.append(checkpointer)
+    checkpointer = ModelCheckpoint(filepath="%s/weights.hdf5" % output_dir,
+                                   verbose=verbose,
+                                   save_weights_only=True,
+                                   save_best_only=True)
+    callbacks.append(checkpointer)
+
     if reduce_lr:
         lr_cb = ReduceLROnPlateau(monitor='val_loss', patience=reduce_lr, verbose=verbose)
         callbacks.append(lr_cb)
@@ -99,12 +99,10 @@ def train_model(data_path):
             activation='relu',
             init='glorot_uniform',
             debug=False,
-            file_path=False)
+            file_path="./result")
     net.build()
-    losses = train(adata, net,
-                   output_dir="../result",)
+    losses = train(adata, net, output_dir="./result")
 
-    predict_columns = adata.var_names
-    net.predict(adata, mode='full', return_info=True)
-    net.write(adata, "../result", mode='full')
+    #net.predict(adata, mode='full', return_info=True)
+    #net.write(adata, "./result", mode='full')
 
