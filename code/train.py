@@ -12,7 +12,7 @@ from getAnnData import getAnnData
 
 def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.001,
           epochs=10, reduce_lr=10, output_subset=None, use_raw_as_output=True,
-          early_stop=15, batch_size=32, clip_grad=5., save_weights=False,
+          early_stop=15, batch_size=32, clip_grad=5., save_weights=True,
           validation_split=0.1, tensorboard=False, verbose=True, threads=None,
           **kwds):
 
@@ -30,7 +30,7 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.
 
     checkpointer = ModelCheckpoint(filepath="%s/weights.hdf5" % output_dir,
                                    verbose=verbose,
-                                   save_weights_only=True,
+                                   save_weights_only=save_weights,
                                    save_best_only=True)
     callbacks.append(checkpointer)
 
@@ -63,10 +63,10 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.
 
     return loss
 
-def train_model(data_path):
+def train_model(input_file,output_path):
     K.set_session(tf.Session())
     # load data
-    adata = getAnnData(data_path)
+    adata = getAnnData(input_file)
     # delete gene and cell with all 0 value
     sc.pp.filter_genes(adata, min_counts=1)
     sc.pp.filter_cells(adata, min_counts=1)
@@ -99,9 +99,9 @@ def train_model(data_path):
             activation='relu',
             init='glorot_uniform',
             debug=False,
-            file_path="./result")
+            file_path=output_path)
     net.build()
-    losses = train(adata, net, output_dir="./result")
+    losses = train(adata, net, output_dir=out_path)
 
     #net.predict(adata, mode='full', return_info=True)
     #net.write(adata, "./result", mode='full')

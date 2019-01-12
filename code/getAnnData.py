@@ -6,8 +6,8 @@ from anndata import AnnData, read_h5ad
 import pandas as pd
 
 
-def getAnnData(path):
-    h5 = h5py.File(path,'r')
+def getAnnData(input_file):
+    h5 = h5py.File(input_file,'r')
     data = h5['/GRCh38/data']
     indices = h5['/GRCh38/indices']
     barcodes = h5['/GRCh38/barcodes']
