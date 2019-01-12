@@ -101,7 +101,7 @@ def train_model(input_file,output_path):
             debug=False,
             file_path=output_path)
     net.build()
-    losses = train(adata, net, output_dir=out_path)
+    losses = train(adata, net, output_dir=output_path)
 
     #net.predict(adata, mode='full', return_info=True)
     #net.write(adata, "./result", mode='full')
