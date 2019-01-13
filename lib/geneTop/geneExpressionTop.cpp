@@ -6,8 +6,10 @@ geneExpressionTop::geneExpressionTop(SparseMatrix sm,int topNum) {
 	this->topNum = topNum;
 	gc = new geneCount[num];
 	top = new string[topNum];
+	top_index = new long long[topNum];
 	for (int i = 0; i < num; i++) {
 		gc[i].setGeneName(sm.get_genes()[i]);
+		gc[i].setIndex(i);
 	}
 	for (int i = 0; i < n; i++) {
 		gc[sm.get_indices()[i]].countAdd(sm.get_data()[i]);
@@ -50,10 +52,16 @@ string* geneExpressionTop::getTop() {
 	return top;
 }
 
+long long * geneExpressionTop::get_top_index()
+{
+	return top_index;
+}
+
 void geneExpressionTop::geneSort() {
 	sort(gc,gc+num);
 	for (int i = 0; i < topNum; i++) {
 		top[i] = gc[i].getGeneName();
+		top_index[i] = gc[i].getIndex();
 	}
 }
 

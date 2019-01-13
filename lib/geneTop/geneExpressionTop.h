@@ -8,6 +8,7 @@ class geneExpressionTop {
 	SparseMatrix sm;
 	geneCount * gc;
 	string *top;
+	long long *top_index;
 public:
 	geneExpressionTop(SparseMatrix sm,int topNum);
 	~geneExpressionTop();
@@ -22,6 +23,7 @@ public:
 	int getNum();
 	geneCount* getGeneCount();
 	string* getTop();
+	long long *get_top_index();
 
 	void geneSort();
 	void printTop();
