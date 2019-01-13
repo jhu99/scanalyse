@@ -45,7 +45,7 @@ rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o SparseM
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
 fetch_batchTest:tests/fetch_batchTest.cpp SparseMatrix.o lib/qqNorm/qqNorm.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
-geneVariationTest:tests/geneVariationTest.cpp lib/geneVariationTop/geneVariation.o lib/geneVariationTop/geneVariationTop.o lib/geneTop/geneCount.o SparseMatrix.o lib/qqNorm/qqNorm.o
+geneVariationTest:tests/geneVariationTest.cpp lib/geneVariationTop/geneVariation.o lib/geneVariationTop/geneVariationTop.o lib/geneTop/geneExpressionTop.o lib/geneTop/geneCount.o SparseMatrix.o lib/qqNorm/qqNorm.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
 FiltrationTest:tests/FiltrationTest.cpp lib/Filtration/Filtration.o lib/geneVariationTop/geneVariation.o lib/geneVariationTop/geneVariationTop.o lib/geneTop/geneCount.o SparseMatrix.o lib/qqNorm/qqNorm.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
