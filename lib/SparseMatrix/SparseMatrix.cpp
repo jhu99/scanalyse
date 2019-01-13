@@ -47,6 +47,17 @@ long long* SparseMatrix::get_indptr()
 	return indptr;
 }
 
+int SparseMatrix::get_str_barcodes_len()
+{
+	return str_barcodes_len;
+}
+
+int SparseMatrix::get_str_genes_length()
+{
+	return str_genes_length;
+}
+
+
 unordered_map<int, string> SparseMatrix::get_numToCell()
 {
 	return numToCell;
@@ -96,6 +107,7 @@ int SparseMatrix::readHDF5File(string path, string type)
 
 		datatype = ds.getDataType();
 		size_t str_genes_len = datatype.getSize();
+		str_genes_length = str_genes_len;
 		size_t s = ds.getInMemDataSize();
 
 		genes = new char*[gene_count];
@@ -132,6 +144,7 @@ int SparseMatrix::readHDF5File(string path, string type)
 		ds = DataSet(datasetId);
 		datatype = ds.getDataType();
 		size_t str_cell_names_len = datatype.getSize();
+		str_barcodes_len = str_cell_names_len;
 		size_t s = ds.getInMemDataSize();
 		dataspace = ds.getSpace();
 		hsize_t cellnum;

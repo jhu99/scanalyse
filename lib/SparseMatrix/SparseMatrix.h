@@ -23,6 +23,8 @@ private:
 	unordered_map<string, int> cellToNum;
 	int gene_count;
 	int cell_count, data_count;
+	int str_barcodes_len;
+	int str_genes_length;
 
 public:
 	SparseMatrix() {
@@ -40,6 +42,8 @@ public:
 	int get_gene_count();
 	int get_data_count();
 	long long* get_indptr();
+	int get_str_barcodes_len();
+	int get_str_genes_length();
 	unordered_map<int, string> get_numToCell();
 	int readHDF5File(string path, string type);
 	void createCellnameMap();
