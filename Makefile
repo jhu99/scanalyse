@@ -21,7 +21,7 @@ CXXFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/include/hdf5/serial/ -std=c++0x -
 H5CXXFLAGS = -std=c++0x -Ilib/
 CXXGSLFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -std=c++0x -DNDEBUG -lgsl -lgslcblas -lpthread
 endif
-all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest fetch_batchTest
+all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest fetch_batchTest FiltrationTest
 #ArgParserTest
 cellTest: tests/cellTest.cpp lib/cell/cell.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
@@ -45,7 +45,9 @@ rankTest:tests/rankTest.cpp lib/rank/rankNormalize.o lib/rank/geneInfo.o SparseM
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
 fetch_batchTest:tests/fetch_batchTest.cpp SparseMatrix.o lib/qqNorm/qqNorm.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
-geneVariationTest:tests/geneVariationTest.cpp lib/geneVariationTop/geneVariation.o lib/geneVariationTop/geneVariationTop.o lib/geneTop/geneCount.o SparseMatrix.o
+geneVariationTest:tests/geneVariationTest.cpp lib/geneVariationTop/geneVariation.o lib/geneVariationTop/geneVariationTop.o lib/geneTop/geneCount.o SparseMatrix.o lib/qqNorm/qqNorm.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
+FiltrationTest:tests/FiltrationTest.cpp lib/Filtration/Filtration.o lib/geneVariationTop/geneVariationTop.o lib/geneTop/geneCount.o SparseMatrix.o lib/qqNorm/qqNorm.o
+`	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
 clean:
-	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/SparseMatrix/*.o lib/geneTop/*.o lib/rank/*.o *.o cellTest funTest linearRegressionTest argParserTest qqNormTest geneTopsTest HDF5ReaderTest rankTest fetch_batchTest
+	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/SparseMatrix/*.o lib/geneTop/*.o lib/rank/*.o *.o cellTest funTest linearRegressionTest argParserTest qqNormTest geneTopsTest HDF5ReaderTest rankTest fetch_batchTest FiltrationTest
