@@ -1,5 +1,5 @@
 
-#include "geneVariationTop.h"
+#include "geneVariationTop/geneVariationTop.h"
 
 int main() {
 	SparseMatrix sm;
