@@ -11,12 +11,13 @@ from model import ZINBAutoencoder
 from getAnnData import getAnnData
 
 def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.001,
-          epochs=10, reduce_lr=10, output_subset=None, use_raw_as_output=True,
+          epochs=300, reduce_lr=10, output_subset=None, use_raw_as_output=True,
           early_stop=15, batch_size=32, clip_grad=5., save_weights=True,
           validation_split=0.1, tensorboard=False, verbose=True, threads=None,
           **kwds):
 
-    K.set_session(tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=threads, inter_op_parallelism_threads=threads)))
+    #K.set_session(tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=threads, inter_op_parallelism_threads=threads)))
+    #K.clear_session()
     model = network.model
     loss = network.loss
     if output_dir is not None:
@@ -64,7 +65,7 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.
     return loss
 
 def train_model(input_file,output_path):
-    K.set_session(tf.Session())
+    #K.set_session(tf.Session())
     # load data
     adata = getAnnData(input_file)
     # delete gene and cell with all 0 value

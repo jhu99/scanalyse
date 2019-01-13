@@ -48,7 +48,7 @@ def train_model(data_path):
                           activation='relu',
                           init='glorot_uniform',
                           debug=False,
-                          file_path="./result")
+                          file_path="../result")
     net.build()
     net.load_weights(data_path)
     net.predict(adata, mode='full', return_info=True)
