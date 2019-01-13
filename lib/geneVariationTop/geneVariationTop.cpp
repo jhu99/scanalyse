@@ -7,6 +7,7 @@ geneVariationTop::geneVariationTop(SparseMatrix sm, int topNum) {
 	this->topNum = topNum;
 	gc = new geneCount[gnum];
 	gv = new geneVariation[gnum];
+	top_index = new long long[topNum];
 	top = new string[topNum];
 	for (int i = 0; i < gnum; i++) {
 		gc[i].setGeneName(sm.get_genes()[i]);
