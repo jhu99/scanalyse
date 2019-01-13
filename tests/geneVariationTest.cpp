@@ -3,10 +3,13 @@
 
 int main() {
 	SparseMatrix sm;
-	int test = sm.readHDF5File("ica_cord_blood_h5.h5");
+	string type = "original";
+	int test = sm.readHDF5File("./data/ica_cord_blood_h5.h5", type);
 	geneVariationTop GVT(sm, 5000);
 	GVT.geneSort();
 	GVT.printTop();
-	system("pause");
+	sm.deleteSparseMatrix("original");
+	cin.get();
+	cin.get();
 	return 0;
 }
