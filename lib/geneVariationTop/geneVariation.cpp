@@ -9,12 +9,22 @@ void geneVariation::set_Variation(double Variation) {
 	this->Variation = Variation;
 }
 
+void geneVariation::set_Index(long long index)
+{
+	this->index = index;
+}
+
 string geneVariation::get_geneName() {
 	return geneName;
 }
 
 double geneVariation::get_Variation() {
 	return Variation;
+}
+
+long long geneVariation::get_index()
+{
+	return index;
 }
 
 void geneVariation::VarAdd(int num, double avg,int n) {

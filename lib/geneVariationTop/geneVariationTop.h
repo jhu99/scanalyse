@@ -1,8 +1,8 @@
 #ifndef GENEVARIATIONTOP
 #define GENEVARIATIONTOP
 #include "geneVariation.h"
-#include "SparseMatrix.h"
-#include "geneCount.h"
+#include "SparseMatrix/SparseMatrix.h"
+#include "geneTop/geneCount.h"
 #include <algorithm>
 class geneVariationTop {
 	int topNum = 0, gnum = 0;
@@ -10,6 +10,7 @@ class geneVariationTop {
 	geneCount *gc;
 	geneVariation *gv;
 	string * top;
+	long long* top_index;
 public:
 	geneVariationTop(SparseMatrix sm, int topNum);
 	~geneVariationTop();
@@ -24,6 +25,7 @@ public:
 	int get_Num();
 	geneVariation* get_geneVariation();
 	string* get_Top();
+	long long *get_top_index();
 
 	void geneSort();
 	void printTop();

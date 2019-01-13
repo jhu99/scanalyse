@@ -11,6 +11,7 @@ geneVariationTop::geneVariationTop(SparseMatrix sm, int topNum) {
 	for (int i = 0; i < gnum; i++) {
 		gc[i].setGeneName(sm.get_genes()[i]);
 		gv[i].set_geneName(sm.get_genes()[i]);
+		gv[i].set_Index(i);
 	}
 	for (int i = 0; i < n; i++) {
 		gc[sm.get_indices()[i]].countAdd(sm.get_data()[i]);// 对同gene不同cell表达值求和
@@ -57,10 +58,16 @@ string* geneVariationTop::get_Top() {
 	return top;
 }
 
+long long * geneVariationTop::get_top_index()
+{
+	return top_index;
+}
+
 void geneVariationTop::geneSort() {
 	sort(gv, gv + gnum);
 	for (int i = 0; i < topNum; i++) {
 		top[i] = gv[i].get_geneName();
+		top_index[i] = gv[i].get_index();
 	}
 }
 
