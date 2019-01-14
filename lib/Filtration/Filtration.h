@@ -1,6 +1,7 @@
 #include "SparseMatrix/SparseMatrix.h"
 #include "geneTop/geneExpressionTop.h"
 #include "geneVariationTop/geneVariationTop.h"
+#include "H5Cpp.h"
 
 class Filtration
 {
@@ -52,4 +53,5 @@ public:
 	void dataFiltrationByGenes();
 	void filtGeneAndCell(int cell_min_count, int gene_top_num, int gene_filt_method);
 	void printFiltResult();
+	void writeFiltH5File(string write_path);
 };

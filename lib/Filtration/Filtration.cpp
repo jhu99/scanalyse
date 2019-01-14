@@ -1,4 +1,7 @@
 #include"Filtration.h"
+#define _CRT_SECURE_NO_WARNINGS
+using namespace std;
+using namespace H5;
 
 Filtration::Filtration(SparseMatrix sm)
 {
@@ -179,12 +182,12 @@ void Filtration::filtGeneAndCell(int cell_min_count, int gene_top_num, int gene_
 
 void Filtration::printFiltResult()
 {
-	for (int i = 0; i < filt_gene_count; i++)
+	/*for (int i = 0; i < filt_gene_count; i++)
 	{
 		cout << filt_genes[i] << " ";
 	}
 	cout << endl;
-	/*for (int i = 0; i < filt_cell_count; i++)
+	for (int i = 0; i < filt_cell_count; i++)
 	{
 		cout << filt_barcodes[i] << " ";
 	}
@@ -204,6 +207,87 @@ void Filtration::printFiltResult()
 	cout << filt_gene_data_count << endl;
 	cout << filt_gene_indptr[filt_cell_count ];
 	cout << endl;
+}
+
+void Filtration::writeFiltH5File(string write_path)
+{
+	const H5std_string FILE_NAME(write_path);
+	const H5std_string GROUP_NAME("/GRCh38");
+	const int RANK = 1;
+	H5File file(FILE_NAME, H5F_ACC_TRUNC);
+	Group group = file.createGroup(GROUP_NAME);
+
+	//write Dataset
+	hsize_t dims[RANK];
+
+	//write barcodes
+	char *para_barcodes;
+	int cell_name_str_len = sm.get_str_barcodes_len();
+	para_barcodes = new char[filt_cell_count * cell_name_str_len];
+	for (int i = 0; i < filt_cell_count; i++)
+	{
+		strncpy(para_barcodes + i * cell_name_str_len, filt_barcodes[i], cell_name_str_len);
+	}
+	dims[0] = filt_cell_count;
+	DataSpace *dataspace_barcodes = new DataSpace(RANK, dims);
+	size_t str_cell_names_len = cell_name_str_len;
+	hid_t barcodes_type = H5Tcopy(H5T_C_S1);
+	H5Tset_size(barcodes_type, str_cell_names_len);
+	DataSet *dataset_barcodes = new DataSet(group.createDataSet("barcodes", barcodes_type, *dataspace_barcodes));
+	dataset_barcodes->write(para_barcodes, barcodes_type);
+	cout << "finish write barcodes" << endl;
+
+	//write data
+	dims[0] = filt_gene_data_count;
+	DataSpace *dataspace_data = new DataSpace(RANK, dims);
+	DataSet *dataset_data = new DataSet(group.createDataSet("data", H5T_NATIVE_INT, *dataspace_data));
+	H5Dwrite(dataset_data->getId(), H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, filt_gene_data);
+	cout << "finish write data" << endl;
+
+
+	//write genes
+	char *para_genes;
+	int genes_str_len = sm.get_str_genes_length();
+	para_genes = new char[filt_gene_count * genes_str_len];
+	for (int i = 0; i < filt_gene_count; i++)
+	{
+		strncpy(para_genes + i * genes_str_len, filt_genes[i], genes_str_len);
+	}
+	dims[0] = filt_gene_count;
+	DataSpace *dataspace_genes = new DataSpace(RANK, dims);
+	size_t str_genes_len = genes_str_len;
+	hid_t genes_type = H5Tcopy(H5T_C_S1);
+	H5Tset_size(genes_type, str_genes_len);
+	DataSet *dataset_genes = new DataSet(group.createDataSet("genes", genes_type, *dataspace_genes));
+	dataset_genes->write(para_genes, genes_type);
+	cout << "finish write genes" << endl;
+
+	//write indices
+	dims[0] = filt_gene_data_count;
+	DataSpace *dataspace_indices = new DataSpace(RANK, dims);
+	DataSet *dataset_indices = new DataSet(group.createDataSet("indices", H5T_NATIVE_LONG, *dataspace_indices));
+	H5Dwrite(dataset_indices->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, filt_gene_indices);
+	cout << "finish write indices" << endl;
+
+	//write indptr
+	dims[0] = filt_cell_count + 1;
+	DataSpace *dataspace_indptr = new DataSpace(RANK, dims);
+	DataSet *dataset_indptr = new DataSet(group.createDataSet("indptr", H5T_NATIVE_LONG, *dataspace_indptr));
+	H5Dwrite(dataset_indptr->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, filt_gene_indptr);
+	cout << "finish write indptr" << endl;
+	
+	delete dataspace_data;
+	delete dataspace_barcodes;
+	delete dataspace_genes;
+	delete dataspace_indices;
+	delete dataspace_indptr;
+	delete dataset_barcodes;
+	delete dataset_data;
+	delete dataset_genes;
+	delete dataset_indices;
+	delete dataset_indptr;
+	group.close();
+	file.close();
 }
 
 

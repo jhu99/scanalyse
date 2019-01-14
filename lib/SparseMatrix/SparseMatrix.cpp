@@ -443,7 +443,7 @@ void SparseMatrix::write2HDF5(string path)
 void SparseMatrix::deleteSparseMatrix(string type){
 	delete[] indices;
 	delete[] indptr;
-	if (type == "orignal")
+	if (type == "original")
 	{
 		delete[] data;
 	}
