@@ -8,7 +8,7 @@ from keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping, ReduceL
 from keras import backend as K
 from sklearn.model_selection import train_test_split
 from model import ZINBAutoencoder
-from getAnnData import getAnnData
+from getAnnData import getAnnData, getAnnData_10x_h5
 
 def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.001,
           epochs=300, reduce_lr=10, output_subset=None, use_raw_as_output=True,
@@ -64,10 +64,15 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.
 
     return loss
 
-def train_model(input_file,output_path):
+def train_model(input_file,output_path,format_type='10x_h5'):
     #K.set_session(tf.Session())
     # load data
-    adata = getAnnData(input_file)
+    if format_type=="10x_h5":
+		adata = getAnnData_10x_h5(input_file)
+    elif format_type=="10x_mtx":
+		adata = getAnnData_10x_mtx(input_file)
+    else :
+		adata = getAnnData(input_file)
     # delete gene and cell with all 0 value
     sc.pp.filter_genes(adata, min_counts=1)
     sc.pp.filter_cells(adata, min_counts=1)

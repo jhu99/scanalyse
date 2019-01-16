@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.sparse import csr_matrix, csc_matrix
+import scanpy.api as sc
 import anndata
 from anndata import h5py, logging
 from anndata import AnnData, read_h5ad
@@ -22,5 +23,12 @@ def getAnnData(input_file):
 		   var=pd.DataFrame(index=genes.value),
 		   dtype=X.dtype.name,
 		   filemode=True)
-   
     return adata
+ 
+def getAnnData_10x_h5(input_file):
+	adata = sc.read_10x_h5(input_file,"GRCh38")
+	return adata
+
+def getAnnData_10x_mtx(input_file):
+	adata = sc.read_10x_mtx(input_file,"gene_ids")
+	return adata
