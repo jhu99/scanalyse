@@ -68,11 +68,11 @@ def train_model(input_file,output_path,format_type='10x_h5'):
     #K.set_session(tf.Session())
     # load data
     if format_type=="10x_h5":
-		adata = getAnnData_10x_h5(input_file)
-    elif format_type=="10x_mtx":
-		adata = getAnnData_10x_mtx(input_file)
+        adata = getAnnData_10x_h5(input_file)
+    elif format_type == "mtx_h5"
+        adata = getAnnData_10x_mtx(input_file)
     else :
-		adata = getAnnData(input_file)
+        adata = getAnnData(input_file)
     # delete gene and cell with all 0 value
     sc.pp.filter_genes(adata, min_counts=1)
     sc.pp.filter_cells(adata, min_counts=1)
