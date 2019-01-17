@@ -69,7 +69,7 @@ def train_model(input_file,output_path,format_type='10x_h5'):
     # load data
     if format_type=="10x_h5":
         adata = getAnnData_10x_h5(input_file)
-    elif format_type == "mtx_h5"
+    elif format_type == "10x_mtx":
         adata = getAnnData_10x_mtx(input_file)
     else :
         adata = getAnnData(input_file)
