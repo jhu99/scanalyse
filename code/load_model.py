@@ -11,9 +11,7 @@ from model import ZINBAutoencoder
 from getAnnData import getAnnData
 
 
-def train_model(data_path):
-    K.set_session(tf.Session())
-    # load data
+def load_weight(data_path, weight_path, result_path):
     #adata = getAnnData(data_path)
     adata = getAnnData(data_path)
     # delete gene and cell with all 0 value
@@ -48,9 +46,9 @@ def train_model(data_path):
                           activation='relu',
                           init='glorot_uniform',
                           debug=False,
-                          file_path="../result")
+                          file_path=result_path)
     net.build()
-    net.load_weights(data_path)
+    net.load_weights(weight_path)
     net.predict(adata, mode='full', return_info=True)
     net.write(adata, mode='full')
 
