@@ -14,4 +14,4 @@ if FUN=='train':
 elif FUN=='prediction':
 	load_model.load_weight(sys.argv[1],sys.argv[2],sys.argv[3])
 else:
-	print 'please use \'train\' or \'prediction\''
+	print('please use \'train\' or \'prediction\'')
