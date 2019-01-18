@@ -19,6 +19,11 @@ char ** SparseMatrix::get_genes()
 	return genes;
 }
 
+char ** SparseMatrix::get_gene_names()
+{
+	return nullptr;
+}
+
 long long* SparseMatrix::get_indices() {
 	return indices;
 }
@@ -55,6 +60,11 @@ int SparseMatrix::get_str_barcodes_len()
 int SparseMatrix::get_str_genes_length()
 {
 	return str_genes_length;
+}
+
+int SparseMatrix::get_str_gene_names_len()
+{
+	return 0;
 }
 
 
@@ -134,7 +144,46 @@ int SparseMatrix::readHDF5File(string path, string type)
 	{
 		printf("The dataset either does NOT exist or some other error occurred.\n");
 	}
-	//read dataset-cellname
+
+	//read dataset-gene_names
+	status = H5Lget_info(fileId, "/GRCh38/gene_names", NULL, H5P_DEFAULT);
+	printf("/GRCh38/gene_names: ");
+	if (status == 0)
+	{
+		printf("The dataset exists.\n");
+		datasetId = H5Dopen(fileId, "/GRCh38/gene_names", H5P_DEFAULT);
+		ds = DataSet(datasetId);
+		dataspace = ds.getSpace();
+		datatype = ds.getDataType();
+		size_t gene_names_len = datatype.getSize();
+		str_gene_names_len = gene_names_len;
+
+		gene_names = new char*[gene_count];
+		for (int i = 0; i < gene_count; i++)
+		{
+			gene_names[i] = new char[str_gene_names_len];
+		}
+		char* para_gene_names;
+		para_gene_names = new char[str_gene_names_len * gene_count];
+		hid_t str_gene_names = H5Tcopy(H5T_C_S1);
+		H5Tset_size(str_gene_names, str_gene_names_len);
+		status = H5Dread(datasetId, str_gene_names, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_gene_names);
+		for (int i = 0; i < gene_count; i++)
+		{
+			strncpy(gene_names[i], para_gene_names + i * str_gene_names_len, str_gene_names_len);
+		}
+		for (int i = 0; i < 5; i++)
+		{
+			cout << gene_names[i] << endl;
+		}
+		cout << "finish read gene_names" << endl;
+	}
+	else
+	{
+		printf("The dataset either does NOT exist or some other error occurred.\n");
+	}
+
+	//read dataset-barcodes
 	status = H5Lget_info(fileId, "/GRCh38/barcodes", NULL, H5P_DEFAULT);
 	printf("/GRCh38/barcodes': ");
 	if (status == 0)
@@ -253,6 +302,7 @@ int SparseMatrix::readHDF5File(string path, string type)
 	{
 		printf("The dataset zero_value does NOT exist or some other error occurred.\n");
 	}
+
 	//close
 	H5Fclose(fileId);
 	H5Dclose(datasetId);
@@ -498,4 +548,118 @@ double ** SparseMatrix::fetch_batch(int batch_index, int batch_size)
 	}
 
 	return inputMatrix;
+}
+
+void SparseMatrix::readMtxFile(string read_path)
+{
+	
+	string mtx_path = read_path + "matrix.mtx";
+	std::ifstream fin(mtx_path);
+	// Ignore headers and comments:
+	while (fin.peek() == '%') fin.ignore(2048, '\n');
+
+	// Read defining parameters:
+	fin >> gene_count >> cell_count >> data_count;
+	cout << "gene_count:" << gene_count << endl;
+	cout << "cell_count:" << cell_count << endl;
+	cout << "data_count:" << data_count << endl;
+	data = new int[data_count]; 
+	indices = new long long[data_count];
+	indptr = new long long[cell_count + 1];
+	int *gene_count_per_cell;
+	gene_count_per_cell = new int[cell_count];
+	fill(gene_count_per_cell, gene_count_per_cell + cell_count, 0);
+
+	// Read the data
+	int cell_index;
+	for (int data_index = 0; data_index < data_count; data_index++)
+	{
+		int para_data;
+		long long para_indptr;
+		long long para_indices;
+		fin >> indices[data_index] >> cell_index >> data[data_index];
+		gene_count_per_cell[cell_index-1]++;
+	}
+	indptr[0] = 0;
+	for (int cell_index = 0; cell_index < cell_count; cell_index++)
+	{
+		indptr[cell_index + 1] = indptr[cell_index] + gene_count_per_cell[cell_index];
+	}
+	cout <<"indptr[cell_count] "<< indptr[cell_count ] << endl;
+	fin.close();
+}
+
+void SparseMatrix::readTsvFile(string read_path)
+{
+	string barcodes_path = read_path + "barcodes.tsv";
+	string genes_path = read_path + "genes.tsv";
+	char separator = '\t';
+	string lineStr;
+	barcodes = new char*[cell_count];
+	genes = new char*[gene_count];
+	gene_names = new char*[gene_count];
+	//read barcodes
+	ifstream barcodes_infile(barcodes_path, ios::in);
+	getline(barcodes_infile, lineStr);
+	str_barcodes_len = lineStr.length();
+	for (int i = 0; i < cell_count; i++)
+	{
+		barcodes[i] = new char[str_barcodes_len];
+	}
+	lineStr.copy(barcodes[0], str_barcodes_len, 0);
+	int barcodes_index = 1;
+	while (getline(barcodes_infile, lineStr))
+	{
+		lineStr.copy(barcodes[barcodes_index], str_barcodes_len, 0);
+		barcodes_index++;
+	}
+	barcodes_infile.close();
+
+	//read genes and gene_names
+	ifstream genes_infile(genes_path, ios::in);
+	str_genes_length = 15;
+	str_gene_names_len = 20;
+	string para_str;
+	int is_genes = 1;
+	for (int i = 0; i < gene_count; i++)
+	{
+		genes[i] = new char[str_genes_length];
+		gene_names[i] = new char[str_gene_names_len];
+	}
+	int genes_index = 0;
+	while (getline(genes_infile, lineStr))
+	{
+		stringstream ss(lineStr);
+		while (getline(ss, para_str, separator))
+		{
+			if (is_genes == 1)
+			{
+				para_str.copy(genes[genes_index], str_genes_length, 0);
+				is_genes = 0;
+			}
+			else
+			{
+				para_str.copy(gene_names[genes_index], str_gene_names_len, 0);
+				is_genes = 1;
+			}
+		}
+		genes_index++;
+	}
+	genes_infile.close();
+	for (int i = 0; i < 5; i++)
+	{
+		cout << genes[i] << endl;
+		cout << gene_names[i] << endl;
+	}
+}
+
+void SparseMatrix::read_10x_h5(string read_path)
+{
+	readHDF5File(read_path,"original");
+}
+
+void SparseMatrix::read_10x_mtx(string read_path)
+{
+	readMtxFile(read_path);
+	readTsvFile(read_path);
 }
