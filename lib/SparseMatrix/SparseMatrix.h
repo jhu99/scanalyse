@@ -7,7 +7,7 @@
 #include<iostream>
 #include<unordered_map>
 #include <algorithm>
-#include "qqNorm.h"
+#include "qqNorm/qqNorm.h"
 #include <fstream>
 #include<string>
 #include <sstream>
