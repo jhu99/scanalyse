@@ -51,7 +51,7 @@ FiltrationTest:tests/FiltrationTest.cpp lib/Filtration/Filtration.o lib/geneVari
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
 read10xTest:tests/read10xTest.cpp SparseMatrix.o lib/qqNorm/qqNorm.o lib/argparser/argparser.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
-mergeH5Test:tests/mergeH5Test.cpp SparseMatrix.o
+mergeH5Test:tests/mergeH5Test.cpp SparseMatrix.o lib/qqNorm/qqNorm.o lib/argparser/argparser.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
 moveTest:
 	mv ./*Test ./bin
