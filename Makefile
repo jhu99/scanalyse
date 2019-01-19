@@ -35,7 +35,7 @@ argParserTest: tests/argparsertest.cpp lib/argparser/argparser.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
 qqNormTest:tests/qqNormTest.cpp lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface.o
 	${CXX} $^ ${CXXGSLFLAGS} -o $@ 
-SparseMatrix.o:lib/SparseMatrix/SparseMatrix.cpp 
+SparseMatrix.o:lib/SparseMatrix/SparseMatrix.cpp lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface.o
 	${H5CXX} $^ ${H5CXXFLAGS} -c -o $@
 SparseMatrixTest:tests/SparseMatrixTest.cpp SparseMatrix.o lib/rank/geneInfo.o lib/rank/rankNormalize.o lib/qqNorm/qqNorm.o lib/qqNorm/caculateInterface.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@  
