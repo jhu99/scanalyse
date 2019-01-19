@@ -7,7 +7,7 @@ using namespace std;
 int main() {
 	clock_t start,end;
 	SparseMatrix hr;
-	hr.readHDF5File("./data/ica_cord_blood_h5.h5");
+	hr.readHDF5File("./data/ica_cord_blood_h5.h5","original");
 	start=clock();
 	rankNormalize rn(hr);
 	rn.ranks(5);
@@ -16,5 +16,5 @@ int main() {
 	//cout<<"Total time:"<<endtime<<endl;		
 	//rn.print();
 	cout<<"Total time:"<<endtime<<endl;		
-	hr.deleteSparseMatrix();
+	hr.deleteSparseMatrix("original");
 }
