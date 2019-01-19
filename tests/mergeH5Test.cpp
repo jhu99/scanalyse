@@ -1,4 +1,4 @@
-#include"Merge.h"
+#include"SparseMatrix/SparseMatrix.h"
 #include<vector>
 using namespace std;
 using namespace H5;
