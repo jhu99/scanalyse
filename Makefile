@@ -21,7 +21,7 @@ CXXFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/include/hdf5/serial/ -std=c++0x -
 H5CXXFLAGS = -std=c++0x -Ilib/
 CXXGSLFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -std=c++0x -DNDEBUG -lgsl -lgslcblas -lpthread
 endif
-all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest rankTest fetch_batchTest FiltrationTest moveTest read10xTest
+all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest rankTest fetch_batchTest FiltrationTest moveTest read10xTest mergeH5Test
 #ArgParserTest
 cellTest: tests/cellTest.cpp lib/cell/cell.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
@@ -50,7 +50,9 @@ geneVariationTest:tests/geneVariationTest.cpp lib/geneVariationTop/geneVariation
 FiltrationTest:tests/FiltrationTest.cpp lib/Filtration/Filtration.o lib/geneVariationTop/geneVariation.o lib/geneVariationTop/geneVariationTop.o lib/geneTop/geneCount.o lib/geneTop/geneExpressionTop.o SparseMatrix.o lib/qqNorm/qqNorm.o lib/argparser/argparser.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
 read10xTest:tests/read10xTest.cpp SparseMatrix.o lib/qqNorm/qqNorm.o lib/argparser/argparser.o
-	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
+	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
+mergeH5Test:tests/mergeH5Test.cpp SparseMatrix.o
+	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
 moveTest:
 	mv ./*Test ./bin
 clean:
