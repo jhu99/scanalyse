@@ -72,7 +72,7 @@ def train_model(input_file,output_path,format_type='10x_h5'):
     elif format_type == "10x_mtx":
         adata = getAnnData_10x_mtx(input_file)
     else :
-        adata = getAnnData(input_file)
+        raise ValueError('`format` needs to be \'10x_h5\' or \'10x_mtx\'')
     # delete gene and cell with all 0 value
     sc.pp.filter_genes(adata, min_counts=1)
     sc.pp.filter_cells(adata, min_counts=1)

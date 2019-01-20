@@ -30,5 +30,5 @@ def getAnnData_10x_h5(input_file):
 	return adata
 
 def getAnnData_10x_mtx(input_file):
-	adata = sc.read_10x_mtx(input_file,"gene_ids")
+	adata = sc.read_10x_mtx(input_file)
 	return adata
