@@ -128,6 +128,7 @@ void Filtration::geneFiltration(int topNum, int method)
 		filtered_genes[top_genes_index[i]] = 1;
 	}
 	filt_genes = new char*[topNum];
+	filt_gene_names = new char*[topNum];
 	for (int i = 0; i < topNum; i++)
 	{
 		filt_genes[i] = new char[str_genes_len];
