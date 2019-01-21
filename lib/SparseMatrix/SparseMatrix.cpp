@@ -65,7 +65,7 @@ int SparseMatrix::get_str_genes_length()
 
 int SparseMatrix::get_str_gene_names_len()
 {
-	return 0;
+	return str_gene_names_len;
 }
 
 
@@ -416,19 +416,17 @@ void SparseMatrix::write2HDF5(string path)
 	Group group = file.createGroup(GROUP_NAME);
 
 	//write Dataset
-	hsize_t dims[RANK], chunk_size[1];
+	hsize_t dims[RANK];
 	//write barcodes
-	chunk_size[0] = 3276;
 	char *para_barcodes;
-	int cell_name_str_len = 40;
-	para_barcodes = new char[cell_count * cell_name_str_len];
+	para_barcodes = new char[cell_count * str_barcodes_len];
 	for (int i = 0; i < cell_count; i++)
 	{
-		strncpy(para_barcodes + i * cell_name_str_len, barcodes[i], cell_name_str_len);
+		strncpy(para_barcodes + i * str_barcodes_len, barcodes[i], str_barcodes_len);
 	}
 	dims[0] = cell_count;
 	DataSpace *dataspace_barcodes = new DataSpace(RANK, dims);
-	size_t str_cell_names_len = cell_name_str_len;
+	size_t str_cell_names_len = str_barcodes_len;
 	hid_t barcodes_type = H5Tcopy(H5T_C_S1);
 	H5Tset_size(barcodes_type, str_cell_names_len);
 	DataSet *dataset_barcodes = new DataSet(group.createDataSet("barcodes", barcodes_type, *dataspace_barcodes));
@@ -442,20 +440,34 @@ void SparseMatrix::write2HDF5(string path)
 	cout << "finish write data" << endl;
 	//write genes
 	char *para_genes;
-	int genes_str_len = 15;
-	para_genes = new char[gene_count * genes_str_len];
+	para_genes = new char[gene_count * str_genes_length];
 	for (int i = 0; i < gene_count; i++)
 	{
-		strncpy(para_genes + i * genes_str_len, genes[i], genes_str_len);
+		strncpy(para_genes + i * str_genes_length, genes[i], str_genes_length);
 	}
 	dims[0] = gene_count;
 	DataSpace *dataspace_genes = new DataSpace(RANK, dims);
-	size_t str_genes_len = genes_str_len;
+	size_t str_genes_len = str_genes_length;
 	hid_t genes_type = H5Tcopy(H5T_C_S1);
 	H5Tset_size(genes_type, str_genes_len);
 	DataSet *dataset_genes = new DataSet(group.createDataSet("genes", genes_type, *dataspace_genes));
 	dataset_genes->write(para_genes, genes_type);
 	cout << "finish write genes" << endl;
+	//write gene_names
+	char *para_gene_names;
+	para_gene_names = new char[gene_count * str_gene_names_len];
+	for (int i = 0; i < gene_count; i++)
+	{
+		strncpy(para_genes + i * str_gene_names_len, genes[i], str_gene_names_len);
+	}
+	dims[0] = gene_count;
+	DataSpace *dataspace_gene_names = new DataSpace(RANK, dims);
+	size_t str_gene_names_len_t = str_gene_names_len;
+	hid_t gene_names_type = H5Tcopy(H5T_C_S1);
+	H5Tset_size(gene_names_type, str_gene_names_len_t);
+	DataSet *dataset_gene_names = new DataSet(group.createDataSet("gene_names", gene_names_type, *dataspace_gene_names));
+	dataset_gene_names->write(para_gene_names, gene_names_type);
+	cout << "finish write gene_names" << endl;
 	//write indices
 	dims[0] = data_count;
 	DataSpace *dataspace_indices = new DataSpace(RANK, dims);
@@ -481,12 +493,14 @@ void SparseMatrix::write2HDF5(string path)
 	delete dataspace_indices;
 	delete dataspace_indptr;
 	delete dataspace_zero_value;
+	delete dataspace_gene_names;
 	delete dataset_barcodes;
 	delete dataset_data;
 	delete dataset_genes;
 	delete dataset_indices;
 	delete dataset_indptr;
 	delete dataset_zero_value;
+	delete dataset_gene_names;
 	group.close();
 	file.close();
 }
@@ -522,6 +536,11 @@ void SparseMatrix::deleteSparseMatrix(string type) {
 		delete[] genes[i];
 	}
 	delete[] genes;
+	for (int i = 0; i < gene_count; i++)
+	{
+		delete[] gene_names[i];
+	}
+	delete[] gene_names;
 	cout << "finish delete" << endl;
 }
 
@@ -664,6 +683,7 @@ void SparseMatrix::read_10x_mtx(string read_path)
 	readMtxFile(read_path);
 	readTsvFile(read_path);
 }
+
 void SparseMatrix::mergeDate(vector<string> paths) {
 	SparseMatrix *sm = new SparseMatrix[paths.size()];
 	for (int i = 0;i < paths.size();i++) {
@@ -716,6 +736,7 @@ void SparseMatrix::mergeDate(vector<string> paths) {
 			strcpy(gene_names[geneNamesIndex], sm[i].get_gene_names()[j]);
 		}
 	}
+	
 }
 
 void SparseMatrix::h5Compressed(string aimFilePath, string method, int chunk, int rank) {

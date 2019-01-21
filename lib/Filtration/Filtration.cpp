@@ -16,6 +16,8 @@ Filtration::Filtration(SparseMatrix sm)
 	this->barcodes = sm.get_barcodes();
 	this->str_barcodes_len = sm.get_str_barcodes_len();
 	this->str_genes_len = sm.get_str_genes_length();
+	this->str_gene_names_len = sm.get_str_gene_names_len();
+	this->gene_names = sm.get_gene_names();
 }
 
 Filtration::~Filtration()
@@ -129,10 +131,12 @@ void Filtration::geneFiltration(int topNum, int method)
 	for (int i = 0; i < topNum; i++)
 	{
 		filt_genes[i] = new char[str_genes_len];
+		filt_gene_names[i] = new char[str_gene_names_len];
 	}
 	for (int i = 0; i < topNum; i++)
 	{
 		filt_genes[i] = genes[top_genes_index[i]];
+		filt_gene_names[i] = gene_names[top_genes_index[i]];
 	}
 
 }
@@ -247,20 +251,35 @@ void Filtration::writeFiltH5File(string write_path)
 
 	//write genes
 	char *para_genes;
-	int genes_str_len = sm.get_str_genes_length();
-	para_genes = new char[filt_gene_count * genes_str_len];
+	para_genes = new char[filt_gene_count * str_genes_len];
 	for (int i = 0; i < filt_gene_count; i++)
 	{
-		strncpy(para_genes + i * genes_str_len, filt_genes[i], genes_str_len);
+		strncpy(para_genes + i * str_genes_len, filt_genes[i], str_genes_len);
 	}
 	dims[0] = filt_gene_count;
 	DataSpace *dataspace_genes = new DataSpace(RANK, dims);
-	size_t str_genes_len = genes_str_len;
+	size_t str_genes_len_t = str_genes_len;
 	hid_t genes_type = H5Tcopy(H5T_C_S1);
-	H5Tset_size(genes_type, str_genes_len);
+	H5Tset_size(genes_type, str_genes_len_t);
 	DataSet *dataset_genes = new DataSet(group.createDataSet("genes", genes_type, *dataspace_genes));
 	dataset_genes->write(para_genes, genes_type);
 	cout << "finish write genes" << endl;
+
+	//write gene_names
+	char *para_gene_names;
+	para_gene_names = new char[filt_gene_count * str_gene_names_len];
+	for (int i = 0; i < filt_gene_count; i++)
+	{
+		strncpy(para_gene_names + i * str_gene_names_len, filt_genes[i], str_gene_names_len);
+	}
+	dims[0] = filt_gene_count;
+	DataSpace *dataspace_gene_names = new DataSpace(RANK, dims);
+	size_t str_gene_names_len_t = str_gene_names_len;
+	hid_t gene_names_type = H5Tcopy(H5T_C_S1);
+	H5Tset_size(gene_names_type, str_gene_names_len_t);
+	DataSet *dataset_gene_names = new DataSet(group.createDataSet("gene_names", gene_names_type, *dataspace_gene_names));
+	dataset_gene_names->write(para_gene_names, gene_names_type);
+	cout << "finish write gene_names" << endl;
 
 	//write indices
 	dims[0] = filt_gene_data_count;

@@ -21,18 +21,21 @@ private:
 	int filt_gene_count;
 	int str_barcodes_len;
 	int str_genes_len;
+	int str_gene_names_len;
 
 	long long * indptr;
 	long long * indices;
 	int *data;
 	char** genes;
 	char** barcodes;
+	char** gene_names;
 
 	long long *filt_indptr;
 	long long *filt_indices;
 	int *filt_data;
 	char **filt_barcodes;
 	char **filt_genes;
+	char **filt_gene_names;
 	long long *filt_gene_indptr;
 	long long *filt_gene_indices;
 	int *filt_gene_data;
