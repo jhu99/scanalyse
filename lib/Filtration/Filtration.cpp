@@ -158,7 +158,7 @@ void Filtration::dataFiltrationByGenes()
 	}
 	filt_gene_data = new int[filt_gene_data_count];
 	filt_gene_indices = new long long[filt_gene_data_count];
-	filt_gene_indptr = new long long[filt_cell_count];
+	filt_gene_indptr = new long long[filt_cell_count + 1];
 	int filt_gene_data_index = 0;
 	filt_gene_indptr[0] = 0;
 	for (int cell_index = 0; cell_index < filt_cell_count; cell_index++)
