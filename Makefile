@@ -53,7 +53,7 @@ read10xTest:tests/read10xTest.cpp SparseMatrix.o lib/qqNorm/qqNorm.o lib/argpars
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
 mergeH5Test:tests/mergeH5Test.cpp SparseMatrix.o lib/qqNorm/qqNorm.o lib/argparser/argparser.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
-appTest:App/dataProcessing.cpp SparseMatrix.o lib/qqNorm/qqNorm.o lib/argparser/argparser.o lib/rank/rankNormalize.o lib/rank/geneInfo.o lib/Filtration/Filtration.o 
+appTest:App/dataProcessing.cpp SparseMatrix.o lib/qqNorm/qqNorm.o lib/argparser/argparser.o lib/rank/rankNormalize.o lib/rank/geneInfo.o lib/Filtration/Filtration.o lib/geneVariationTop/geneVariation.o lib/geneVariationTop/geneVariationTop.o lib/geneTop/geneCount.o lib/geneTop/geneExpressionTop.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
 moveTest:
 	mv ./*Test ./bin
