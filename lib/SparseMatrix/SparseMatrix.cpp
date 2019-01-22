@@ -43,7 +43,7 @@ int SparseMatrix::get_gene_count()
 	return gene_count;
 }
 
-int SparseMatrix::get_data_count()
+long long SparseMatrix::get_data_count()
 {
 	return data_count;
 }
@@ -235,6 +235,7 @@ int SparseMatrix::readHDF5File(string path, string type)
 		hsize_t datanum;
 		dataspace.getSimpleExtentDims(&datanum, NULL);
 		data_count = datanum;
+		cout<<datanum<<endl;
 		if (type == "original")
 		{
 			data = new int[data_count];
@@ -685,12 +686,16 @@ void SparseMatrix::read_10x_mtx(string read_path)
 }
 
 void SparseMatrix::mergeDate(vector<string> paths) {
+	data_count = 0;
+	cell_count = 0;
+	gene_count = 0;
 	SparseMatrix *sm = new SparseMatrix[paths.size()];
 	for (int i = 0;i < paths.size();i++) {
 		sm[i].readHDF5File(paths[i], "original");
 		data_count += sm[i].get_data_count();
-		cell_count += sm[i].get_cell_count();
-		gene_count += sm[i].get_gene_count();
+		cout<<sm[i].get_data_count()<<endl;
+		cell_count = sm[i].get_cell_count();
+		gene_count = sm[i].get_gene_count();
 		str_genes_length = sm[i].get_str_genes_length();
 		str_barcodes_len = sm[i].get_str_barcodes_len();
 	}
@@ -788,6 +793,7 @@ void SparseMatrix::h5Compressed(string aimFilePath, string method, int chunk, in
 
 	//write data
 	dims[0] = data_count;
+	cout<<data_count<<endl;
 	dataspace_id = H5Screate_simple(rank, dims, NULL);
 	dataset_id = H5Dcreate2(file_id, dataPath.c_str(), H5T_STD_I32LE,
 		dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
