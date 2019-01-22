@@ -693,12 +693,13 @@ void SparseMatrix::mergeDate(vector<string> paths) {
 	for (int i = 0;i < paths.size();i++) {
 		sm[i].readHDF5File(paths[i], "original");
 		data_count += sm[i].get_data_count();
-		cout<<"data_num"<<data_count<<endl;
-		cell_count = sm[i].get_cell_count();
+		cell_count += sm[i].get_cell_count();
 		gene_count = sm[i].get_gene_count();
 		str_genes_length = sm[i].get_str_genes_length();
 		str_barcodes_len = sm[i].get_str_barcodes_len();
 	}
+	cout<<"data_num"<<data_count<<endl;
+	cout<<"barcodes_num"<<cell_count<<endl;
 	data = new int[data_count];
 	genes = new char *[gene_count];
 	for (int i = 0;i < gene_count;i++) {
@@ -732,23 +733,23 @@ void SparseMatrix::mergeDate(vector<string> paths) {
 		for (long long j = 1;j < sm[i].get_cell_count() + 1;j++, indptrIndex++) {
 			indptr[indptrIndex] = indptr[indptrIndex - 1] + sm[i].get_indptr()[j] - sm[i].get_indptr()[j - 1];
 		}
+		for (long long j = 0;j < sm[i].get_cell_count();j++, cellIndex++) {
+			strcpy(barcodes[cellIndex], sm[i].get_barcodes()[j]);
+		}
 		
 	}
-	for (long long j = 0;j < sm[0].get_cell_count();j++, cellIndex++) {
-		strcpy(barcodes[cellIndex], sm[0].get_barcodes()[j]);
-	}
+	
 	for (long long j = 0;j < sm[0].get_gene_count();j++, geneIndex++) {
 		strcpy(genes[geneIndex], sm[0].get_genes()[j]);
 	}
 	for (long long j = 0;j < sm[0].get_gene_count();j++, geneNamesIndex++) {
 		strcpy(gene_names[geneNamesIndex], sm[0].get_gene_names()[j]);
 	}
-	cout<<"read finish"<<endl;
+	cout<<"merge finish"<<endl;
 	
 }
 
 void SparseMatrix::h5Compressed(string aimFilePath, string method, int chunk, int rank) {
-
 	hid_t    file_id, dataset_id, group_id, dataspace_id;
 	hid_t    plist_id;
 	hid_t    strGene, strCell,strGeneName;
