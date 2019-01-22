@@ -36,7 +36,7 @@ private:
 	long long  indptrIndex;
 	long long  indicesIndex;
 	int geneIndex;
-	int cellIndex;
+	long long cellIndex;
 	int dataIndex;
 	int geneNamesIndex;
 public:
