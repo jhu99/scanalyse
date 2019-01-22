@@ -3,13 +3,12 @@
 using namespace std;
 using namespace H5;
 
-int main() {
+int main(int argc,const char** argv) {
 	SparseMatrix m;
 	vector<string> paths;
-	string path = "./data/ica_cord_blood_h5.h5";
-	//string path = "D:/test.h5";
-	paths.push_back(path);
-	//paths.push_back(path);
+	for(int i=1;i<argc;i++){
+	    paths.push_back(argv[i]);
+	}
 	m.mergeDate(paths);
 	m.h5Compressed("./data/test.h5", "s", 1000, 1);
 }
