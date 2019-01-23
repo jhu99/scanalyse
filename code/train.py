@@ -68,7 +68,7 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.
 
     return loss
 
-def train_model(input_file,output_path,optimizer,format_type='10x_h5'):
+def train_model(input_file,output_path,optimizer='rmsprop',format_type='10x_h5'):
     #K.set_session(tf.Session())
     # load data
     if format_type=="10x_h5":
