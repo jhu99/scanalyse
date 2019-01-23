@@ -22,8 +22,12 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.
     loss = network.loss
     if output_dir is not None:
         os.makedirs(output_dir, exist_ok=True)
+    
+    if(optimizer == 'adam'):
+        optimizer = opt.Adam(lr=learning_rate, clipvalue=clip_grad)
+    else:
+        optimizer = opt.rmsprop(lr=learning_rate, clipvalue=clip_grad)
 
-    optimizer = opt.rmsprop(lr=learning_rate, clipvalue=clip_grad)
     model.compile(loss=loss, optimizer=optimizer)
 
     # Callbacks
@@ -64,7 +68,7 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.
 
     return loss
 
-def train_model(input_file,output_path,format_type='10x_h5'):
+def train_model(input_file,output_path,optimizer,format_type='10x_h5'):
     #K.set_session(tf.Session())
     # load data
     if format_type=="10x_h5":
@@ -107,7 +111,7 @@ def train_model(input_file,output_path,format_type='10x_h5'):
             debug=False,
             file_path=output_path)
     net.build()
-    losses = train(adata, net, output_dir=output_path)
+    losses = train(adata, net, optimizer=optimizer, output_dir=output_path)
 
     #net.predict(adata, mode='full', return_info=True)
     #net.write(adata, "./result", mode='full')
