@@ -763,6 +763,7 @@ void SparseMatrix::h5Compressed(string aimFilePath, string method, int chunk, in
 
 	int      idx;
 	int      i, j, numfilt;
+	int shape[]={gene_count,cell_count};
 
 	string groupPath = "/GRCh38";
 	string dataPath = "/GRCh38/data";
@@ -771,6 +772,7 @@ void SparseMatrix::h5Compressed(string aimFilePath, string method, int chunk, in
 	string indicesPath = "/GRCh38/indices";
 	string indptrPath = "/GRCh38/indptr";
 	string barcodesPath = "/GRCh38/barcodes";
+	string shapePath = "/GRCh38/shape";
 
 	// Uncomment these variables to use SZIP compression
 	unsigned szip_options_mask;
@@ -797,7 +799,6 @@ void SparseMatrix::h5Compressed(string aimFilePath, string method, int chunk, in
 
 	//write data
 	dims[0] = data_count;
-	cout<<data_count<<endl;
 	dataspace_id = H5Screate_simple(rank, dims, NULL);
 	dataset_id = H5Dcreate2(file_id, dataPath.c_str(), H5T_STD_I32LE,
 		dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
@@ -872,7 +873,15 @@ void SparseMatrix::h5Compressed(string aimFilePath, string method, int chunk, in
 		, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_barcodes);
 	delete[] para_barcodes;
 	cout << "barcodes writed" << endl;
-
+	
+	//write shape
+	dims[0] = 2;
+	dataspace_id = H5Screate_simple(rank, dims, NULL);
+	dataset_id = H5Dcreate2(file_id, shapePath.c_str(), H5T_STD_I32LE,
+		dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Dwrite(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, shape);
+	cout << "shape writed" << endl;
+	
 	H5Fclose(file_id);
 	
 }
