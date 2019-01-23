@@ -3,14 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "H5Cpp.h"
-#include<hdf5.h>
-#include<iostream>
-#include<unordered_map>
+#include <hdf5.h>
+#include <iostream>
+#include <unordered_map>
 #include <algorithm>
 #include "qqNorm/qqNorm.h"
 #include <fstream>
-#include<string>
+#include <string>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 class SparseMatrix

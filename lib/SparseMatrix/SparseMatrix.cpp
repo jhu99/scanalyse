@@ -685,7 +685,7 @@ void SparseMatrix::read_10x_mtx(string read_path)
 	readTsvFile(read_path);
 }
 
-void SparseMatrix::mergeDate(vector<string> paths) {
+void SparseMatrix::mergeDate(std::vector<std::string> paths) {
 	data_count = 0;
 	cell_count = 0;
 	gene_count = 0;
