@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from model import ZINBAutoencoder
 from getAnnData import getAnnData, getAnnData_10x_h5, getAnnData_10x_mtx
 
-def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.001,
+def train(adata, network, weight_file, output_dir=None, optimizer='rmsprop', learning_rate=0.001,
           epochs=300, reduce_lr=10, output_subset=None, use_raw_as_output=True,
           early_stop=15, batch_size=32, clip_grad=5., save_weights=True,
           validation_split=0.1, tensorboard=False, verbose=True, threads=None,
@@ -33,7 +33,7 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.
     # Callbacks
     callbacks = []
 
-    checkpointer = ModelCheckpoint(filepath="%s/weights.hdf5" % output_dir,
+    checkpointer = ModelCheckpoint(filepath="%s/%" % （output_dir,weight_file),
                                    verbose=verbose,
                                    save_weights_only=save_weights,
                                    save_best_only=True)
@@ -68,7 +68,14 @@ def train(adata, network, output_dir=None, optimizer='rmsprop', learning_rate=0.
 
     return loss
 
-def train_model(input_file,output_path,optimizer='rmsprop',format_type='10x_h5'):
+def train_model(input_file,
+                weight_file,
+                output_path,
+                hidden_size,
+                batch_size,
+                optimizer='rmsprop',
+                format_type='10x_h5'):
+
     #K.set_session(tf.Session())
     # load data
     if format_type=="10x_h5":
@@ -92,7 +99,7 @@ def train_model(input_file,output_path,optimizer='rmsprop',format_type='10x_h5')
 
     output_size = adata.n_vars
     input_size = adata.n_vars
-    hidden_size = [64,32,64]
+
     hidden_dropout = 0
 
     net = ZINBAutoencoder(input_size=input_size,
@@ -111,7 +118,7 @@ def train_model(input_file,output_path,optimizer='rmsprop',format_type='10x_h5')
             debug=False,
             file_path=output_path)
     net.build()
-    losses = train(adata, net, optimizer=optimizer, output_dir=output_path)
+    losses = train(adata, net, optimizer=optimizer, weight_file=weight_file, output_dir=output_path)
 
     #net.predict(adata, mode='full', return_info=True)
     #net.write(adata, "./result", mode='full')

@@ -10,8 +10,14 @@ parser.add_argument('--task','-t', required=True,
 					help='The task will be performed. It has two options, \'train\' or \'prediction\'. Default is \'train\'.')
 parser.add_argument('--input_file','-i', required = True, 
 					help='The path of an input filename.')
-parser.add_argument('--output_file','-o', required=True,
+parser.add_argument('--weight_file','-w', 
+					help='The path of a weight filename.')
+parser.add_argument('--output_path','-o', required = True,
 					help='The path of the output directory.')
+parser.add_argument('--latent_size','-l', type=int, nargs='+', default=[64,32,64],
+					help='The size of latent layers.')
+parser.add_argument('--batch_size','-b', type=int, default=128,
+					help='The size of each batch.')
 parser.add_argument('--algorithm','-a', default='rmsprop', 
 					choices=['adam','rmsprop'],
 					help='The optimization algorithms. It has two options, \'adam\' or \'rmsprop\'. Default is \'rmsprop\'.')
@@ -22,7 +28,13 @@ args = parser.parse_args()
 
 #Argv 1: Pathway of the input file
 if args.task =='train':
-	train.train_model(input_file=args.input_file, output_path=args.output_file,optimizer=args.algorithm,format_type=args.format)
+	train.train_model(input_file=args.input_file, 
+					weight_file=args.weight_file, 
+					out_path=args.output_path,
+					hidden_size=args.latent_size,
+					batch_size=args.batch_size, 
+					optimizer=args.algorithm,
+					format_type=args.format)
 #Argv 2: Pathway of the load_weight
 elif args.task =='prediction':
 	load_model.load_weight(args.input_file,args.output_file,args.format)
