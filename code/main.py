@@ -30,7 +30,7 @@ args = parser.parse_args()
 if args.task =='train':
 	train.train_model(input_file=args.input_file, 
 					weight_file=args.weight_file, 
-					out_path=args.output_path,
+					output_path=args.output_path,
 					hidden_size=args.latent_size,
 					batch_size=args.batch_size, 
 					optimizer=args.algorithm,
