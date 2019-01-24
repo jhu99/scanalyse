@@ -16,12 +16,14 @@ endif
 ifeq ($(MODE),Debug)
 CXXFLAGS = -Wall -g3 -DDEBUG -std=c++0x -DVERBOSE -Ilib/ -I/usr/local/include/ -I/usr/include/hdf5/serial/
 CXXGSLFLAGS = -Wall -g3 -DDEBUG -std=c++0x -DVERBOSE -Ilib/ -I/usr/local/include/ -lgsl -lgslcblas -lpthread
+CXXTFFLAGS = -Wall -O3 -DDEBUG -std=c++0x -DVERBOSE -D_GLIBCXX_USE_CXX11_ABI=0 -Ilib/ -I/usr/local/include/ -I/usr/local/include/tf -I/usr/local/include/tf/tensorflow/contrib/makefile/gen/proto/ -I/usr/local/include/tf/tensorflow/contrib/makefile/gen/protobuf/include/ -I/usr/local/include/tf/tensorflow/contrib/makefile/downloads/absl/ -I/usr/local/include/tf/tensorflow/contrib/makefile/downloads/eigen/ -I/usr/local/include/tf/bazel-genfiles/  -ltensorflow_cc -ltensorflow_framework -lgsl -lgslcblas
 else
 CXXFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/include/hdf5/serial/ -std=c++0x -DNDEBUG
 H5CXXFLAGS = -std=c++0x -Ilib/
 CXXGSLFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -std=c++0x -DNDEBUG -lgsl -lgslcblas -lpthread
+CXXTFFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -I/usr/local/include/tf -I/usr/local/include/tf/tensorflow/contrib/makefile/gen/proto/ -I/usr/local/include/tf/tensorflow/contrib/makefile/gen/protobuf/include/ -I/usr/local/include/tf/tensorflow/contrib/makefile/downloads/absl/ -I/usr/local/include/tf/tensorflow/contrib/makefile/downloads/eigen/ -I/usr/local/include/tf/bazel-genfiles/ -std=c++0x  -D_GLIBCXX_USE_CXX11_ABI=0 -ltensorflow_cc -ltensorflow_framework -lgsl -lgslcblas
 endif
-all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest rankTest fetch_batchTest FiltrationTest read10xTest mergeH5Test appTest moveTest
+all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest rankTest fetch_batchTest FiltrationTest read10xTest mergeH5Test appTest moveTest autoEncoderTest
 #ArgParserTest
 cellTest: tests/cellTest.cpp lib/cell/cell.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
@@ -55,8 +57,9 @@ mergeH5Test:tests/mergeH5Test.cpp SparseMatrix.o lib/qqNorm/qqNorm.o lib/argpars
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
 appTest:App/dataProcessing.cpp SparseMatrix.o lib/qqNorm/qqNorm.o lib/argparser/argparser.o lib/rank/rankNormalize.o lib/rank/geneInfo.o lib/Filtration/Filtration.o lib/geneVariationTop/geneVariation.o lib/geneVariationTop/geneVariationTop.o lib/geneTop/geneCount.o lib/geneTop/geneExpressionTop.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@
+autoEncoderTest:tests/autoEncoderTest.cpp  lib/autoEncoder/autoEncoder.cpp SparseMatrix.o lib/qqNorm/qqNorm.o lib/argparser/argparser.o
+	${H5CXX} $^ ${CXXTFFLAGS} -o $@
 moveTest:
 	mv ./*Test ./bin
 clean:
 	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/SparseMatrix/*.o lib/geneTop/*.o lib/rank/*.o ./*.o
-
