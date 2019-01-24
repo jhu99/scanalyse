@@ -32,11 +32,8 @@ def train(adata, network, weight_file, output_dir=None, optimizer='rmsprop', lea
 
     # Callbacks
     callbacks = []
-    
-    filepath='{output_dir}/{weight_file}'
-    filepath.format(output_dir,weight_file)
 
-    checkpointer = ModelCheckpoint(filepath=filepath,
+    checkpointer = ModelCheckpoint(filepath='/'.join([output_dir,weight_file]),
                                    verbose=verbose,
                                    save_weights_only=save_weights,
                                    save_best_only=True)
