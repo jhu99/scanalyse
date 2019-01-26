@@ -12,7 +12,8 @@
 #filepath = '%(output_dir) has %(weight_file)' % vars()
 
 ##run on 293t
-#python3 -m pdb ./main.py -t train -i ../data/cf.10xgenomics.com/samples/cell-exp/1.1.0/293t/filtered_matrices_mex/hg19/ -o ../result/1.1.0/293t -b 32 -l 64 32 64 -a adam -w weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_mtx
+#wget -r http://cf.10xgenomics.com/samples/cell-exp/1.1.0/293t/293t_filtered_gene_bc_matrices.tar.gz
+#python3.6 -m pdb ./main.py -t train -i ../data/cf.10xgenomics.com/samples/cell-exp/1.1.0/293t/filtered_matrices_mex/hg19/ -o ../result/1.1.0/293t -b 32 -l 64 32 64 -a adam -w weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_mtx
 #python3 ./main.py -t train -i ../data/cf.10xgenomics.com/samples/cell-exp/1.1.0/293t/filtered_matrices_mex/hg19/ -o ../result/1.1.0/293t -b 32 -l 64 32 64 -a adam -w weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_mtx
 
 ##run on ica_all
@@ -29,8 +30,8 @@ do
 			do
 				px+='_'$w
 			done
-			weight_file="weight_$a${px}_g1_c1_b$b.h5"
-			python3.6 ./main.py -t train -i ../data/ica_all.h5 -o ../result/ica_all -b $b -l $l -a $a -w ${weight_file} -f 10x_h5 > ../result/ica_all/$a${px}_b$b.log\n
+			weight_file="weight_${a}${px}_g1_c1_b$b.h5"
+			python3.6 ./main.py -t train -i ../data/ica_all.h5 -o ../result/ica_all -b $b -l $l -a $a -w ${weight_file} -f 10x_h5 > ../result/ica_all/$a${px}_b$b.log
 		done
 	done
 done
