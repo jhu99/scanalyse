@@ -2,6 +2,8 @@
 #include"argparser/argparser.h"
 #include"Filtration/Filtration.h"
 #include"rank/rankNormalize.h"
+#include"logNormalize/logNormalize.h"
+
 struct Option
 {
 	string file_type;
@@ -12,7 +14,8 @@ struct Option
 	int gene_top_num;
 	int gene_filt_type;
 };
-int main(int argc, const char ** argv)
+
+int main(int argc, const char **argv)
 {
 	SparseMatrix sm;
 	ArgParser a;
@@ -64,14 +67,22 @@ int main(int argc, const char ** argv)
 	cout << "start write to h5 file-----------------" << endl;
 	f.writeFiltH5File(option.write_path);
 	cout << "end write to h5 file-----------------" << endl;
+	
 	SparseMatrix filt_sm;
 	filt_sm.read_10x_h5(option.write_path);
-	if (option.normalize_type.compare("rank") == 0)
-	{
+	cout << "start normalize--------------" << endl;
+	if (option.normalize_type == "rank")
+	{	
 		rankNormalize rn(filt_sm);
 		rn.ranks(5);
 		rn.print();
 	}
+	else if (option.normalize_type=="log")
+	{
+		logNormalize log(filt_sm);
+		log.logNormalizeData(5);
+	}
+	cout << "end normalize--------------" << endl;
 	sm.deleteSparseMatrix("original");
 	cin.get();
 	cin.get();

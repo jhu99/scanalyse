@@ -78,7 +78,6 @@ void Filtration::dataFiltrationByCell()
 	}
 	int f_cell_index = 0;
 	int f_data_index = 0;
-	int f_indptr_index = 0;
 	filt_indptr[0] = 0;
 	for (int cell_index = 0; cell_index < cell_count; cell_index++)
 	{
@@ -96,8 +95,9 @@ void Filtration::dataFiltrationByCell()
 		}
 	}
 	cout << f_cell_index << endl;
-	cout << filt_cell_count << endl;
+	cout << "filt_cell_count: " <<filt_cell_count << endl;
 	cout << "end filt cell" << endl;
+	
 }
 
 void Filtration::geneFiltration(int topNum, int method)
@@ -139,7 +139,6 @@ void Filtration::geneFiltration(int topNum, int method)
 		filt_genes[i] = genes[top_genes_index[i]];
 		filt_gene_names[i] = gene_names[top_genes_index[i]];
 	}
-
 }
 
 void Filtration::dataFiltrationByGenes()
@@ -209,8 +208,8 @@ void Filtration::printFiltResult()
 	cout << filt_data_count << endl;
 	cout << filt_indptr[filt_cell_count];
 	cout << endl;
-	cout << filt_gene_data_count << endl;
-	cout << filt_gene_indptr[filt_cell_count ];
+	cout << "filt_gene_data_count"<< filt_gene_data_count << endl;
+	cout << "filt_gene_indptr[filt_cell_count ]" << filt_gene_indptr[filt_cell_count ];
 	cout << endl;
 }
 
@@ -245,8 +244,8 @@ void Filtration::writeFiltH5File(string write_path)
 	//write data
 	dims[0] = filt_gene_data_count;
 	DataSpace *dataspace_data = new DataSpace(RANK, dims);
-	DataSet *dataset_data = new DataSet(group.createDataSet("data", H5T_NATIVE_INT, *dataspace_data));
-	H5Dwrite(dataset_data->getId(), H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, filt_gene_data);
+	DataSet *dataset_data = new DataSet(group.createDataSet("data", H5T_STD_I32LE, *dataspace_data));
+	H5Dwrite(dataset_data->getId(), H5T_NATIVE_INT32, H5S_ALL, H5S_ALL, H5P_DEFAULT, filt_gene_data);
 	cout << "finish write data" << endl;
 
 
@@ -271,7 +270,7 @@ void Filtration::writeFiltH5File(string write_path)
 	para_gene_names = new char[filt_gene_count * str_gene_names_len];
 	for (int i = 0; i < filt_gene_count; i++)
 	{
-		strncpy(para_gene_names + i * str_gene_names_len, filt_genes[i], str_gene_names_len);
+		strncpy(para_gene_names + i * str_gene_names_len, filt_gene_names[i], str_gene_names_len);
 	}
 	dims[0] = filt_gene_count;
 	DataSpace *dataspace_gene_names = new DataSpace(RANK, dims);
@@ -285,15 +284,15 @@ void Filtration::writeFiltH5File(string write_path)
 	//write indices
 	dims[0] = filt_gene_data_count;
 	DataSpace *dataspace_indices = new DataSpace(RANK, dims);
-	DataSet *dataset_indices = new DataSet(group.createDataSet("indices", H5T_NATIVE_LONG, *dataspace_indices));
-	H5Dwrite(dataset_indices->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, filt_gene_indices);
+	DataSet *dataset_indices = new DataSet(group.createDataSet("indices", H5T_STD_I64LE, *dataspace_indices));
+	H5Dwrite(dataset_indices->getId(), H5T_NATIVE_LLONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, filt_gene_indices);
 	cout << "finish write indices" << endl;
 
 	//write indptr
 	dims[0] = filt_cell_count + 1;
 	DataSpace *dataspace_indptr = new DataSpace(RANK, dims);
-	DataSet *dataset_indptr = new DataSet(group.createDataSet("indptr", H5T_NATIVE_LONG, *dataspace_indptr));
-	H5Dwrite(dataset_indptr->getId(), H5T_NATIVE_LONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, filt_gene_indptr);
+	DataSet *dataset_indptr = new DataSet(group.createDataSet("indptr", H5T_STD_I64LE, *dataspace_indptr));
+	H5Dwrite(dataset_indptr->getId(), H5T_NATIVE_LLONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, filt_gene_indptr);
 	cout << "finish write indptr" << endl;
 	
 	delete dataspace_data;
