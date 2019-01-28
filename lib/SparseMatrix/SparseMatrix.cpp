@@ -9,6 +9,11 @@ void SparseMatrix::set_rank(unsigned short *rank)
 	rankData = rank;
 }
 
+void SparseMatrix::set_log_data(double * log_normalize_data)
+{
+	this->log_normalize_data = log_normalize_data;
+}
+
 char** SparseMatrix::get_barcodes()
 {
 	return barcodes;
@@ -884,4 +889,156 @@ void SparseMatrix::h5Compressed(string aimFilePath, string method, int chunk, in
 	
 	H5Fclose(file_id);
 	
+}
+
+void SparseMatrix::write_norm_data(string write_path, int chunk, string method, string norm_type)
+{
+	int rank = 1;
+	hid_t    file_id, dataset_id, group_id, dataspace_id;
+	hid_t    plist_id;
+	hid_t    strGene, strCell, strGeneName;
+	size_t   nelmts;
+	unsigned flags, filter_info;
+	H5Z_filter_t filter_type;
+
+	herr_t   status;
+	hsize_t  dims[1];
+	hsize_t  cdims[1];
+
+	int      idx;
+	int      i, j, numfilt;
+	int shape[] = { gene_count,cell_count };
+
+	string groupPath = "/GRCh38";
+	string dataPath = "/GRCh38/data";
+	string genesPath = "/GRCh38/genes";
+	string geneNamesPath = "/GRCh38/gene_names";
+	string indicesPath = "/GRCh38/indices";
+	string indptrPath = "/GRCh38/indptr";
+	string barcodesPath = "/GRCh38/barcodes";
+	string shapePath = "/GRCh38/shape";
+
+	// Uncomment these variables to use SZIP compression
+	unsigned szip_options_mask;
+	unsigned szip_pixels_per_block;
+
+	//create a file
+	file_id = H5Fcreate(write_path.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+
+	//create a group
+	group_id = H5Gcreate(file_id, groupPath.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+	plist_id = H5Pcreate(H5P_DATASET_CREATE);
+	cdims[0] = chunk;
+	status = H5Pset_chunk(plist_id, rank, cdims);
+
+	if (method == "s") {//szip
+		szip_options_mask = H5_SZIP_NN_OPTION_MASK;
+		szip_pixels_per_block = 16;
+		status = H5Pset_szip(plist_id, szip_options_mask, szip_pixels_per_block);
+	}
+	else {//zlib
+		status = H5Pset_deflate(plist_id, 6);
+	}
+
+	//write data
+	if (norm_type == "rank")
+	{
+		dims[0] = data_count;
+		dataspace_id = H5Screate_simple(rank, dims, NULL);
+		dataset_id = H5Dcreate2(file_id, dataPath.c_str(), H5T_STD_I16LE,
+		dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
+		status = H5Dwrite(dataset_id, H5T_NATIVE_SHORT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rankData);
+		cout << "data writed" << endl;
+	}
+	else if (norm_type == "log")
+	{
+		dims[0] = data_count;
+		dataspace_id = H5Screate_simple(rank, dims, NULL);
+		dataset_id = H5Dcreate2(file_id, dataPath.c_str(), H5T_IEEE_F64LE,
+			dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
+		status = H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, rankData);
+		cout << "data writed" << endl;
+	}
+	
+
+	//write indptr
+	dims[0] = cell_count + 1;
+	dataspace_id = H5Screate_simple(rank, dims, NULL);
+	dataset_id = H5Dcreate2(file_id, indptrPath.c_str(), H5T_STD_I64LE,
+		dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
+	status = H5Dwrite(dataset_id, H5T_NATIVE_LLONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indptr);
+	cout << "indptr writed" << endl;
+
+	//write indices
+	dims[0] = data_count;
+	dataspace_id = H5Screate_simple(rank, dims, NULL);
+	dataset_id = H5Dcreate2(file_id, indicesPath.c_str(), H5T_STD_I64LE,
+		dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
+	status = H5Dwrite(dataset_id, H5T_NATIVE_LLONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indices);
+	cout << "indices writed" << endl;
+
+	//write genes
+	strGene = H5Tcopy(H5T_C_S1);
+	H5Tset_size(strGene, str_genes_length);
+	dims[0] = gene_count;
+	char *para_genes;
+	para_genes = new char[gene_count * str_genes_length];
+	for (int i = 0; i < gene_count; i++) {
+		strncpy(para_genes + i * str_genes_length, genes[i], str_genes_length);
+	}
+	//printf("%s", para_genes);
+	dataspace_id = H5Screate_simple(rank, dims, NULL);
+	dataset_id = H5Dcreate2(file_id, genesPath.c_str(), strGene,
+		dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Dwrite(dataset_id, strGene, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_genes);
+	delete[] para_genes;
+	cout << "genes writed" << endl;
+
+	//write gene_names
+	strGeneName = H5Tcopy(H5T_C_S1);
+	str_gene_names_len = 20;
+	H5Tset_size(strGeneName, str_gene_names_len);
+	dims[0] = gene_count;
+	char *para_gene_names;
+	para_gene_names = new char[gene_count * str_gene_names_len];
+	for (int i = 0; i < gene_count; i++) {
+		strncpy(para_gene_names + i * str_gene_names_len, gene_names[i], str_gene_names_len);
+	}
+
+	dataspace_id = H5Screate_simple(rank, dims, NULL);
+	dataset_id = H5Dcreate2(file_id, geneNamesPath.c_str(), strGeneName,
+		dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Dwrite(dataset_id, strGeneName, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_gene_names);
+	delete[] para_gene_names;
+	cout << "gene_names writed" << endl;
+
+	//write barcodes
+	strCell = H5Tcopy(H5T_C_S1);
+	H5Tset_size(strCell, str_barcodes_len);
+
+	dims[0] = cell_count;
+	char *para_barcodes;
+	para_barcodes = new char[cell_count * str_barcodes_len];
+	for (int i = 0; i < cell_count; i++) {
+		strncpy(para_barcodes + i * str_barcodes_len, barcodes[i], str_barcodes_len);
+	}
+	dataspace_id = H5Screate_simple(1, dims, NULL);
+	dataset_id = H5Dcreate2(file_id, barcodesPath.c_str(), strCell,
+		dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Dwrite(dataset_id, strCell
+		, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_barcodes);
+	delete[] para_barcodes;
+	cout << "barcodes writed" << endl;
+
+	//write shape
+	dims[0] = 2;
+	dataspace_id = H5Screate_simple(rank, dims, NULL);
+	dataset_id = H5Dcreate2(file_id, shapePath.c_str(), H5T_STD_I32LE,
+		dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Dwrite(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, shape);
+	cout << "shape writed" << endl;
+
+	H5Fclose(file_id);
+
 }

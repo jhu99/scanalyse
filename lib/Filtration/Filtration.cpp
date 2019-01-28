@@ -176,12 +176,17 @@ void Filtration::dataFiltrationByGenes()
 	cout << "end filt gene" << endl;
 }
 
-void Filtration::filtGeneAndCell(int cell_min_count, int gene_top_num, int gene_filt_method)
+SparseMatrix Filtration::filtGeneAndCell(int cell_min_count, int gene_top_num, int gene_filt_method)
 {
 	cellFiltration(cell_min_count);
 	dataFiltrationByCell();
 	geneFiltration(gene_top_num, gene_filt_method);
 	dataFiltrationByGenes();
+	SparseMatrix para_sm(filt_barcodes, filt_gene_names, filt_genes, 
+		filt_gene_indptr, filt_gene_indices, filt_gene_data,
+		filt_cell_count, filt_gene_count, filt_gene_data_count,
+		str_barcodes_len,str_genes_len, str_gene_names_len);
+	return para_sm;
 }
 
 void Filtration::printFiltResult()

@@ -13,6 +13,7 @@ struct Option
 	int min_cell_size;
 	int gene_top_num;
 	int gene_filt_type;
+	int thread_count;
 };
 
 int main(int argc, const char **argv)
@@ -48,6 +49,10 @@ int main(int argc, const char **argv)
 		"gene_filt_type has two types: type 1 is provided by JieLiu and 2 is provided by TianweiLiu.",
 		option.gene_filt_type,
 		1, true);
+	a.refOption("thread_count",
+		"thread_count: the count of threads you want to create while get geneTop and logNormalize.",
+		option.thread_count,
+		1, true);
 	a.run(argc, argv);
 	cout << "start read-----------------" << endl;
 	if (option.file_type.compare("h5") == 0)
@@ -61,28 +66,34 @@ int main(int argc, const char **argv)
 	cout << "end read-----------------" << endl;
 	cout << "start filtration-----------------" << endl;
 	Filtration f(sm);
-	f.filtGeneAndCell(option.min_cell_size, option.gene_top_num, option.gene_filt_type);
+	SparseMatrix filt_sm = f.filtGeneAndCell(option.min_cell_size, option.gene_top_num, option.gene_filt_type);
 	f.printFiltResult();
 	cout << "end filtration-----------------" << endl; 
-	cout << "start write to h5 file-----------------" << endl;
-	f.writeFiltH5File(option.write_path);
-	cout << "end write to h5 file-----------------" << endl;
 	
-	SparseMatrix filt_sm;
-	filt_sm.read_10x_h5(option.write_path);
 	cout << "start normalize--------------" << endl;
 	if (option.normalize_type == "rank")
 	{	
 		rankNormalize rn(filt_sm);
-		rn.ranks(5);
+		rn.ranks(option.thread_count);
 		rn.print();
+		cout << "end normalize--------------" << endl;
+		filt_sm.set_rank(rn.getRank());
+		cout << "start write to h5 file-----------------" << endl;
+		filt_sm.write_norm_data(option.write_path, 500, "s", "rank");
+		cout << "end write to h5 file-----------------" << endl;
 	}
 	else if (option.normalize_type=="log")
 	{
 		logNormalize log(filt_sm);
-		log.logNormalizeData(5);
+		log.logNormalizeData(option.thread_count);
+		cout << "end normalize--------------" << endl;
+		filt_sm.set_log_data(log.get_log_data());
+		cout << "start write to h5 file-----------------" << endl;
+		filt_sm.write_norm_data(option.write_path, 500, "s", "log");
+		cout << "end write to h5 file-----------------" << endl;
 	}
-	cout << "end normalize--------------" << endl;
+
+	
 	sm.deleteSparseMatrix("original");
 	cin.get();
 	cin.get();

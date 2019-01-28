@@ -54,7 +54,7 @@ public:
 	void dataFiltrationByCell();
 	void geneFiltration(int topNum, int method = 1);
 	void dataFiltrationByGenes();
-	void filtGeneAndCell(int cell_min_count, int gene_top_num, int gene_filt_method);
+	SparseMatrix filtGeneAndCell(int cell_min_count, int gene_top_num, int gene_filt_method);
 	void printFiltResult();
 	void writeFiltH5File(string write_path);
 };

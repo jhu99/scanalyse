@@ -23,6 +23,7 @@ private:
 	char** genes;
 	char** gene_names;
 	unsigned short *rankData;
+	double *log_normalize_data;
 	double *qqNormedData;
 	double *qqNormedZero;
 	long *zeroPosPerCell;
@@ -43,11 +44,29 @@ private:
 public:
 	SparseMatrix() {
 	}
+	SparseMatrix(char** barcodes, char** gene_names, char** genes, 
+		long long* indptr, long long* indices, int* data, 
+		int cell_count, int gene_count, int data_count, 
+		int str_barcodes_len, int str_genes_len, int str_gene_names_len) {
+		this->barcodes = barcodes;
+		this->gene_names = gene_names;
+		this->genes = genes;
+		this->indptr = indptr;
+		this->indices = indices;
+		this->data = data;
+		this->cell_count = cell_count;
+		this->gene_count = gene_count;
+		this->data_count = data_count;
+		this->str_barcodes_len = str_barcodes_len;
+		this->str_genes_length = str_genes_len;
+		this->str_gene_names_len = str_gene_names_len;
+	}
 	~SparseMatrix()
 	{
 
 	}
 	void set_rank(unsigned short *rank);
+	void set_log_data(double *log_normalize_data);
 	char** get_barcodes();
 	char** get_genes();
 	char** get_gene_names();
@@ -76,4 +95,5 @@ public:
 	void read_10x_mtx(string read_path);
 	void mergeDate(vector<string> paths);
 	void h5Compressed(string aimFilePath, string method, int chunk, int rank);
+	void write_norm_data(string write_path, int chunk ,string method, string norm_type);
 };
