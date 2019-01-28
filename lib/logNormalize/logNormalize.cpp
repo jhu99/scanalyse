@@ -15,6 +15,11 @@ logNormalize::~logNormalize()
 {
 }
 
+double * logNormalize::get_log_data()
+{
+	return normalize_data;
+}
+
 double * logNormalize::get_normalize_data()
 {
 	return normalize_data;

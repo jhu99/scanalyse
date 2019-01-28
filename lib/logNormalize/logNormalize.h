@@ -22,6 +22,7 @@ class logNormalize
 public:
 	logNormalize(SparseMatrix sm);
 	~logNormalize();
+	double* get_log_data();
 	double *get_normalize_data();
 	void cacuSizeFactor(int thread_index);
 	void logData(int thread_index);
