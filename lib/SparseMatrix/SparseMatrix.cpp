@@ -574,16 +574,22 @@ double ** SparseMatrix::fetch_batch(int batch_index, string norm_type, int batch
 {
 	double **input_matrix;
 	long long column_pos;
-	input_matrix = new double*[batch_size];
-	for (int i = 0; i < batch_size; i++)
+
+	int start_pos = batch_index * batch_size;
+	int read_size = batch_size;
+	if (cell_count - start_pos < batch_size)
+	{
+		read_size = cell_count - start_pos;
+	}
+	input_matrix = new double*[read_size];
+	for (int i = 0; i < read_size; i++)
 	{
 		input_matrix[i] = new double[gene_count];
 		fill(input_matrix[i], input_matrix[i] + gene_count, 0);
 	}
-	int start_pos = (batch_index - 1)*batch_size;
-	if(norm_type=="qqNorm")
+	if (norm_type == "qqNorm")
 	{
-		for (int i = 0; i < batch_size; i++)
+		for (int i = 0; i < read_size; i++)
 		{
 			for (int j = 0; j < gene_count; j++)
 			{
@@ -598,23 +604,23 @@ double ** SparseMatrix::fetch_batch(int batch_index, string norm_type, int batch
 	}
 	else if (norm_type == "rank")
 	{
-		for (int cell_index = start_pos; cell_index < start_pos + batch_size; cell_index++)
+		for (int i = 0; i < read_size; i++)
 		{
-			for (long long para_pos = indptr[cell_index]; para_pos < indptr[cell_index + 1]; para_pos++)
+			for (long long para_pos = indptr[start_pos + i]; para_pos < indptr[start_pos + i + 1]; para_pos++)
 			{
 				column_pos = indices[para_pos];
-				input_matrix[cell_index][column_pos] = rankData[para_pos];
+				input_matrix[i][column_pos] = rankData[para_pos];
 			}
 		}
 	}
 	else if (norm_type == "log")
 	{
-		for (int cell_index = start_pos; cell_index < start_pos + batch_size; cell_index++)
+		for (int i = 0; i < read_size; i++)
 		{
-			for (long long para_pos = indptr[cell_index]; para_pos < indptr[cell_index + 1]; para_pos++)
+			for (long long para_pos = indptr[start_pos + i]; para_pos < indptr[start_pos + i + 1]; para_pos++)
 			{
 				column_pos = indices[para_pos];
-				input_matrix[cell_index][column_pos] = log_normalize_data[para_pos];
+				input_matrix[i][column_pos] = log_normalize_data[para_pos];
 			}
 		}
 	}
