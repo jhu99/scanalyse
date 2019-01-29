@@ -19,6 +19,7 @@ char** SparseMatrix::get_barcodes()
 	return barcodes;
 }
 
+
 char ** SparseMatrix::get_genes()
 {
 	return genes;
@@ -71,6 +72,7 @@ int SparseMatrix::get_str_gene_names_len()
 {
 	return str_gene_names_len;
 }
+
 
 unordered_map<int, string> SparseMatrix::get_numToCell()
 {
@@ -476,7 +478,7 @@ void SparseMatrix::write2HDF5(string path)
 	para_gene_names = new char[gene_count * str_gene_names_len];
 	for (int i = 0; i < gene_count; i++)
 	{
-		strncpy(para_genes + i * str_gene_names_len, genes[i], str_gene_names_len);
+		strncpy(para_genes + i * str_gene_names_len, gene_names[i], str_gene_names_len);
 	}
 	dims[0] = gene_count;
 	DataSpace *dataspace_gene_names = new DataSpace(RANK, dims);
@@ -574,7 +576,7 @@ double ** SparseMatrix::fetch_batch(int batch_index, string norm_type, int batch
 {
 	double **input_matrix;
 	long long column_pos;
-
+	
 	int start_pos = batch_index * batch_size;
 	int read_size = batch_size;
 	if (cell_count - start_pos < batch_size)
@@ -587,7 +589,7 @@ double ** SparseMatrix::fetch_batch(int batch_index, string norm_type, int batch
 		input_matrix[i] = new double[gene_count];
 		fill(input_matrix[i], input_matrix[i] + gene_count, 0);
 	}
-	if (norm_type == "qqNorm")
+	if(norm_type == "qqNorm")
 	{
 		for (int i = 0; i < read_size; i++)
 		{
@@ -1010,15 +1012,6 @@ void SparseMatrix::write_norm_data(string write_path, string norm_type, int chun
 		status = H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, log_normalize_data);
 		cout << "data writed" << endl;
 	}
-
-	//write indptr
-	dims[0] = cell_count + 1;
-	dataspace_id = H5Screate_simple(rank, dims, NULL);
-	dataset_id = H5Dcreate2(file_id, indptrPath.c_str(), H5T_STD_I64LE,
-		dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
-	status = H5Dwrite(dataset_id, H5T_NATIVE_LLONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indptr);
-	cout << "indptr writed" << endl;
-
 	//write indices
 	dims[0] = data_count;
 	dataspace_id = H5Screate_simple(rank, dims, NULL);
@@ -1026,6 +1019,14 @@ void SparseMatrix::write_norm_data(string write_path, string norm_type, int chun
 		dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
 	status = H5Dwrite(dataset_id, H5T_NATIVE_LLONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indices);
 	cout << "indices writed" << endl;
+
+	//write indptr
+	dims[0] = cell_count + 1;
+	dataspace_id = H5Screate_simple(rank, dims, NULL);
+	dataset_id = H5Dcreate2(file_id, indptrPath.c_str(), H5T_STD_I64LE,
+		dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Dwrite(dataset_id, H5T_NATIVE_LLONG, H5S_ALL, H5S_ALL, H5P_DEFAULT, indptr);
+	cout << "indptr writed" << endl;
 
 	//write genes
 	strGene = H5Tcopy(H5T_C_S1);
