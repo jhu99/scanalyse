@@ -88,12 +88,12 @@ public:
 	void qqNormedData2HDF5Format();
 	void write2HDF5(string path);
 	void deleteSparseMatrix(string type);
-	double** fetch_batch(int batch_index, int batch_size = 128);
+	double** fetch_batch(int batch_index, string norm_type,int batch_size = 128);
 	void readMtxFile(string read_path);
 	void readTsvFile(string read_path);
 	void read_10x_h5(string read_path);
 	void read_10x_mtx(string read_path);
 	void mergeDate(vector<string> paths);
 	void h5Compressed(string aimFilePath, string method, int chunk, int rank);
-	void write_norm_data(string write_path, int chunk ,string method, string norm_type);
+	void write_norm_data(string write_path, string norm_type, int chunk, string method);
 };

@@ -69,17 +69,17 @@ int main(int argc, const char **argv)
 	SparseMatrix filt_sm = f.filtGeneAndCell(option.min_cell_size, option.gene_top_num, option.gene_filt_type);
 	f.printFiltResult();
 	cout << "end filtration-----------------" << endl; 
-	
+	cout << "end write to h5 file-----------------" << endl;
 	cout << "start normalize--------------" << endl;
 	if (option.normalize_type == "rank")
 	{	
 		rankNormalize rn(filt_sm);
 		rn.ranks(option.thread_count);
-		rn.print();
+	
 		cout << "end normalize--------------" << endl;
 		filt_sm.set_rank(rn.getRank());
 		cout << "start write to h5 file-----------------" << endl;
-		filt_sm.write_norm_data(option.write_path, 500, "s", "rank");
+		filt_sm.write_norm_data(option.write_path, "rank", 500, "s");
 		cout << "end write to h5 file-----------------" << endl;
 	}
 	else if (option.normalize_type=="log")
@@ -89,12 +89,11 @@ int main(int argc, const char **argv)
 		cout << "end normalize--------------" << endl;
 		filt_sm.set_log_data(log.get_log_data());
 		cout << "start write to h5 file-----------------" << endl;
-		filt_sm.write_norm_data(option.write_path, 500, "s", "log");
+		filt_sm.write_norm_data(option.write_path, "log", 500, "s");
 		cout << "end write to h5 file-----------------" << endl;
 	}
-
-	
 	sm.deleteSparseMatrix("original");
+	SparseMatrix sm2;
 	cin.get();
 	cin.get();
 }

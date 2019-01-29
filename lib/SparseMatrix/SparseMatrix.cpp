@@ -19,7 +19,6 @@ char** SparseMatrix::get_barcodes()
 	return barcodes;
 }
 
-
 char ** SparseMatrix::get_genes()
 {
 	return genes;
@@ -72,7 +71,6 @@ int SparseMatrix::get_str_gene_names_len()
 {
 	return str_gene_names_len;
 }
-
 
 unordered_map<int, string> SparseMatrix::get_numToCell()
 {
@@ -247,11 +245,23 @@ int SparseMatrix::readHDF5File(string path, string type)
 			status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
 			cout << "finish read data" << endl;
 		}
-		else
+		else if(type=="qqNorm")
 		{
 			qqNormedData = new double[data_count];
 			status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, qqNormedData);
 			cout << "finish read qqnorm_data" << endl;
+		}
+		else if (type == "rank")
+		{
+			rankData = new unsigned short[data_count];
+			status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, rankData);
+			cout << "finish read rank_data" << endl;
+		}
+		else if (type == "log")
+		{
+			log_normalize_data = new double[data_count];
+			status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, log_normalize_data);
+			cout << "finish read log_data" << endl;
 		}
 
 	}
@@ -292,24 +302,26 @@ int SparseMatrix::readHDF5File(string path, string type)
 	{
 		printf("The dataset either does NOT exist or some other error occurred.\n");
 	}
+	
 	//if it is qqnorm_data read dataset zero_value
-
-	status = H5Lget_info(fileId, "/GRCh38/zero_value", NULL, H5P_DEFAULT);
-	printf("/GRCh38/zero_value': ");
-	if (status == 0)
+	if (type == "qqNorm")
 	{
-		qqNormedZero = new double[cell_count];
-		datasetId = H5Dopen(fileId, "/GRCh38/zero_value", H5P_DEFAULT);
-		ds = DataSet(datasetId);
-		datatype = ds.getDataType();
-		status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, qqNormedZero);
-		cout << "finish read zero_value" << endl;
+		status = H5Lget_info(fileId, "/GRCh38/zero_value", NULL, H5P_DEFAULT);
+		printf("/GRCh38/zero_value': ");
+		if (status == 0)
+		{
+			qqNormedZero = new double[cell_count];
+			datasetId = H5Dopen(fileId, "/GRCh38/zero_value", H5P_DEFAULT);
+			ds = DataSet(datasetId);
+			datatype = ds.getDataType();
+			status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, qqNormedZero);
+			cout << "finish read zero_value" << endl;
+		}
+		else
+		{
+			printf("The dataset zero_value does NOT exist or some other error occurred.\n");
+		}
 	}
-	else
-	{
-		printf("The dataset zero_value does NOT exist or some other error occurred.\n");
-	}
-
 	//close
 	H5Fclose(fileId);
 	H5Dclose(datasetId);
@@ -532,6 +544,14 @@ void SparseMatrix::deleteSparseMatrix(string type) {
 		delete[] qqNormedZero;
 		delete[] rankData;
 	}
+	else if (type == "log")
+	{
+		delete[] log_normalize_data;
+	}
+	else if (type == "rank")
+	{
+		delete[] rankData;
+	}
 	for (int i = 0; i < cell_count; i++)
 	{
 		delete[] barcodes[i];
@@ -550,30 +570,55 @@ void SparseMatrix::deleteSparseMatrix(string type) {
 	cout << "finish delete" << endl;
 }
 
-double ** SparseMatrix::fetch_batch(int batch_index, int batch_size)
+double ** SparseMatrix::fetch_batch(int batch_index, string norm_type, int batch_size)
 {
-	double **inputMatrix;
-	long columnPos;
-	inputMatrix = new double*[batch_size];
+	double **input_matrix;
+	long long column_pos;
+	input_matrix = new double*[batch_size];
 	for (int i = 0; i < batch_size; i++)
 	{
-		inputMatrix[i] = new double[gene_count];
+		input_matrix[i] = new double[gene_count];
+		fill(input_matrix[i], input_matrix[i] + gene_count, 0);
 	}
-	int startPos = (batch_index - 1)*batch_size;
-	for (int i = 0; i < batch_size; i++)
+	int start_pos = (batch_index - 1)*batch_size;
+	if(norm_type=="qqNorm")
 	{
-		for (int j = 0; j < gene_count; j++)
+		for (int i = 0; i < batch_size; i++)
 		{
-			inputMatrix[i][j] = qqNormedZero[i + startPos];
-		}
-		for (long paraPos = indptr[startPos + i]; paraPos < indptr[startPos + i + 1]; paraPos++)
-		{
-			columnPos = indices[paraPos];
-			inputMatrix[i][columnPos] = qqNormedData[paraPos];
+			for (int j = 0; j < gene_count; j++)
+			{
+				input_matrix[i][j] = qqNormedZero[i + start_pos];
+			}
+			for (long long para_pos = indptr[start_pos + i]; para_pos < indptr[start_pos + i + 1]; para_pos++)
+			{
+				column_pos = indices[para_pos];
+				input_matrix[i][column_pos] = qqNormedData[para_pos];
+			}
 		}
 	}
-
-	return inputMatrix;
+	else if (norm_type == "rank")
+	{
+		for (int cell_index = start_pos; cell_index < start_pos + batch_size; cell_index++)
+		{
+			for (long long para_pos = indptr[cell_index]; para_pos < indptr[cell_index + 1]; para_pos++)
+			{
+				column_pos = indices[para_pos];
+				input_matrix[cell_index][column_pos] = rankData[para_pos];
+			}
+		}
+	}
+	else if (norm_type == "log")
+	{
+		for (int cell_index = start_pos; cell_index < start_pos + batch_size; cell_index++)
+		{
+			for (long long para_pos = indptr[cell_index]; para_pos < indptr[cell_index + 1]; para_pos++)
+			{
+				column_pos = indices[para_pos];
+				input_matrix[cell_index][column_pos] = log_normalize_data[para_pos];
+			}
+		}
+	}
+	return input_matrix;
 }
 
 void SparseMatrix::readMtxFile(string read_path)
@@ -644,7 +689,7 @@ void SparseMatrix::readTsvFile(string read_path)
 	//read genes and gene_names
 	ifstream genes_infile(genes_path, ios::in);
 	str_genes_length = 15;
-	str_gene_names_len = 20;
+	str_gene_names_len = 19;
 	string para_str;
 	int is_genes = 1;
 	for (int i = 0; i < gene_count; i++)
@@ -891,12 +936,11 @@ void SparseMatrix::h5Compressed(string aimFilePath, string method, int chunk, in
 	
 }
 
-void SparseMatrix::write_norm_data(string write_path, int chunk, string method, string norm_type)
-{
-	int rank = 1;
+void SparseMatrix::write_norm_data(string write_path, string norm_type, int chunk, string method)
+{	
 	hid_t    file_id, dataset_id, group_id, dataspace_id;
 	hid_t    plist_id;
-	hid_t    strGene, strCell, strGeneName;
+	hid_t    strGene, strCell,strGeneName;
 	size_t   nelmts;
 	unsigned flags, filter_info;
 	H5Z_filter_t filter_type;
@@ -921,7 +965,7 @@ void SparseMatrix::write_norm_data(string write_path, int chunk, string method, 
 	// Uncomment these variables to use SZIP compression
 	unsigned szip_options_mask;
 	unsigned szip_pixels_per_block;
-
+	int rank = 1;
 	//create a file
 	file_id = H5Fcreate(write_path.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
@@ -947,8 +991,8 @@ void SparseMatrix::write_norm_data(string write_path, int chunk, string method, 
 		dims[0] = data_count;
 		dataspace_id = H5Screate_simple(rank, dims, NULL);
 		dataset_id = H5Dcreate2(file_id, dataPath.c_str(), H5T_STD_I16LE,
-		dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
-		status = H5Dwrite(dataset_id, H5T_NATIVE_SHORT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rankData);
+			dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
+		status = H5Dwrite(dataset_id, H5T_NATIVE_USHORT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rankData);
 		cout << "data writed" << endl;
 	}
 	else if (norm_type == "log")
@@ -957,10 +1001,9 @@ void SparseMatrix::write_norm_data(string write_path, int chunk, string method, 
 		dataspace_id = H5Screate_simple(rank, dims, NULL);
 		dataset_id = H5Dcreate2(file_id, dataPath.c_str(), H5T_IEEE_F64LE,
 			dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
-		status = H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, rankData);
+		status = H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, log_normalize_data);
 		cout << "data writed" << endl;
 	}
-	
 
 	//write indptr
 	dims[0] = cell_count + 1;
@@ -1005,7 +1048,7 @@ void SparseMatrix::write_norm_data(string write_path, int chunk, string method, 
 	for (int i = 0; i < gene_count; i++) {
 		strncpy(para_gene_names + i * str_gene_names_len, gene_names[i], str_gene_names_len);
 	}
-
+	
 	dataspace_id = H5Screate_simple(rank, dims, NULL);
 	dataset_id = H5Dcreate2(file_id, geneNamesPath.c_str(), strGeneName,
 		dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -1030,7 +1073,7 @@ void SparseMatrix::write_norm_data(string write_path, int chunk, string method, 
 		, H5S_ALL, H5S_ALL, H5P_DEFAULT, para_barcodes);
 	delete[] para_barcodes;
 	cout << "barcodes writed" << endl;
-
+	
 	//write shape
 	dims[0] = 2;
 	dataspace_id = H5Screate_simple(rank, dims, NULL);
@@ -1038,7 +1081,6 @@ void SparseMatrix::write_norm_data(string write_path, int chunk, string method, 
 		dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	status = H5Dwrite(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, shape);
 	cout << "shape writed" << endl;
-
+	
 	H5Fclose(file_id);
-
 }

@@ -6,12 +6,10 @@ using namespace std;
 int main(int argc, const char ** argv)
 {
 	SparseMatrix sm;
-	string path_read = argv[1];
-	string type = "qqnorm";
-	sm.readHDF5File(path_read, type);
+	sm.readHDF5File(argv[1], argv[2]);
 	int gene_count = sm.get_gene_count();
-	double** inputMtrix = sm.fetch_batch(5);
-	for (int i = 0; i < 128; i++)
+	double** inputMtrix = sm.fetch_batch(1,argv[2]);
+	for (int i = 0; i < 2; i++)
 	{
 		for (int j = 0; j < 100; j++)
 		{
@@ -19,8 +17,7 @@ int main(int argc, const char ** argv)
 		}
 		cout << endl;
 	}
-	string deleteType = "fetch_batch";
-	sm.deleteSparseMatrix(deleteType);
+	sm.deleteSparseMatrix(argv[2]);
 	cin.get();
 	cin.get();
 	return 0;
