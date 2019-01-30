@@ -21,39 +21,41 @@ int main(int argc, const char **argv)
 	SparseMatrix sm;
 	ArgParser a;
 	Option option;
+	a.setName("appTest","This is a description of appTest.");
+	a.setVerion("0.0.1");
 	a.refOption("file_type",
-		"choose h5 or mtx",
+		"Choose h5 or mtx. Default is h5.",
 		option.file_type,
-		"h5", true);
+		"h5", false);
 	a.refOption("read_path",
-		"path of the file you want to read(mtx_file only need folder path + /).",
+		"Path of the file you want to read (mtx_file only need folder path + /).",
 		option.read_path,
 		"", true);
 	a.refOption("write_path",
-		"path of the HDF5 file you want to write after filtration.",
+		"Path of the HDF5 file you want to write after filtration.",
 		option.write_path,
 		"", true);
 	a.refOption("normalize_type",
-		"two normalize method were provided: ",
+		"Two normalize methods are provided: log (log normalization) and rank (rank normalization). Default is log.",
 		option.normalize_type,
-		"", true);
+		"log", false);
 	a.refOption("min_cell_size",
-		"min_cell_size represent the minimize gene count a cell need to have",
+		"It filter these cell which have less read counts than min_cell_size. Default is 1.",
 		option.min_cell_size,
-		1, true);
+		1, false);
 	a.refOption("gene_top_num",
-		"gene_top_num  represent the number of top_genes you want to obtain.",
+		"It will select the top_num genes ranked by read counts or variance. Default is 1000.",
 		option.gene_top_num,
-		500, true);
+		1000, true);
 	a.refOption("gene_filt_type",
-		"gene_filt_type has two types: type 1 is provided by JieLiu and 2 is provided by TianweiLiu.",
+		"gene_filt_type has two options: 1 and 2. Type 1 is ranked by variance and Type 2 is provided by gene expression.",
 		option.gene_filt_type,
 		1, true);
-	a.refOption("thread_count",
-		"thread_count: the count of threads you want to create while get geneTop and logNormalize.",
+	a.refOption("thread_num",
+		"thread_num: the number of threads you want to use for the parallelization.",
 		option.thread_count,
 		1, true);
-	a.run(argc, argv);
+	if(!a.run(argc, argv))return 0;
 	cout << "start read-----------------" << endl;
 	if (option.file_type.compare("h5") == 0)
 	{

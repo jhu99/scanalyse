@@ -48,12 +48,12 @@ public:
 	~ArgParser();
     void setName(const char*,const char*);
     void setVerion(const char*);
-	void refOption(const char*,const char*,bool&,bool dft=false,bool mandatory=false);
-	void refOption(const std::string &name,const std::string &help,std::string&,std::string,bool mandatory=false);
-	void refOption(const std::string &name,const std::string &help,int&,int,bool mandatory=false);
-	void refOption(const std::string &name,const std::string &help,double&,double,bool mandatory=false);
+	void refOption(const char*,const char*,bool&,bool dft=false,bool mandatory=false);//Parameter in the type of bool
+	void refOption(const std::string &name,const std::string &help,std::string&,std::string,bool mandatory=false);//Parameter in the type of string
+	void refOption(const std::string &name,const std::string &help,int&,int,bool mandatory=false);//Parameter in the type of int
+	void refOption(const std::string &name,const std::string &help,double&,double,bool mandatory=false);//Parameter in the type of double
 	bool run(int,const char**);
-	bool checkMandatories();
+	bool checkMandatories();// Check the presence of mandatory parameters
 	bool checkParaValue(int,const char**);
 	void showUsages();
 	void showOptions();
