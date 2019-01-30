@@ -46,13 +46,13 @@ int main(int argc, const char **argv)
 	a.refOption("gene_top_num",
 		"It will select the top_num genes ranked by read counts or variance. Default is 1000.",
 		option.gene_top_num,
-		1000, true);
+		1000, false);
 	a.refOption("gene_filt_type",
-		"gene_filt_type has two options: 1 and 2. Type 1 is ranked by variance and Type 2 is provided by gene expression.",
+		"The parameter gene_filt_type has two options: 1 and 2. Type 1 is ranked by variance and type 2 is ranked by gene expression.",
 		option.gene_filt_type,
-		1, true);
+		1, false);
 	a.refOption("thread_num",
-		"thread_num: the number of threads you want to use for the parallelization.",
+		"The parameter thread_num is the number of threads you want to use for the parallelization.",
 		option.thread_count,
 		1, true);
 	if(!a.run(argc, argv))return 0;
