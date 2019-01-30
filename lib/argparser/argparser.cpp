@@ -18,7 +18,7 @@ void ArgParser::setName(const char* comName,const char* comDesc)
     commandName=comName;
     commandDesc=comDesc;
 }
-void ArgParser::setVerion(const char* version)
+void ArgParser::setVersion(const char* version)
 {
     commandVersion=version;
 }

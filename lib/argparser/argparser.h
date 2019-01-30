@@ -47,7 +47,7 @@ public:
 	ArgParser();
 	~ArgParser();
     void setName(const char*,const char*);
-    void setVerion(const char*);
+    void setVersion(const char*);
 	void refOption(const char*,const char*,bool&,bool dft=false,bool mandatory=false);//Parameter in the type of bool
 	void refOption(const std::string &name,const std::string &help,std::string&,std::string,bool mandatory=false);//Parameter in the type of string
 	void refOption(const std::string &name,const std::string &help,int&,int,bool mandatory=false);//Parameter in the type of int

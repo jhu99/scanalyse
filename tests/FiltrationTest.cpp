@@ -3,6 +3,8 @@
 int main(int argc, const char ** argv)
 {
 	ArgParser a;
+	a.setName("filtrationTest","It filters count matrix by observations and variables");
+	a.setVersion("0.0.1");
 	int gene_top_numVariable,min_cell_sizeVariable,method_typeVariable;
 	a.refOption("gene_top_num", 
 				"gene_top_num  represent the number of top_genes you want to obtain.", 
@@ -32,7 +34,7 @@ int main(int argc, const char ** argv)
 				"",
 				true);
 
-	a.run(argc,argv);
+	if(!a.run(argc,argv)) return 0;
 	cout << gene_top_numVariable << endl; 
  	SparseMatrix sm;
 	sm.readHDF5File(read_pathVariable, "original");
@@ -43,5 +45,6 @@ int main(int argc, const char ** argv)
 	sm.deleteSparseMatrix("original");
 	cin.get();
 	cin.get();
+	return 1;
 
 }

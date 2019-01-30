@@ -22,7 +22,7 @@ int main(int argc, const char **argv)
 	ArgParser a;
 	Option option;
 	a.setName("appTest","This is a description of appTest.");
-	a.setVerion("0.0.1");
+	a.setVersion("0.0.1");
 	a.refOption("file_type",
 		"Choose h5 or mtx. Default is h5.",
 		option.file_type,
