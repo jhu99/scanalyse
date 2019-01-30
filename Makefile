@@ -23,7 +23,7 @@ H5CXXFLAGS = -std=c++0x -Ilib/
 CXXGSLFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -std=c++0x -DNDEBUG -lgsl -lgslcblas -lpthread
 CXXTFFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -I/usr/local/include/tf -I/usr/local/include/tf/tensorflow/contrib/makefile/gen/proto/ -I/usr/local/include/tf/tensorflow/contrib/makefile/gen/protobuf/include/ -I/usr/local/include/tf/tensorflow/contrib/makefile/downloads/absl/ -I/usr/local/include/tf/tensorflow/contrib/makefile/downloads/eigen/ -I/usr/local/include/tf/bazel-genfiles/ -std=c++0x  -D_GLIBCXX_USE_CXX11_ABI=0 -ltensorflow_cc -ltensorflow_framework -lgsl -lgslcblas
 endif
-all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest rankTest fetch_batchTest FiltrationTest read10xTest mergeH5Test appTest moveTest autoEncoderTest logNormalizeTest
+all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest rankTest fetch_batchTest FiltrationTest read10xTest mergeH5Test autoEncoderTest logNormalizeTest appTest moveTest
 #ArgParserTest
 cellTest: tests/cellTest.cpp lib/cell/cell.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
