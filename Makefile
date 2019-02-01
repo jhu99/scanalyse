@@ -61,9 +61,9 @@ autoEncoderTest:tests/autoEncoderTest.cpp  lib/autoEncoder/autoEncoder.cpp Spars
 	${H5CXX} $^ ${CXXTFFLAGS} -o $@
 logNormalizeTest:tests/logNormalizeTest.cpp lib/logNormalize/logNormalize.o SparseMatrix.o lib/qqNorm/qqNorm.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
-createGeneTemplateTest:tests/createGeneTemplateTest.cpp lib/geneFilter.o SparseMatrix.o lib/qqNorm/qqNorm.o
+createGeneTemplateTest:tests/createGeneTemplateTest.cpp lib/geneFilter/geneFilter.o SparseMatrix.o lib/qqNorm/qqNorm.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
-geneFilterTest:tests/geneFilterTest.cpp lib/geneFilter.o SparseMatrix.o lib/qqNorm/qqNorm.o
+geneFilterTest:tests/geneFilterTest.cpp lib/geneFilter/geneFilter.o SparseMatrix.o lib/qqNorm/qqNorm.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
 moveTest:
 	mv ./*Test ./bin
