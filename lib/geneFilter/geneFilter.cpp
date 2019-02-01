@@ -11,8 +11,8 @@ geneFilter::~geneFilter()
 void geneFilter::createFiltGeneTemplate(string read_path)
 {
 	template_sm.read_10x_h5(read_path);
-	int gene_count = template_sm.get_gene_count();
-	int cell_count = template_sm.get_cell_count();
+	gene_count = template_sm.get_gene_count();
+	cell_count = template_sm.get_cell_count();
 	long long* template_indptr = template_sm.get_indptr();
 	long long* template_indices = template_sm.get_indices();
 	char** template_genes = template_sm.get_genes();
@@ -22,7 +22,7 @@ void geneFilter::createFiltGeneTemplate(string read_path)
 	int column_pos;
 	for (int cell_index = 0; cell_index < cell_count; cell_index++)
 	{
-		for (int para_index = template_indptr[cell_index]; para_index < indptr[cell_index+1]; para_index++)
+		for (int para_index = template_indptr[cell_index]; para_index < template_indptr[cell_index+1]; para_index++)
 		{
 			column_pos = template_indices[para_index];
 			gene_express_count[column_pos]++;
