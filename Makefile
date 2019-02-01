@@ -23,7 +23,7 @@ H5CXXFLAGS = -std=c++0x -Ilib/
 CXXGSLFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -std=c++0x -DNDEBUG -lgsl -lgslcblas -lpthread
 CXXTFFLAGS = -Wall -O3 -ffast-math -Ilib/ -I/usr/local/include/ -I/usr/local/include/tf -I/usr/local/include/tf/tensorflow/contrib/makefile/gen/proto/ -I/usr/local/include/tf/tensorflow/contrib/makefile/gen/protobuf/include/ -I/usr/local/include/tf/tensorflow/contrib/makefile/downloads/absl/ -I/usr/local/include/tf/tensorflow/contrib/makefile/downloads/eigen/ -I/usr/local/include/tf/bazel-genfiles/ -std=c++0x -ltensorflow_cc -ltensorflow_framework -lgsl -lgslcblas
 endif
-all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest rankTest fetch_batchTest FiltrationTest read10xTest mergeH5Test autoEncoderTest logNormalizeTest appTest moveTest
+all: cellTest funTest linearRegressionTest argParserTest linearRegressionParameterTest qqNormTest SparseMatrixTest geneTopsTest rankTest fetch_batchTest FiltrationTest read10xTest mergeH5Test autoEncoderTest logNormalizeTest appTest moveTest createGeneTemplateTest geneFilterTest
 #ArgParserTest
 cellTest: tests/cellTest.cpp lib/cell/cell.o
 	${CXX} $^ ${CXXFLAGS} -o $@ 
@@ -61,7 +61,11 @@ autoEncoderTest:tests/autoEncoderTest.cpp  lib/autoEncoder/autoEncoder.cpp Spars
 	${H5CXX} $^ ${CXXTFFLAGS} -o $@
 logNormalizeTest:tests/logNormalizeTest.cpp lib/logNormalize/logNormalize.o SparseMatrix.o lib/qqNorm/qqNorm.o
 	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
+createGeneTemplateTest:tests/createGeneTemplateTest.cpp lib/geneFilter.o SparseMatrix.o lib/qqNorm/qqNorm.o
+	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
+geneFilterTest:tests/geneFilterTest.cpp lib/geneFilter.o SparseMatrix.o lib/qqNorm/qqNorm.o
+	${H5CXX} $^ ${CXXGSLFLAGS} -o $@ 
 moveTest:
 	mv ./*Test ./bin
 clean:
-	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/SparseMatrix/*.o lib/geneTop/*.o lib/rank/*.o ./*.o lib/logNormalize/*.o
+	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/SparseMatrix/*.o lib/geneTop/*.o lib/rank/*.o ./*.o lib/logNormalize/*.o lib/geneFilter/*.o

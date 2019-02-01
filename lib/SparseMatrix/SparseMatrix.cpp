@@ -709,19 +709,10 @@ void SparseMatrix::readTsvFile(string read_path)
 	while (getline(genes_infile, lineStr))
 	{
 		stringstream ss(lineStr);
-		while (getline(ss, para_str, separator))
-		{
-			if (is_genes == 1)
-			{
-				para_str.copy(genes[genes_index], str_genes_length, 0);
-				is_genes = 0;
-			}
-			else
-			{
-				para_str.copy(gene_names[genes_index], str_gene_names_len, 0);
-				is_genes = 1;
-			}
-		}
+		getline(ss, para_str, separator);
+		para_str.copy(genes[genes_index], str_genes_length, 0);
+		getline(ss, para_str, '\n');
+		para_str.copy(gene_names[genes_index], para_str.length(), 0);
 		genes_index++;
 	}
 	genes_infile.close();
@@ -1010,6 +1001,15 @@ void SparseMatrix::write_norm_data(string write_path, string norm_type, int chun
 		dataset_id = H5Dcreate2(file_id, dataPath.c_str(), H5T_IEEE_F64LE,
 			dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
 		status = H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, log_normalize_data);
+		cout << "data writed" << endl;
+	}
+	else if (norm_type == "none")
+	{
+		dims[0] = data_count;
+		dataspace_id = H5Screate_simple(rank, dims, NULL);
+		dataset_id = H5Dcreate2(file_id, dataPath.c_str(), H5T_STD_I32LE,
+			dataspace_id, H5P_DEFAULT, plist_id, H5P_DEFAULT);
+		status = H5Dwrite(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
 		cout << "data writed" << endl;
 	}
 	//write indices
