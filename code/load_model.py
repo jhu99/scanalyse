@@ -8,15 +8,11 @@ from keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping, ReduceL
 from keras import backend as K
 from sklearn.model_selection import train_test_split
 from model import ZINBAutoencoder
-from getAnnData import getAnnData
+from getAnnData import getAnnData, getAnnData_10x_h5, getAnnData_10x_mtx, pre_process_input_data
 
 
-def load_weight(data_path, weight_path, result_path):
-    #adata = getAnnData(data_path)
-    adata = getAnnData(data_path)
-    # delete gene and cell with all 0 value
-    sc.pp.filter_genes(adata, min_counts=1)
-    sc.pp.filter_cells(adata, min_counts=1)
+def load_weight(input_file, weight_file, gene_file,output_path, format_type="10x_h5"):
+    adata = pre_process_input_data(gene_file,input_file,format_type)
     adata.raw = adata.copy()
 
     # calculate size factors
@@ -25,7 +21,7 @@ def load_weight(data_path, weight_path, result_path):
     adata.obs['size_factors'] = adata.obs.n_counts / np.median(adata.obs.n_counts)
     # log transfer and normalization
     sc.pp.log1p(adata)
-    sc.pp.scale(adata)
+    sc.pp.scale(adata,zero_center=False)
 
     output_size = adata.n_vars
     input_size = adata.n_vars
@@ -46,9 +42,9 @@ def load_weight(data_path, weight_path, result_path):
                           activation='relu',
                           init='glorot_uniform',
                           debug=False,
-                          file_path=result_path)
+                          file_path=output_path)
     net.build()
-    net.load_weights(weight_path)
+    net.load_weights(weight_file)
     net.predict(adata, mode='full', return_info=True)
     net.write(adata, mode='full')
 

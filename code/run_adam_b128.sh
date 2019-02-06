@@ -32,7 +32,7 @@ do
 	python3.6 ./main.py -t train -i ../data/ica_all.h5 -o ../result/ica_all -b $b -l $l -a $a -w ${weight_file} -f 10x_h5 > ../result/ica_all/$a${px}_b$b.log
 done
 
-#python3.6 ./main.py -t train -i ../data/ica_all.h5 -o ../result/ica_all -b 32 -l 64 32 64 -a adam -w weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_h5
+#python3.6 -m pdb ./main.py -t train -i ../data/ica_all.h5 -o ../result/ica_all -b 32 -l 64 32 64 -a adam -w weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_h5
 #python3.6 ./main.py -t train -i ../data/ica_all.h5 -o ../result/ica_all -b 128 -l 64 32 64 -a adam -w weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_h5
 #python3.6 ./main.py -t train -i ../data/ica_all.h5 -o ../result/ica_all -b 512 -l 64 32 64 -a adam -w weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_h5
 #python3.6 ./main.py -t train -i ../data/ica_all.h5 -o ../result/ica_all -b 1024 -l 64 32 64 -a adam -w weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_h5

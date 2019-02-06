@@ -71,6 +71,7 @@ def train(adata, network, weight_file, output_dir=None, optimizer='rmsprop', lea
 def train_model(input_file,
                 weight_file,
                 output_path,
+                gene_file,
                 hidden_size,
                 batch_size,
                 optimizer='rmsprop',
@@ -87,6 +88,7 @@ def train_model(input_file,
     # delete gene and cell with all 0 value
     sc.pp.filter_genes(adata, min_counts=1)
     sc.pp.filter_cells(adata, min_counts=1)
+    adata.var.to_csv(gene_file)
     adata.raw = adata.copy()
   
     # calculate size factors

@@ -10,6 +10,8 @@ parser.add_argument('--task','-t', required=True,
 					help='The task will be performed. It has two options, \'train\' or \'prediction\'. Default is \'train\'.')
 parser.add_argument('--input_file','-i', required = True, 
 					help='The path of an input filename.')
+parser.add_argument('--gene_file','-g', required= True,
+					help='The path of a gene filename.', default='input_tensor.csv')
 parser.add_argument('--weight_file','-w', 
 					help='The path of a weight filename.')
 parser.add_argument('--output_path','-o', required = True,
@@ -31,13 +33,18 @@ if args.task =='train':
 	train.train_model(input_file=args.input_file, 
 					weight_file=args.weight_file, 
 					output_path=args.output_path,
+					gene_file=args.gene_file,
 					hidden_size=args.latent_size,
 					batch_size=args.batch_size, 
 					optimizer=args.algorithm,
 					format_type=args.format)
 #Argv 2: Pathway of the load_weight
 elif args.task =='prediction':
-	load_model.load_weight(args.input_file,args.output_file,args.format)
+	load_model.load_weight(input_file=args.input_file,
+						weight_file=args.weight_file,
+						gene_file=args.gene_file,
+						output_path=args.output_path,
+						format_type=args.format)
 else:
 	print('Please use \'train\' or \'prediction\' to specific --task.')
 	

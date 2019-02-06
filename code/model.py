@@ -146,7 +146,7 @@ class ZINBAutoencoder():
         adata = adata.copy() if copy else adata
 
         if mode in ('denoise', 'full'):
-            print('dca: Calculating reconstructions...')
+            print('Calculating reconstructions...')
 
             adata.X = self.model.predict({'count': adata.X,
                                           'size_factors': adata.obs.size_factors})
@@ -159,13 +159,13 @@ class ZINBAutoencoder():
         colnames = adata.obs_names.values
         rownames = adata.var_names.values
 
-        print('dca: Saving output(s)...')
+        print('Saving output(s)...')
         os.makedirs(self.file_path, exist_ok=True)
 
         if mode in ('denoise', 'full'):
-            print('dca: Saving denoised expression...')
+            print('Saving denoised expression...')
             matrix = adata.X.T
-            pd.DataFrame(matrix, index=rownames, columns=colnames).to_csv(os.path.join(self.file_path, 'mean.csv'),sep=',',index=(rownames is not None),header=(colnames is not None),float_format='%.6f')
+            pd.DataFrame(matrix, index=rownames, columns=colnames).to_csv(os.path.join(self.file_path, 'mean.csv'),sep=',',index=(rownames is not None),header=(colnames is not None),float_format='%.2f')
 
 
     def load_weights(self, filename):
