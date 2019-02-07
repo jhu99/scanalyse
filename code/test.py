@@ -1,21 +1,34 @@
-import scanpy.api as sc
+import scipy as sci
+from anndata import AnnData
 import numpy as np
-adata = sc.read("./data/scRNAseq_CountTable.csv", first_column_names=True)
-adata = adata.transpose()
+import pandas as pd
+from getAnnData import getAnnData, getAnnData_10x_h5, getAnnData_10x_mtx
 
-print(adata)
-sc.pp.filter_genes(adata, min_counts=1)
-print(adata)
-sc.pp.filter_cells(adata, min_counts=1)
-print(adata)
+def pre_process_input_data(gene_file,input_file,format_type="10x_mtx"):
+	if format_type == "10x_h5":
+		adata = getAnnData_10x_h5(input_file)
+	else:
+		adata = getAnnData_10x_mtx(input_file)
+	
+	rownames = adata.obs_names.values
+	colnames = adata.var_names.values
+	X2=pd.DataFrame(adata.X.todense(), index=rownames, columns=colnames)
+	
+	gene_input = pd.read_csv(gene_file,index_col=1)
+	
+	
+	common_ind = adata.var.index.intersection(gene_input.index.values)
+	left_ind = gene_input.index.difference(common_ind)
+	X3=X2[common_ind]
+	for ind in left_ind:
+		X3.insert(0,ind,0)
+	X3=X3.reindex(columns=gene_input.index.values)
+	X=sci.sparse.csr_matrix(X3,dtype='float32')
+	adata = AnnData(X,
+				obs=pd.DataFrame(index=rownames),
+				var=pd.DataFrame(index=gene_input.index.values),
+				dtype=X.dtype.name,
+				filemode=True)
+	return adata
 
-adata.raw = adata.copy()
 
-sc.pp.normalize_per_cell(adata)
-print(adata.obs.n_counts)
-adata.obs['size_factors'] = adata.obs.n_counts / np.median(adata.obs.n_counts)
-print(sum(adata.X))
-sc.pp.log1p(adata)
-print(sum(adata.X))
-sc.pp.scale(adata)
-print(sum(adata.X))

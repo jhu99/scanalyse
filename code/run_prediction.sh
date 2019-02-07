@@ -54,19 +54,21 @@ do
 			for b in 32 128 512 1024
 			do
 				#echo $b
-				echo "python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b}.mean.csv -g ../result/ica_all/input_gene_g1.csv -w ../result/ica_all/${weight_file} -f 10x_mtx"
+				#echo "python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b}_ -g ../result/ica_all/input_gene_g1.csv -w ../result/ica_all/${weight_file} -f 10x_mtx &"
+				python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b}_ -g ../result/ica_all/input_gene_g1.csv -w ../result/ica_all/${weight_file} -f 10x_mtx &
 			done
 		done
 	done
+	wait
 done
 #for a in "${testdata[@]}"
-
 #do
 	#echo "$a"
 	#printf "%s\n" "$a"
 	#echo "python3.6 ./main.py -t prediction -i ../data/zheng/${a}/hg19/ -o ../result/zheng/${a}.mean.csv -g ../result/ica_all/input_gene_g1.csv -w ../result/ica_all/weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_mtx"
 #done
 ###Test prediction model 
+#python3.6 ./main.py -t prediction -i ../data/zheng/293t_filtered_gene_bc_matrices_mex/hg19/ -o ../result/zheng/test.csv -g ../result/ica_all/input_gene_g1.csv -w ../result/ica_all/weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_mtx
 #python3.6 -m pdb ./main.py -t prediction -i ../data/cf.10xgenomics.com/samples/cell-exp/1.1.0/293t/filtered_matrices_mex/hg19/ -o ../result/ -g ../result/ica_all/input_gene_g1.csv -w ../result/ica_all/weight_adam_64_32_64_g1_c1_b1024.h5 -f 10x_mtx
 #python3.6 ./main.py -t prediction -i ../data/cf.10xgenomics.com/samples/cell-exp/1.1.0/293t/filtered_matrices_mex/hg19/ -o ../result/ -g ../result/ica_all/input_gene_g1.csv -w ../result/ica_all/weight_adam_64_32_64_g1_c1_b1024.h5 -f 10x_mtx
 ###Test training model
