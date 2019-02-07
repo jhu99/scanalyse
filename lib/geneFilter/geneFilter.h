@@ -1,5 +1,6 @@
 #include"SparseMatrix/SparseMatrix.h"
 class geneFilter{
+	string template_path;
 	string filt_gene_file_path;
 	SparseMatrix template_sm;
 	char** genes;
