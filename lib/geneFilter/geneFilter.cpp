@@ -16,6 +16,7 @@ void geneFilter::createFiltGeneTemplate(string read_path)
 	long long* template_indptr = template_sm.get_indptr();
 	long long* template_indices = template_sm.get_indices();
 	char** template_genes = template_sm.get_genes();
+	char** template_gene_names = template_sm.get_gene_names();
 	int *gene_express_count;
 	gene_express_count = new int[gene_count];
 	fill(gene_express_count, gene_express_count + gene_count, 0);
@@ -37,12 +38,14 @@ void geneFilter::createFiltGeneTemplate(string read_path)
 		}
 	}
 	filt_genes = new char*[filt_gene_count];
+	filt_gene_names = new char*[filt_gene_count];
 	int filt_index = 0;
 	for (int i = 0; i < gene_count; i++)
 	{
 		if (gene_express_count[i] != 0)
 		{
 			filt_genes[filt_index] = template_genes[i];
+			filt_gene_names[filt_index] = template_gene_names[i];
 			filt_index++;
 		}
 	}
@@ -55,7 +58,7 @@ void geneFilter::out2CsvFile(string write_path)
 	ofstream ofn(write_path);
 	for (int i = 0; i < filt_gene_count; i++)
 	{
-		ofn << filt_genes[i] << "\n";
+		ofn << filt_genes[i] << "," << filt_gene_names[i] << "\n";
 	}
 	ofn.close();
 	cout << "end out file" << endl;
@@ -63,15 +66,24 @@ void geneFilter::out2CsvFile(string write_path)
 
 void geneFilter::createFiltGeneMap(string gene_path)
 {
+	template_path = gene_path;
 	string para_genes;
+	string para_gene_names;
+	string para_str;
 	cout << "start create filt_genes_template map" << endl;
 	ifstream inFile(gene_path, ios::in);
-	while (getline(inFile, para_genes))
+	int i = 1;
+	while (getline(inFile, para_str))
 	{
-		filt_genes_template[para_genes] = 1;
+		stringstream ss(para_str);
+		getline(ss, para_genes, ',');
+		getline(ss, para_gene_names, '\n');
+		filt_genes_template[para_genes] = i;
+		i++;
 	}
 	cout << "end create filt_genes_template map" << endl;
 	filt_gene_count = filt_genes_template.size();
+	inFile.close();
 }
 
 void geneFilter::filtGene(string file_path)
@@ -90,22 +102,36 @@ void geneFilter::filtGene(string file_path)
 	str_genes_len = sm.get_str_genes_length();
 	str_gene_names_len = sm.get_str_gene_names_len();
 	str_barcodes_len = sm.get_str_barcodes_len();
-	filt_genes = new char*[filt_gene_count];
+
 	filt_gene_names = new char*[filt_gene_count];
+	filt_genes = new char*[filt_gene_count];
 	for (int i = 0; i < filt_gene_count; i++)
 	{
 		filt_genes[i] = new char[str_genes_len];
 		filt_gene_names[i] = new char[str_gene_names_len];
 	}
-	int filt_gene_names_index = 0;
+	ifstream inFile(template_path, ios::in);
+	int index = 0;
+	string para_genes;
+	string para_gene_names;
+	string para_str;
+	while (getline(inFile, para_str))
+	{
+		stringstream ss(para_str);
+		getline(ss, para_genes, ',');
+		getline(ss, para_gene_names, '\n');
+		para_genes.copy(filt_genes[index], str_genes_len, 0);
+		para_gene_names.copy(filt_gene_names[index], para_gene_names.length(), 0);
+		*(filt_genes[index] + str_genes_len) = '\0';
+		*(filt_gene_names[index] + para_gene_names.length()) = '\0';
+		index++;
+	}
+
 	for (int i = 0; i < gene_count; i++)
 	{
-		if (filt_genes_template[genes[i]] == 1)
+		if (filt_genes_template[genes[i]] >= 1)
 		{
-			filt_gene_names[filt_gene_names_index] = gene_names[i];
-			filt_genes[filt_gene_names_index] = genes[i];
-			orig2filt_index[i] = filt_gene_names_index;
-			filt_gene_names_index++;
+			orig2filt_index[i] = filt_genes_template[genes[i]] - 1;
 		}
 	}
 }
@@ -118,7 +144,7 @@ SparseMatrix geneFilter::filtDataByTemplateGene()
 	{
 		for (paraPos = indptr[cell_index]; paraPos < indptr[cell_index + 1]; paraPos++)
 		{
-			if (filt_genes_template[genes[indices[paraPos]]] == 1)
+			if (filt_genes_template[genes[indices[paraPos]]] >= 1)
 			{
 				filt_data_count++;
 			}
@@ -133,7 +159,7 @@ SparseMatrix geneFilter::filtDataByTemplateGene()
 	{
 		for (paraPos = indptr[cell_index]; paraPos < indptr[cell_index + 1]; paraPos++)
 		{
-			if (filt_genes_template[genes[indices[paraPos]]]==1)
+			if (filt_genes_template[genes[indices[paraPos]]] >= 1 )
 			{
 				filt_data[filt_data_index] = data[paraPos];
 				filt_indices[filt_data_index] = orig2filt_index[indices[paraPos]];
