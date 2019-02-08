@@ -42,7 +42,7 @@ do
 	for a in "adam" "rmsprop"
 	do
 		#echo $a
-		for l in "512 64 512"
+		for l in "64 32 64"
 		do
 			#echo $l
 			px=''
@@ -54,8 +54,9 @@ do
 			for b in 32 128 512 1024
 			do
 				#echo $b
-				#echo "python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b}_ -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &"
-				python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &
+				#echo "python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &"
+				#python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &
+				mv ../result/zheng/${i}_${a}${px}_${b}_ ../result/zheng/${i}_${a}${px}_${b}
 			done
 		done
 	done
