@@ -43,6 +43,7 @@ elif args.task =='prediction':
 	load_model.load_weight(input_file=args.input_file,
 						weight_file=args.weight_file,
 						gene_file=args.gene_file,
+						hidden_size=args.latent_size,
 						output_path=args.output_path,
 						format_type=args.format)
 else:
