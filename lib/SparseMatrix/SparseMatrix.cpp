@@ -525,6 +525,101 @@ void SparseMatrix::write2HDF5(string path)
 	file.close();
 }
 
+void SparseMatrix::write2CSV(string path,string type) {
+	cout << "start writing" << endl;
+	int start, end;
+	ofstream ofn(path);
+	ofn << " "<<",";
+	for (int i = 0; i < gene_count; i++) {
+		ofn << genes[i] << ",";
+	}
+	ofn << "\n";
+	
+	if (type == "original") {
+		int * cell;
+		cell = new int[cell_count];
+		for (int i = 0; i < cell_count; i++) {
+			ofn << barcodes[i] << ",";
+			fill(cell, cell+gene_count, 0);
+			start = indptr[i];
+			end = indptr[i + 1];
+			for (int j = start; j < end; j++) {
+				cell[indices[j]] = data[j];
+			}
+			for (int j = 0; j < gene_count; j++) {
+				ofn << cell[j] << ",";
+			}
+			ofn << "\n";
+			if(i%100==0)
+			cout << "write " << i << " line" << endl;
+		}
+		delete cell;
+	}
+	else if(type=="qqNorm"){
+		double * cell;
+		cell = new double[cell_count];
+		for (int i = 0; i < cell_count; i++) {
+			ofn << barcodes[i] << ",";
+			fill(cell, cell+gene_count, 0);
+			start = indptr[i];
+			end = indptr[i + 1];
+			for (int j = start; j < end; j++) {
+				cell[indices[j]] = qqNormedData[j];
+			}
+			for (int j = 0; j < gene_count; j++) {
+				ofn << cell[j] << ",";
+			}
+			ofn << "\n";
+			if(i%100==0)
+			cout << "write " << i << " line" << endl;
+		}
+		delete cell;	
+	}
+	else if(type=="rank"){
+		double * cell;
+		cell = new double[cell_count];
+		for (int i = 0; i < cell_count; i++) {
+			ofn << barcodes[i] << ",";
+			fill(cell, cell+gene_count, 0);
+			start = indptr[i];
+			end = indptr[i + 1];
+			for (int j = start; j < end; j++) {
+				cell[indices[j]] = rankData[j];
+			}
+			for (int j = 0; j < gene_count; j++) {
+				ofn << cell[j] << ",";
+			}
+			ofn << "\n";
+			if(i%100==0)
+			cout << "write " << i << " line" << endl;
+		}
+		delete cell;	
+	}
+	else if(type=="log"){
+		double * cell;
+		cell = new double[cell_count];
+		for (int i = 0; i < cell_count; i++) {
+			ofn << barcodes[i] << ",";
+			fill(cell, cell+gene_count, 0);
+			start = indptr[i];
+			end = indptr[i + 1];
+			for (int j = start; j < end; j++) {
+				cell[indices[j]] = log_normalize_data[j];
+			}
+			for (int j = 0; j < gene_count; j++) {
+				ofn << cell[j] << ",";
+			}
+			ofn << "\n";
+			if(i%100==0)
+			cout << "write " << i << " line" << endl;
+		}
+		delete cell;		
+	}	
+	
+	ofn.close();
+	cout << "end writing" << endl;
+}
+
 void SparseMatrix::deleteSparseMatrix(string type) {
 	delete[] indices;
 	delete[] indptr;
