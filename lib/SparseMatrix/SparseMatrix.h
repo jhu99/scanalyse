@@ -87,6 +87,7 @@ public:
 	void createZeroPosPerCell();
 	void qqNormedData2HDF5Format();
 	void write2HDF5(string path);
+	void write2CSV(string path,string type);
 	void deleteSparseMatrix(string type);
 	double** fetch_batch(int batch_index, string norm_type,int batch_size = 128);
 	void readMtxFile(string read_path);
