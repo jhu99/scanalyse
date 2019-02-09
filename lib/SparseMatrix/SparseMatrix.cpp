@@ -537,7 +537,7 @@ void SparseMatrix::write2CSV(string path,string type) {
 	
 	if (type == "original") {
 		int * cell;
-		cell = new int[cell_count];
+		cell = new int[gene_count];
 		for (int i = 0; i < cell_count; i++) {
 			ofn << barcodes[i] << ",";
 			fill(cell, cell+gene_count, 0);
@@ -557,7 +557,7 @@ void SparseMatrix::write2CSV(string path,string type) {
 	}
 	else if(type=="qqNorm"){
 		double * cell;
-		cell = new double[cell_count];
+		cell = new double[gene_count];
 		for (int i = 0; i < cell_count; i++) {
 			ofn << barcodes[i] << ",";
 			fill(cell, cell+gene_count, 0);
@@ -577,7 +577,7 @@ void SparseMatrix::write2CSV(string path,string type) {
 	}
 	else if(type=="rank"){
 		double * cell;
-		cell = new double[cell_count];
+		cell = new double[gene_count];
 		for (int i = 0; i < cell_count; i++) {
 			ofn << barcodes[i] << ",";
 			fill(cell, cell+gene_count, 0);
@@ -597,7 +597,7 @@ void SparseMatrix::write2CSV(string path,string type) {
 	}
 	else if(type=="log"){
 		double * cell;
-		cell = new double[cell_count];
+		cell = new double[gene_count];
 		for (int i = 0; i < cell_count; i++) {
 			ofn << barcodes[i] << ",";
 			fill(cell, cell+gene_count, 0);
