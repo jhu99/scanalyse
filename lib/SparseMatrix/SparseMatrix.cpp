@@ -529,9 +529,9 @@ void SparseMatrix::write2CSV(string path,string type) {
 	cout << "start writing" << endl;
 	int start, end;
 	ofstream ofn(path);
-	ofn << " "<<",";
+	ofn << "";
 	for (int i = 0; i < gene_count; i++) {
-		ofn << genes[i] << ",";
+		ofn <<","<< genes[i] ;
 	}
 	ofn << "\n";
 	
@@ -539,7 +539,7 @@ void SparseMatrix::write2CSV(string path,string type) {
 		int * cell;
 		cell = new int[gene_count];
 		for (int i = 0; i < cell_count; i++) {
-			ofn << barcodes[i] << ",";
+			ofn << barcodes[i];
 			fill(cell, cell+gene_count, 0);
 			start = indptr[i];
 			end = indptr[i + 1];
@@ -547,7 +547,7 @@ void SparseMatrix::write2CSV(string path,string type) {
 				cell[indices[j]] = data[j];
 			}
 			for (int j = 0; j < gene_count; j++) {
-				ofn << cell[j] << ",";
+				ofn << ","<< cell[j] ;
 			}
 			ofn << "\n";
 			if(i%100==0)
