@@ -35,40 +35,12 @@
 		#done
 	#done
 #done
-#declare -a testdata=("293t_filtered_gene_bc_matrices_mex" "b_cells_filtered_matrices_mex" "cd34_filtered_matrices_mex" "cd4_t_helper_filtered_matrices_mex" "cd56_nk_filtered_matrices_mex" "cytotoxic_t_filtered_matrices_mex" "memory_t_filtered_matrices_mex" "naive_cytotoxic_filtered_matrices_mex" "naive_t_filtered_matrices_mex" "regulatory_t_filtered_matrices_mex")
-
-#for i in "${testdata[@]}"
-#do
-	##echo $i
-	#for a in "adam" "rmsprop"
-	#do
-		##echo $a
-		#for l in "64 32 64"
-		#do
-			##echo $l
-			#px=''
-			#for w in $l
-			#do
-				#px+='_'$w
-			#done
-			#weight_file="weight_${a}${px}_g1_c1_b$b.h5"
-			#for b in 32 128 512 1024
-			#do
-				##echo $b
-				#echo "python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &"
-				##python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &
-				##mv ../result/zheng/${i}_${a}${px}_${b}_ ../result/zheng/${i}_${a}${px}_${b}
-			#done
-		#done
-	#done
-	#wait
-#done
-declare -a testdata=("293t_filtered_gene_bc_matrices_mex")
+declare -a testdata=("293t_filtered_gene_bc_matrices_mex" "b_cells_filtered_matrices_mex" "cd34_filtered_matrices_mex" "cd4_t_helper_filtered_matrices_mex" "cd56_nk_filtered_matrices_mex" "cytotoxic_t_filtered_matrices_mex" "memory_t_filtered_matrices_mex" "naive_cytotoxic_filtered_matrices_mex" "naive_t_filtered_matrices_mex" "regulatory_t_filtered_matrices_mex")
 
 for i in "${testdata[@]}"
 do
 	#echo $i
-	for a in "adam"
+	for a in "adam" "rmsprop"
 	do
 		#echo $a
 		for l in "64 32 64" "512 64 512"
@@ -79,12 +51,12 @@ do
 			do
 				px+='_'$w
 			done
-			weight_file="weight_${a}${px}_g1_c1_b$b.h5"
 			for b in 32 128 512 1024
 			do
 				#echo $b
-				echo "python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &"
-				#python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &
+				weight_file="weight_${a}${px}_g1_c1_b$b.h5"
+				#echo "python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &"
+				python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &
 				#mv ../result/zheng/${i}_${a}${px}_${b}_ ../result/zheng/${i}_${a}${px}_${b}
 			done
 		done
