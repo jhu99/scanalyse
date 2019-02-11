@@ -24,6 +24,7 @@ private:
 	char** gene_names;
 	unsigned short *rankData;
 	double *log_normalize_data;
+	int* rank_zero;
 	double *qqNormedData;
 	double *qqNormedZero;
 	long *zeroPosPerCell;
@@ -72,6 +73,7 @@ public:
 	char** get_gene_names();
 	long long* get_indices();
 	int* get_data();
+	int* get_rank_zero();
 	int get_cell_count();
 	int get_gene_count();
 	long long get_data_count();
@@ -82,6 +84,7 @@ public:
 	unordered_map<int, string> get_numToCell();
 	int readHDF5File(string path, string type);
 	void createCellnameMap();
+	void cacuRankZero();
 	unsigned short* createCellVectorByName(string cellname);
 	unordered_map<int, int> cellFiltration();
 	void createZeroPosPerCell();

@@ -38,6 +38,11 @@ int* SparseMatrix::get_data() {
 	return data;
 }
 
+int * SparseMatrix::get_rank_zero()
+{
+	return rank_zero;
+}
+
 int SparseMatrix::get_cell_count()
 {
 	return cell_count;
@@ -324,6 +329,24 @@ int SparseMatrix::readHDF5File(string path, string type)
 			printf("The dataset zero_value does NOT exist or some other error occurred.\n");
 		}
 	}
+	if (type == "rank")
+	{
+		status = H5Lget_info(fileId, "/GRCh38/zero_value", NULL, H5P_DEFAULT);
+		printf("/GRCh38/zero_value': ");
+		if (status == 0)
+		{
+			rank_zero = new int[cell_count];
+			datasetId = H5Dopen(fileId, "/GRCh38/zero_value", H5P_DEFAULT);
+			ds = DataSet(datasetId);
+			datatype = ds.getDataType();
+			status = H5Dread(datasetId, datatype.getId(), H5S_ALL, H5S_ALL, H5P_DEFAULT, rank_zero);
+			cout << "finish read zero_value" << endl;
+		}
+		else
+		{
+			printf("The dataset zero_value does NOT exist or some other error occurred.\n");
+		}
+	}
 	//close
 	H5Fclose(fileId);
 	H5Dclose(datasetId);
@@ -340,6 +363,15 @@ void SparseMatrix::createCellnameMap()
 	{
 		numToCell[i] = barcodes[i];
 		cellToNum[barcodes[i]] = i;
+	}
+}
+
+void SparseMatrix::cacuRankZero()
+{
+	rank_zero = new int[cell_count];
+	for (int i = 0; i < cell_count; i++)
+	{
+		rank_zero[i] = (indptr[i + 1] - indptr[i]) / 2;
 	}
 }
 
@@ -1182,6 +1214,15 @@ void SparseMatrix::write_norm_data(string write_path, string norm_type, int chun
 		dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	status = H5Dwrite(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, shape);
 	cout << "shape writed" << endl;
-	
+
+	if (norm_type == "rank")
+	{
+		dims[0] = cell_count;
+		dataspace_id = H5Screate_simple(rank, dims, NULL);
+		dataset_id = H5Dcreate2(file_id, "/GRCh38/zero_value", H5T_STD_I32LE,
+			dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		status = H5Dwrite(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rank_zero);
+		cout << "zero_value writed" << endl;
+	}
 	H5Fclose(file_id);
 }

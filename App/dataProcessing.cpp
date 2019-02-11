@@ -21,7 +21,7 @@ int main(int argc, const char **argv)
 	SparseMatrix sm;
 	ArgParser a;
 	Option option;
-	a.setName("appTest","This is a description of appTest.");
+	a.setName("appTest", "This is a description of appTest.");
 	a.setVersion("0.0.1");
 	a.refOption("file_type",
 		"Choose h5 or mtx. Default is h5.",
@@ -55,7 +55,7 @@ int main(int argc, const char **argv)
 		"The parameter thread_num is the number of threads you want to use for the parallelization.",
 		option.thread_count,
 		1, true);
-	if(!a.run(argc, argv))return 0;
+	if (!a.run(argc, argv))return 0;
 	cout << "start read-----------------" << endl;
 	if (option.file_type.compare("h5") == 0)
 	{
@@ -70,21 +70,21 @@ int main(int argc, const char **argv)
 	Filtration f(sm);
 	SparseMatrix filt_sm = f.filtGeneAndCell(option.min_cell_size, option.gene_top_num, option.gene_filt_type);
 	f.printFiltResult();
-	cout << "end filtration-----------------" << endl; 
+	cout << "end filtration-----------------" << endl;
 	cout << "end write to h5 file-----------------" << endl;
 	cout << "start normalize--------------" << endl;
 	if (option.normalize_type == "rank")
-	{	
+	{
 		rankNormalize rn(filt_sm);
 		rn.ranks(option.thread_count);
-	
+		filt_sm.cacuRankZero();
 		cout << "end normalize--------------" << endl;
 		filt_sm.set_rank(rn.getRank());
 		cout << "start write to h5 file-----------------" << endl;
 		filt_sm.write_norm_data(option.write_path, "rank", 500, "s");
 		cout << "end write to h5 file-----------------" << endl;
 	}
-	else if (option.normalize_type=="log")
+	else if (option.normalize_type == "log")
 	{
 		logNormalize log(filt_sm);
 		log.logNormalizeData(option.thread_count);
@@ -95,7 +95,6 @@ int main(int argc, const char **argv)
 		cout << "end write to h5 file-----------------" << endl;
 	}
 	sm.deleteSparseMatrix("original");
-	SparseMatrix sm2;
 	cin.get();
 	cin.get();
 }
