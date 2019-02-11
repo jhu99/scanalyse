@@ -612,7 +612,7 @@ void SparseMatrix::write2CSV(string path,string type) {
 		for (int i = 0; i < cell_count; i++) {
 			ofn<<"\n";
 			ofn << barcodes[i];
-			fill(cell, cell+gene_count, 0);
+			fill(cell, cell+gene_count, rank_zero[i]);
 			start = indptr[i];
 			end = indptr[i + 1];
 			for (int j = start; j < end; j++) {
