@@ -32,7 +32,7 @@ def pre_process_input_data(gene_file,input_file,format_type="10x_mtx"):
 				filemode=True)
 	return adata
 
-gene_file="../result/ica_all/input_gene_g1.csv"
+gene_file="../result/ica_all/ica_all_filtered_gene_list.csv.csv"
 input_file1="../data/zheng/293t_filtered_gene_bc_matrices_mex/hg19/"
 input_file2="../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.h5"
 adata1=pre_process_input_data(gene_file,input_file1)
