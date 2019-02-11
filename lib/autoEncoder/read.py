@@ -1,11 +1,12 @@
 from autoEncoder import AutoEncoder
 
+import sys
 import h5py
 from math import fabs
 import numpy as np
 from scipy.sparse import csc_matrix,csr_matrix
 
-f = h5py.File("../../data/mtx_rank01.h5","r")
+f = h5py.File(sys.argv[1],"r")
 print(f)
 genes = f['/GRCh38/genes'][:]
 barcodes = f['/GRCh38/barcodes'][:]
