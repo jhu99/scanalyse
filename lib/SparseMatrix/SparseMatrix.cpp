@@ -1248,8 +1248,8 @@ void SparseMatrix::maskingData(int probability, string write_path, string write_
 				indices[j - cnt] = indices[j];
 			}
 		}
-		indptr[cell_count] = data_count;
 	}
+	indptr[cell_count] = data_count;
 	if (write_type == "h5") {
 		write2HDF5(write_path);
 	}
