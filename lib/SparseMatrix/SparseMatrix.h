@@ -12,7 +12,6 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <time.h> 
 
 using namespace std;
 class SparseMatrix
@@ -46,9 +45,9 @@ private:
 public:
 	SparseMatrix() {
 	}
-	SparseMatrix(char** barcodes, char** gene_names, char** genes,
-		long long* indptr, long long* indices, int* data,
-		int cell_count, int gene_count, int data_count,
+	SparseMatrix(char** barcodes, char** gene_names, char** genes, 
+		long long* indptr, long long* indices, int* data, 
+		int cell_count, int gene_count, int data_count, 
 		int str_barcodes_len, int str_genes_len, int str_gene_names_len) {
 		this->barcodes = barcodes;
 		this->gene_names = gene_names;
@@ -91,9 +90,9 @@ public:
 	void createZeroPosPerCell();
 	void qqNormedData2HDF5Format();
 	void write2HDF5(string path);
-	void write2CSV(string path, string type);
+	void write2CSV(string path,string type);
 	void deleteSparseMatrix(string type);
-	double** fetch_batch(int batch_index, string norm_type, int batch_size = 128);
+	double** fetch_batch(int batch_index, string norm_type,int batch_size = 128);
 	void readMtxFile(string read_path);
 	void readTsvFile(string read_path);
 	void read_10x_h5(string read_path);
@@ -101,5 +100,4 @@ public:
 	void mergeDate(vector<string> paths);
 	void h5Compressed(string aimFilePath, string method, int chunk, int rank);
 	void write_norm_data(string write_path, string norm_type, int chunk, string method);
-	void maskingData(int loss_probability, string write_path, string write_type = "h5");
 };
