@@ -72,9 +72,9 @@ int main(int argc, const char **argv)
 	f.printFiltResult();
 	cout << "end filtration-----------------" << endl;
 	cout << "end write to h5 file-----------------" << endl;
-	cout << "start normalize--------------" << endl;
 	if (option.normalize_type == "rank")
 	{
+		cout << "start normalize--------------" << endl;
 		rankNormalize rn(filt_sm);
 		rn.ranks(option.thread_count);
 		filt_sm.cacuRankZero();
@@ -86,12 +86,19 @@ int main(int argc, const char **argv)
 	}
 	else if (option.normalize_type == "log")
 	{
+		cout << "start normalize--------------" << endl;
 		logNormalize log(filt_sm);
 		log.logNormalizeData(option.thread_count);
 		cout << "end normalize--------------" << endl;
 		filt_sm.set_log_data(log.get_log_data());
 		cout << "start write to h5 file-----------------" << endl;
 		filt_sm.write_norm_data(option.write_path, "log", 500, "s");
+		cout << "end write to h5 file-----------------" << endl;
+	}
+	else if (option.normalize_type == "none")
+	{
+		cout << "start write to h5 file-----------------" << endl;
+		filt_sm.write_norm_data(option.write_path, "none", 500, "s");
 		cout << "end write to h5 file-----------------" << endl;
 	}
 	sm.deleteSparseMatrix("original");
