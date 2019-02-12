@@ -1228,7 +1228,7 @@ void SparseMatrix::write_norm_data(string write_path, string norm_type, int chun
 }
 
 
-void SparseMatrix::maskingData(int probability, string write_path, string write_type) {
+void SparseMatrix::maskingData(int loss_probability, string write_path, string write_type) {
 	long long cnt = 0;
 	long long start, end;
 	srand((unsigned)time(NULL));
@@ -1238,7 +1238,7 @@ void SparseMatrix::maskingData(int probability, string write_path, string write_
 		end = indptr[i + 1];
 		indptr[i] = indptr[i] - cnt;
 		for (long long j = start; j < end; j++) {
-			if (rand() % 100 < probability) {
+			if (rand() % 100 < loss_probability) {
 				data[j] = 0;
 				data_count--;
 				cnt++;
