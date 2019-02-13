@@ -15,7 +15,7 @@
 #wget -r http://cf.10xgenomics.com/samples/cell-exp/1.1.0/293t/293t_filtered_gene_bc_matrices.tar.gz
 #python3.6 -m pdb ./main.py -t train -i ../data/cf.10xgenomics.com/samples/cell-exp/1.1.0/293t/filtered_matrices_mex/hg19/ -o ../result/1.1.0/293t -b 32 -l 64 32 64 -a adam -w weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_mtx
 #python3 ./main.py -t train -i ../data/cf.10xgenomics.com/samples/cell-exp/1.1.0/293t/filtered_matrices_mex/hg19/ -o ../result/1.1.0/293t -b 32 -l 64 32 64 -a adam -w weight_adam_64_32_64_g1_c1_b32.h5 -f 10x_mtx
-
+#
 ##run on ica_all
 #python3 ./main.py -t train -i xxx -o xxx -w xxx -f 10x_mtx -a adam
 #mkdir ../result/ica_all run on P710
@@ -35,34 +35,45 @@
 		#done
 	#done
 #done
-declare -a testdata=("293t_filtered_gene_bc_matrices_mex" "b_cells_filtered_matrices_mex" "cd34_filtered_matrices_mex" "cd4_t_helper_filtered_matrices_mex" "cd56_nk_filtered_matrices_mex" "cytotoxic_t_filtered_matrices_mex" "memory_t_filtered_matrices_mex" "naive_cytotoxic_filtered_matrices_mex" "naive_t_filtered_matrices_mex" "regulatory_t_filtered_matrices_mex")
+# Generate 10 masking data 
 
-for i in "${testdata[@]}"
+mkdir ../data/geneFilterResult/maskingData
+mkdir ../data/geneFilterResult/maskingData/h5
+mkdir ../data/geneFilterResult/maskingData/csv
+
+for i in {1:100}
 do
-	#echo $i
-	for a in "adam" "rmsprop"
-	do
-		#echo $a
-		for l in "64 32 64" "512 64 512"
-		do
-			#echo $l
-			px=''
-			for w in $l
-			do
-				px+='_'$w
-			done
-			for b in 32 128 512 1024
-			do
-				#echo $b
-				weight_file="weight_${a}${px}_g1_c1_b$b.h5"
-				#echo "python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &"
-				python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &
-				#mv ../result/zheng/${i}_${a}${px}_${b}_ ../result/zheng/${i}_${a}${px}_${b}
-			done
-		done
-	done
-	wait
+	echo "../bin/maskingData ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.h5 ../data/geneFilterResult/maskingData/h5/293t_filtered_gene_bc_matrices_mex_${i}.h5"
 done
+
+#declare -a testdata=("293t_filtered_gene_bc_matrices_mex" "b_cells_filtered_matrices_mex" "cd34_filtered_matrices_mex" "cd4_t_helper_filtered_matrices_mex" "cd56_nk_filtered_matrices_mex" "cytotoxic_t_filtered_matrices_mex" "memory_t_filtered_matrices_mex" "naive_cytotoxic_filtered_matrices_mex" "naive_t_filtered_matrices_mex" "regulatory_t_filtered_matrices_mex")
+
+#for i in "${testdata[@]}"
+#do
+	##echo $i
+	#for a in "adam" "rmsprop"
+	#do
+		##echo $a
+		#for l in "64 32 64" "512 64 512"
+		#do
+			##echo $l
+			#px=''
+			#for w in $l
+			#do
+				#px+='_'$w
+			#done
+			#for b in 32 128 512 1024
+			#do
+				##echo $b
+				#weight_file="weight_${a}${px}_g1_c1_b$b.h5"
+				##echo "python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &"
+				#python3.6 ./main.py -t prediction -i ../data/zheng/${i}/hg19/ -o ../result/zheng/${i}_${a}${px}_${b} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_mtx &
+			#done
+		#done
+	#done
+	#wait
+#done
+
 #for a in "${testdata[@]}"
 #do
 	#echo "$a"

@@ -46,6 +46,7 @@ def load_weight(input_file, weight_file, hidden_size, gene_file,output_path, for
     net.build()
     net.load_weights(weight_file)
     net.predict(adata, mode='full', return_info=True)
-    net.write(adata, mode='full')
+    net.write(adata, mode='latent')
+    #net.write(adata, mode='full')
 
 

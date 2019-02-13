@@ -108,7 +108,8 @@ class ZINBAutoencoder():
 
             if hid_drop > 0.0:
                 last_hidden = Dropout(hid_drop, name='%s_drop' % layer_name)(last_hidden)
-
+        
+        #self.encoder = xxx
         self.decoder_output = last_hidden
         self.build_output()
 
@@ -136,7 +137,7 @@ class ZINBAutoencoder():
         self.extra_models['decoded'] = Model(inputs=self.input_layer, outputs=self.decoder_output)
 
         self.model = Model(inputs=[self.input_layer, self.sf_layer], outputs=output)
-
+        self.encoder = self.get_encoder(True)
 
 
     def predict(self, adata, mode='denoise', return_info=False, copy=False):
@@ -150,15 +151,22 @@ class ZINBAutoencoder():
 
             adata.X = self.model.predict({'count': adata.X,
                                           'size_factors': adata.obs.size_factors})
-
+                                     
+        if mode in ('latent', 'full'):
+            print('Calculating low dimension representations...')
+            adata.obsm['X_compressed'] = self.encoder.predict({'count': adata.X,
+                                          'size_factors': adata.obs.size_factors})
+                                          
+        if mode =='latent':
+            adata.X = adata.raw.X.copy()
 
         return adata
 
-    def write(self, adata, mode='denoise'):
-
-        colnames = adata.obs_names.values
-        rownames = adata.var_names.values
-
+    def write(self, adata, mode='denoise', colnames=None):
+        
+        colnames = adata.var_names.values if colnames is None else colnames
+        rownames = adata.obs_names.values
+        
         print('Saving output(s)...')
         os.makedirs(self.file_path, exist_ok=True)
 
@@ -167,6 +175,37 @@ class ZINBAutoencoder():
             matrix = adata.X.T
             pd.DataFrame(matrix, index=rownames, columns=colnames).to_csv(os.path.join(self.file_path, 'mean.csv'),sep=',',index=(rownames is not None),header=(colnames is not None),float_format='%.2f')
 
+        if mode in ('latent', 'full'):
+            print('Saving latent representations...')
+            self.write_text_matrix(adata.obsm['X_compressed'],os.path.join(self.file_path, 'latent.tsv'), rownames=rownames, transpose=False)
 
     def load_weights(self, filename):
         self.model.load_weights(filename)
+        
+    def write_text_matrix(selft, matrix, filename, rownames=None, colnames=None, transpose=False):
+        if transpose:
+            matrix = matrix.T
+            rownames, colnames = colnames, rownames
+        pd.DataFrame(matrix, index=rownames, columns=colnames).to_csv(filename,
+                                                                  sep='\t',
+                                                                  index=(rownames is not None),
+                                                                  header=(colnames is not None),
+                                                                  float_format='%.4f')
+    def get_encoder(self):
+        i = 0
+        for l in self.model.layers:
+            if l.name == 'center_drop':
+                break
+            i += 1
+
+        return Model(inputs=self.model.get_layer(index=i+1).input,
+                     outputs=self.model.output)
+
+    def get_encoder(self, activation=False):
+        if activation:
+            ret = Model(inputs=self.model.input,
+                        outputs=self.model.get_layer('center_act').output)
+        else:
+            ret = Model(inputs=self.model.input,
+                        outputs=self.model.get_layer('center').output)
+        return ret
