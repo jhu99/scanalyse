@@ -25,6 +25,8 @@ parser.add_argument('--batch_size','-b', type=int, default=128,
 parser.add_argument('--algorithm','-a', default='rmsprop', 
 					choices=['adam','rmsprop'],
 					help='The optimization algorithms. It has two options, \'adam\' or \'rmsprop\'. Default is \'rmsprop\'.')
+parser.add_argument('--mode', '-m', default='latent',
+					help='The mode of output has three options: \'denoise\', \'latent\' or \'full\'.')
 parser.add_argument('--format','-f', required= True, 
 					choices=['10x_h5','10x_mtx'],
 					help='The format of input files. It has two options, \'10x_h5\' or \'10x_mtx\'.')
@@ -48,6 +50,7 @@ elif args.task =='prediction':
 						hidden_size=args.latent_size,
 						output_path=args.output_path,
 						filtered=args.filtered,
+						mode=args.mode,
 						format_type=args.format)
 else:
 	print('Please use \'train\' or \'prediction\' to specific --task.')
