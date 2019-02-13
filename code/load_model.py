@@ -11,8 +11,8 @@ from model import ZINBAutoencoder
 from getAnnData import getAnnData, getAnnData_10x_h5, getAnnData_10x_mtx, pre_process_input_data
 
 
-def load_weight(input_file, weight_file, hidden_size, gene_file,output_path, format_type="10x_h5"):
-    adata = pre_process_input_data(gene_file,input_file,format_type)
+def load_weight(input_file, weight_file, hidden_size, filtered, gene_file,output_path, format_type="10x_h5"):
+    adata = pre_process_input_data(gene_file,input_file,filtered,format_type)
     adata.raw = adata.copy()
 
     # calculate size factors

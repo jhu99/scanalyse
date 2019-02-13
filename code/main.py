@@ -11,11 +11,13 @@ parser.add_argument('--task','-t', required=True,
 parser.add_argument('--input_file','-i', required = True, 
 					help='The path of an input filename.')
 parser.add_argument('--gene_file','-g', required= True,
-					help='The path of a gene filename.', default='input_tensor.csv')
+					help='The path of a gene filename.')
 parser.add_argument('--weight_file','-w', 
 					help='The path of a weight filename.')
 parser.add_argument('--output_path','-o', required = True,
 					help='The path of the output directory.')
+parser.add_argument('--filtered', 
+					help='The input data was filtered to fit the neural network.',action='store_true')
 parser.add_argument('--latent_size','-l', type=int, nargs='+', default=[64,32,64],
 					help='The size of latent layers.')
 parser.add_argument('--batch_size','-b', type=int, default=128,
@@ -45,6 +47,7 @@ elif args.task =='prediction':
 						gene_file=args.gene_file,
 						hidden_size=args.latent_size,
 						output_path=args.output_path,
+						filtered=args.filtered,
 						format_type=args.format)
 else:
 	print('Please use \'train\' or \'prediction\' to specific --task.')

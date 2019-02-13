@@ -34,12 +34,13 @@ def getAnnData_10x_mtx(input_file):
 	adata = sc.read_10x_mtx(input_file)
 	return adata
 
-def pre_process_input_data(gene_file,input_file,format_type="10x_mtx"):
+def pre_process_input_data(gene_file,input_file,filtered=False,format_type="10x_mtx"):
 	if format_type == "10x_h5":
 		adata = getAnnData_10x_h5(input_file)
 	else:
 		adata = getAnnData_10x_mtx(input_file)
-	
+	if filtered:
+		return adata
 	rownames = adata.obs_names.values
 	colnames = adata.var['gene_ids'].values
 	X2=pd.DataFrame(adata.X.todense(), index=rownames, columns=colnames)
