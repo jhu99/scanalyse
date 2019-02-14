@@ -11,11 +11,13 @@ parser.add_argument('--task','-t', required=True,
 parser.add_argument('--input_file','-i', required = True, 
 					help='The path of an input filename.')
 parser.add_argument('--gene_file','-g', required= True,
-					help='The path of a gene filename.', default='input_tensor.csv')
+					help='The path of a gene filename.')
 parser.add_argument('--weight_file','-w', 
 					help='The path of a weight filename.')
 parser.add_argument('--output_path','-o', required = True,
 					help='The path of the output directory.')
+parser.add_argument('--filtered', 
+					help='The input data was filtered to fit the neural network.',action='store_true')
 parser.add_argument('--latent_size','-l', type=int, nargs='+', default=[64,32,64],
 					help='The size of latent layers.')
 parser.add_argument('--batch_size','-b', type=int, default=128,
@@ -23,6 +25,8 @@ parser.add_argument('--batch_size','-b', type=int, default=128,
 parser.add_argument('--algorithm','-a', default='rmsprop', 
 					choices=['adam','rmsprop'],
 					help='The optimization algorithms. It has two options, \'adam\' or \'rmsprop\'. Default is \'rmsprop\'.')
+parser.add_argument('--mode', '-m', default='latent',
+					help='The mode of output has three options: \'denoise\', \'latent\' or \'full\'.')
 parser.add_argument('--format','-f', required= True, 
 					choices=['10x_h5','10x_mtx'],
 					help='The format of input files. It has two options, \'10x_h5\' or \'10x_mtx\'.')
@@ -45,6 +49,8 @@ elif args.task =='prediction':
 						gene_file=args.gene_file,
 						hidden_size=args.latent_size,
 						output_path=args.output_path,
+						filtered=args.filtered,
+						mode=args.mode,
 						format_type=args.format)
 else:
 	print('Please use \'train\' or \'prediction\' to specific --task.')
