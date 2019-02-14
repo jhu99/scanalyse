@@ -1251,7 +1251,8 @@ void SparseMatrix::maskingData(int loss_probability, string write_path, string w
 	}
 	indptr[cell_count] = data_count;
 	if (write_type == "h5") {
-		write2HDF5(write_path);
+		h5Compressed(write_path,"s",1000,1);
+		//write2HDF5(write_path);
 	}
 	else {
 		write2CSV(write_path, "original");
