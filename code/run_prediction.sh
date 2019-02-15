@@ -48,7 +48,6 @@ done
 
 for file in $(ls ../data/geneFilterResult/*.h5)  
 do  
-	echo $file;
 	for i in $(seq 1 10)
 	do
 		for j in 2 5 10
@@ -56,7 +55,7 @@ do
 			folder=${file%/*}		
 			h5_files="${file%/*}/maskingData/h5/${file##*/}_masking_${j}_${i}.h5"
 			csv_files="${file%/*}/maskingData/csv/${file##*/}_masking_${j}_${i}.csv"
-			../bin/maskingDataTest $file ${j} ${h5_files}
+			../bin/maskingDataTest ${file} ${j} ${h5_files}
 			../bin/write2CSVTest ${h5_files} ${csv_files} "original"
 		done
 	done 
