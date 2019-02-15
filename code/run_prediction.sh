@@ -46,6 +46,22 @@ do
 	echo "../bin/maskingData ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.h5 ../data/geneFilterResult/maskingData/h5/293t_filtered_gene_bc_matrices_mex_${i}.h5"
 done
 
+for file in $(ls ../data/geneFilterResult/*.h5)  
+do  
+	echo $file;
+	for i in $(seq 1 10)
+	do
+		for j in 2 5 10
+		do
+			folder=${file%/*}		
+			h5_files="${file%/*}/maskingData/h5/${file##*/}_masking_${j}_${i}.h5"
+			csv_files="${file%/*}/maskingData/csv/${file##*/}_masking_${j}_${i}.csv"
+			../bin/maskingDataTest $file ${j} ${h5_files}
+			../bin/write2CSVTest ${h5_files} ${csv_files} "original"
+		done
+	done 
+done
+
 #declare -a testdata=("293t_filtered_gene_bc_matrices_mex" "b_cells_filtered_matrices_mex" "cd34_filtered_matrices_mex" "cd4_t_helper_filtered_matrices_mex" "cd56_nk_filtered_matrices_mex" "cytotoxic_t_filtered_matrices_mex" "memory_t_filtered_matrices_mex" "naive_cytotoxic_filtered_matrices_mex" "naive_t_filtered_matrices_mex" "regulatory_t_filtered_matrices_mex")
 
 #for i in "${testdata[@]}"
