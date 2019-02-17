@@ -1,5 +1,6 @@
 #include"SparseMatrix/SparseMatrix.h"
 #include <iostream>
+#include <cmath>
 #include <algorithm>
 #include <stdio.h>
 #include <gsl/gsl_statistics.h>
