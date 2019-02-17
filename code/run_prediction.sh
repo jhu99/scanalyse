@@ -48,12 +48,13 @@ done
 
 for file in $(ls ../data/geneFilterResult/*.h5)  
 do  
+	folder=${file%/*}
+	filename=${file##*/}
+	filename=${filename%.*}	
 	for i in $(seq 1 10)
 	do
 		for j in 2 5 10
 		do
-			folder=${file%/*}
-			filename=${file##*/}		
 			h5_files="${folder}/maskingData/h5/${filename}_masking_${j}_${i}.h5"
 			csv_files="${folder}/maskingData/csv/${filename}_masking_${j}_${i}.csv"
 			../bin/maskingDataTest ${file} ${j} ${h5_files}
