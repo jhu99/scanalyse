@@ -59,6 +59,7 @@ do
 			csv_files="${folder}/maskingData/csv/${filename}_masking_${j}_${i}.csv"
 			../bin/maskingDataTest ${file} ${j} ${h5_files}
 			../bin/write2CSVTest ${h5_files} ${csv_files} "original"
+			../bin/convert_csv_row_to_clumn ${csv_files}
 		done
 	done 
 done
