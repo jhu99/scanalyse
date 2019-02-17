@@ -41,10 +41,10 @@ mkdir ../data/geneFilterResult/maskingData
 mkdir ../data/geneFilterResult/maskingData/h5
 mkdir ../data/geneFilterResult/maskingData/csv
 
-for i in {1:100}
-do
-	echo "../bin/maskingData ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.h5 ../data/geneFilterResult/maskingData/h5/293t_filtered_gene_bc_matrices_mex_${i}.h5"
-done
+# for i in {1:100}
+# do
+	# echo "../bin/maskingData ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.h5 ../data/geneFilterResult/maskingData/h5/293t_filtered_gene_bc_matrices_mex_${i}.h5"
+# done
 
 for file in $(ls ../data/geneFilterResult/*.h5)  
 do  
