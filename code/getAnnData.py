@@ -7,7 +7,6 @@ from anndata import h5py, logging
 from anndata import AnnData, read_h5ad
 import pandas as pd
 
-
 def getAnnData(input_file):
     h5 = h5py.File(input_file,'r')
     data = h5['/GRCh38/data']
