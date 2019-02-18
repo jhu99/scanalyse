@@ -1228,27 +1228,40 @@ void SparseMatrix::write_norm_data(string write_path, string norm_type, int chun
 }
 
 
-void SparseMatrix::maskingData(int loss_probability, string write_path, string write_type) {
+void SparseMatrix::maskingData(int mask_probability, string write_path, string log_path, string write_type) {
 	long long cnt = 0;
 	long long start, end;
 	srand((unsigned)time(NULL));
-
+	int* mask_column,mask_cnt;
+	mask_column = new int[gene_count];
+	ofstream ofn(log_path);
 	for (int i = 0; i < cell_count; i++) {
+		mask_cnt=0;
+		if(i)ofn<<"\n";
+		ofn<<i;
 		start = indptr[i];
 		end = indptr[i + 1];
 		indptr[i] = indptr[i] - cnt;
 		for (long long j = start; j < end; j++) {
-			if (rand() % 100 < loss_probability) {
+			if (rand() % 100 < mask_probability) {
 				data[j] = 0;
 				data_count--;
 				cnt++;
+				mask_column[mask_cnt] = indices[j];
+				mask_cnt++;
 			}
 			else {
 				data[j - cnt] = data[j];
 				indices[j - cnt] = indices[j];
 			}
 		}
+		//sort(mask_column,mask_column+mask_cnt);
+		for(int j = 0;j<mask_cnt;j++){
+			ofn<<","<<mask_column[j];
+		}
 	}
+	ofn.close();
+	delete mask_column;
 	indptr[cell_count] = data_count;
 	if (write_type == "h5") {
 		h5Compressed(write_path,"s",1000,1);

@@ -40,6 +40,7 @@
 mkdir ../data/geneFilterResult/maskingData
 mkdir ../data/geneFilterResult/maskingData/h5
 mkdir ../data/geneFilterResult/maskingData/csv
+mkdir ../data/geneFilterResult/maskingData/log
 
 # for i in {1:100}
 # do
@@ -57,7 +58,8 @@ do
 		do
 			h5_files="${folder}/maskingData/h5/${filename}_masking_${j}_${i}.h5"
 			csv_files="${folder}/maskingData/csv/${filename}_masking_${j}_${i}.csv"
-			../bin/maskingDataTest ${file} ${j} ${h5_files}
+			log_files="${folder}/maskingData/log/${filename}_masking_${j}_${i}_log.csv"
+			../bin/maskingDataTest ${file} ${j} ${h5_files} ${log_files}
 			../bin/write2CSVTest ${h5_files} ${csv_files} "original"
 			../bin/convert_csv_row_to_clumn ${csv_files} &
 		done
