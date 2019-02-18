@@ -58,10 +58,11 @@ do
 		do
 			h5_files="${folder}/maskingData/h5/${filename}_masking_${j}_${i}.h5"
 			csv_files="${folder}/maskingData/csv/${filename}_masking_${j}_${i}.csv"
+			csv_files_t="${folder}/maskingData/csv/${filename}_masking_${j}_${i}_t.csv"
 			log_files="${folder}/maskingData/log/${filename}_masking_${j}_${i}_log.csv"
 			../bin/maskingDataTest ${file} ${j} ${h5_files} ${log_files}
 			../bin/write2CSVTest ${h5_files} ${csv_files} "original"
-			../bin/convert_csv_row_to_clumn ${csv_files} &
+			../bin/convert_csv_row_to_clumn ${csv_files} ${csv_files_t} &
 		done
 		wait
 	done 
