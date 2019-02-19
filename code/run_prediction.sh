@@ -37,36 +37,58 @@
 #done
 # Generate 10 masking data 
 
-mkdir ../data/geneFilterResult/maskingData
-mkdir ../data/geneFilterResult/maskingData/h5
-mkdir ../data/geneFilterResult/maskingData/csv
-mkdir ../data/geneFilterResult/maskingData/log
+#mkdir ../data/geneFilterResult/maskingData
+#mkdir ../data/geneFilterResult/maskingData/h5
+#mkdir ../data/geneFilterResult/maskingData/csv
+#mkdir ../data/geneFilterResult/maskingData/log
 
 # for i in {1:100}
 # do
 	# echo "../bin/maskingData ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.h5 ../data/geneFilterResult/maskingData/h5/293t_filtered_gene_bc_matrices_mex_${i}.h5"
 # done
 
-for file in $(ls ../data/geneFilterResult/*.h5)  
+result="../result/zheng/maskingData/myresult"
+l="64 32 64"
+a="adam"
+px="_64_32_64"
+b=32
+weight_file="weight_${a}${px}_g1_c1_b$b.h5"
+for file in $(ls ../data/geneFilterResult/293*.h5)  
 do  
 	folder=${file%/*}
 	filename=${file##*/}
 	filename=${filename%.*}	
-	for j in 2 5 10
+	for j in 2
 	do
 		for i in $(seq 1 10)
 		do
 			h5_files="${folder}/maskingData/h5/${filename}_masking_${j}_${i}.h5"
-			csv_files="${folder}/maskingData/csv/${filename}_masking_${j}_${i}.csv"
-			csv_files_t="${folder}/maskingData/csv/${filename}_masking_${j}_${i}_t.csv"
-			log_files="${folder}/maskingData/log/${filename}_masking_${j}_${i}_log.csv"
-			../bin/maskingDataTest ${file} ${j} ${h5_files} ${log_files}
-			../bin/write2CSVTest ${h5_files} ${csv_files} "original"
-			../bin/convert_csv_row_to_clumn ${csv_files} ${csv_files_t} &
+			echo "python3.6 ./main.py -t prediction -i ${h5_files} -o ${result}/${filename} -g ../result/ica_all/input_gene_g1.csv -l $l -w ../result/ica_all/${weight_file} -f 10x_h5"
 		done
-		wait
 	done 
 done
+
+#for file in $(ls ../data/geneFilterResult/*.h5)  
+#do  
+	#folder=${file%/*}
+	#filename=${file##*/}
+	#filename=${filename%.*}	
+	#for j in 2 5 10
+	#do
+		#for i in $(seq 1 10)
+		#do
+			#h5_files="${folder}/maskingData/h5/${filename}_masking_${j}_${i}.h5"
+			#csv_files="${folder}/maskingData/csv/${filename}_masking_${j}_${i}.csv"
+			#csv_files_t="${folder}/maskingData/csv/${filename}_masking_${j}_${i}_t.csv"
+			#result_path="${folder}/maskingData/"
+			#log_files="${folder}/maskingData/log/${filename}_masking_${j}_${i}_log.csv"
+			##../bin/maskingDataTest ${file} ${j} ${h5_files} ${log_files}
+			##../bin/write2CSVTest ${h5_files} ${csv_files} "original"
+			##../bin/convert_csv_row_to_clumn ${csv_files} ${csv_files_t} &
+			#python3.6 ./main.py -t prediction -i ${h5_files} -o ${result} -g ../result/ica_all/input_gene_g1.csv -l $l -w xx -f 10x_h5
+		#done
+	#done 
+#done
 
 #declare -a testdata=("293t_filtered_gene_bc_matrices_mex" "b_cells_filtered_matrices_mex" "cd34_filtered_matrices_mex" "cd4_t_helper_filtered_matrices_mex" "cd56_nk_filtered_matrices_mex" "cytotoxic_t_filtered_matrices_mex" "memory_t_filtered_matrices_mex" "naive_cytotoxic_filtered_matrices_mex" "naive_t_filtered_matrices_mex" "regulatory_t_filtered_matrices_mex")
 
