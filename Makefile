@@ -72,4 +72,4 @@ maskingDataTest:tests/maskingDataTest.cpp  SparseMatrix.o lib/qqNorm/qqNorm.o li
 moveTest:
 	mv ./*Test ./bin
 clean:
-	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/SparseMatrix/*.o lib/geneTop/*.o lib/rank/*.o ./*.o lib/logNormalize/*.o lib/geneFilter/*.o
+	rm lib/cell/*.o lib/fun/*.o lib/linearRegression/*.o lib/argparser/*.o lib/qqNorm/*.o lib/geneTop/*.o lib/rank/*.o lib/logNormalize/*.o lib/geneFilter/*.o ./*.o
