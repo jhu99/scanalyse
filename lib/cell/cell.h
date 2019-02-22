@@ -7,6 +7,7 @@
 #include<cstdlib>
 #include<fstream>
 #include<sstream>
+#include<cstdlib>
 
 using namespace std;
 
@@ -19,7 +20,7 @@ template <class T> class Cells {
 	unordered_map<int, string> numToGene;
 public:
 	Cells();
-	Cells(int n, int p);
+	Cells(int n, int p,string type="original");
 	~Cells();
 	void setCell(T** cell);
 	void setCellToNUm(unordered_map<string, int> cellToNum);
@@ -33,11 +34,12 @@ public:
 	unordered_map<int, string> getNumToCell();
 	unordered_map<int, string> getNumToGene();
 
-	void readFile(string path);
+	void readFile(string path, string type="original");
 	void findCell(string cellName);
 	void findGene(string geneName);
 	void findCellAndGene(string cellName, string geneName);
 	void releaseMemory();
+	void maskCheck(string path);
 };
 
 #endif // !CELL_H

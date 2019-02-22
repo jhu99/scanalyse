@@ -7,12 +7,20 @@ template <class T> Cells<T>::Cells() {
 
 }
 
-template <class T> Cells<T>::Cells(int n, int p) {
+template <class T> Cells<T>::Cells(int n, int p,string type) {
 	this->n = n;
 	this->p = p;
-	cell = new T *[p];
-	for (int i = 0; i < p; i++) {
-		cell[i] = new T[n];
+	if(type=="original"){
+		cell = new T *[n];
+		for (int i = 0; i < n; i++) {
+			cell[i] = new T[p];
+		}
+	}
+	else{
+		cell = new T *[p];
+		for (int i = 0; i < p; i++) {
+			cell[i] = new T[n];
+		}
 	}
 }
 
@@ -67,7 +75,7 @@ template <class T> unordered_map<int, string> Cells<T>::getNumToGene() {
 
 
 
-template <class T> void Cells<T>::readFile(string path) {
+template <class T> void Cells<T>::readFile(string path, string type) {
 	ifstream inFile(path, ios::in);
 	string lineStr;
 	string geneName;
@@ -83,35 +91,73 @@ template <class T> void Cells<T>::readFile(string path) {
 		separator = '\t';
 	}
 	int i = 0;
-	if (getline(inFile, lineStr)) {
-		stringstream ss(lineStr);
-		while (getline(ss, str, separator)) {
-			//str = str.substr(1, str.size() - 2);
-			if (i > 0) {
-				cellToNum[str] = i - 1;
-				numToCell[i - 1] = str;
+	if(type=="original"){
+		if (getline(inFile, lineStr)) {
+			stringstream ss(lineStr);
+			while (getline(ss, str, separator)) {
+				//cout<<str<<endl;
+				//str = str.substr(1, str.size() - 2);
+				if (i > 0) {
+					//cout<<str<<endl;
+					geneToNum[str] = i - 1;
+					numToGene[i - 1] = str;
+				}
+				i++;
+			}
+		}
+
+		i = 0;
+		while (getline(inFile, lineStr)) {
+			stringstream ss(lineStr);
+			int flag = 0, j = 0;
+			while (getline(ss, str, separator)) {
+				
+				if (flag == 0) {
+					cellToNum[str] = i;
+					numToCell[i] = str;
+					flag = 1;
+				}
+				else {
+					
+					cell[i][j] = (T)atof(str.c_str());
+					j++;
+				}
 			}
 			i++;
 		}
 	}
-
-	i = 0;
-	while (getline(inFile, lineStr)) {
-		stringstream ss(lineStr);
-		int flag = 0, j = 0;
-		while (getline(ss, str, separator)) {
-			if (flag == 0) {
+	else{
+		
+		if (getline(inFile, lineStr)) {
+			stringstream ss(lineStr);
+			while (getline(ss, str, separator)) {
 				//str = str.substr(1, str.size() - 2);
-				geneToNum[str] = i;
-				numToGene[i] = str;
-				flag = 1;
-			}
-			else {
-				cell[j][i] = (T)atof(str.c_str());
-				j++;
+				if (i > 0) {
+					cellToNum[str] = i - 1;
+					numToCell[i - 1] = str;
+				}
+				i++;
 			}
 		}
-		i++;
+
+		i = 0;
+		while (getline(inFile, lineStr)) {
+			stringstream ss(lineStr);
+			int flag = 0, j = 0;
+			while (getline(ss, str, separator)) {
+				if (flag == 0) {
+					//str = str.substr(1, str.size() - 2);
+					geneToNum[str] = i;
+					numToGene[i] = str;
+					flag = 1;
+				}
+				else {
+					cell[j][i] = (T)atof(str.c_str());
+					j++;
+				}
+			}
+			i++;
+		}
 	}
 }
 
@@ -141,4 +187,33 @@ template <class T> void Cells<T>::releaseMemory() {
 
 	}
 	delete[] cell;
+}
+
+template <class T> void Cells<T>::maskCheck(string path){
+	ifstream inFile(path, ios::in);
+	string lineStr;
+	string geneName;
+	string str;
+	string suffixName;
+	char separator;
+	bool flag = true;
+	int i, j;
+	if (getline(inFile, lineStr)) {
+		stringstream ss(lineStr);
+		while (getline(ss, str, ',')) {
+			int x = atoi(str.c_str());
+			i = x/numToGene.size();
+			j = x%numToGene.size();
+			if(cell[i][j]){
+				
+				
+			}
+			else {
+				cout<<"Wrong"<<endl;
+				cout<<i<<" "<<j<<endl;
+				flag = false;
+			}
+		}
+	}
+	if(flag)cout<<"OK"<<endl;
 }
