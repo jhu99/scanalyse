@@ -101,5 +101,5 @@ public:
 	void mergeDate(vector<string> paths);
 	void h5Compressed(string aimFilePath, string method, int chunk, int rank);
 	void write_norm_data(string write_path, string norm_type, int chunk, string method);
-	void maskingData(int mask_probability, string write_path, string log_path, string write_type = "h5");
+	void maskingData(int mask_probability, string write_path, string log_path,int seed = 2019, string write_type = "h5");
 };
