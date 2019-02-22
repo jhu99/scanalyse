@@ -1,10 +1,8 @@
 #! /bin/bash
 rm -rf ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.csv ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex_log.csv ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex_mask.csv 
-make maskingDataTest
-make maskingCheckTest
-make write2CSVTest
-make moveTest
 
 ./maskingDataTest ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.h5 5 ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex_mask.csv ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex_log.csv 2019
 ./write2CSVTest ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.h5 ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.csv original
 ./maskingCheckTest 2885 28392 ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.csv ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex_log.csv 
+
+rm -rf ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex.csv ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex_log.csv ../data/geneFilterResult/293t_filtered_gene_bc_matrices_mex_mask.csv 
