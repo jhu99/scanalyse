@@ -1256,9 +1256,9 @@ void SparseMatrix::maskingData(int mask_probability, string write_path, string l
 		}
 		//sort(mask_column,mask_column+mask_cnt);
 		for(int j = 0;j<mask_cnt;j++){
-			if(flag)ofn<<",";
-			else flag=true;
-			ofn << i*gene_count+mask_column[j];
+			//if(flag)ofn<<",";
+			//else flag=true;
+			ofn << i*gene_count+mask_column[j]+1 << "\n";
 		}
 	}
 	ofn.close();
