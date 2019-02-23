@@ -10,10 +10,12 @@ parser.add_argument('--task','-t', required=True,
 					help='The task will be performed. It has two options, \'train\' or \'prediction\'. Default is \'train\'.')
 parser.add_argument('--input_file','-i', required = True, 
 					help='The path of an input filename.')
-parser.add_argument('--gene_file','-g', required= True,
+parser.add_argument('--gene_file','-g', 
 					help='The path of a gene filename.')
 parser.add_argument('--weight_file','-w', 
 					help='The path of a weight filename.')
+parser.add_argument('--load_file',
+					help='Load a pre-trained weight file')
 parser.add_argument('--output_path','-o', required = True,
 					help='The path of the output directory.')
 parser.add_argument('--filtered', 
@@ -45,11 +47,13 @@ if args.task =='train':
 #Argv 2: Pathway of the load_weight
 elif args.task =='prediction':
 	load_model.load_weight(input_file=args.input_file,
+						load_weight_file=args.load_file,
 						weight_file=args.weight_file,
 						gene_file=args.gene_file,
 						hidden_size=args.latent_size,
 						output_path=args.output_path,
 						filtered=args.filtered,
+						optimizer=args.algorithm,
 						mode=args.mode,
 						format_type=args.format)
 else:

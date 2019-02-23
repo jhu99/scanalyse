@@ -164,8 +164,8 @@ class ZINBAutoencoder():
 
     def write(self, adata, mode='denoise', colnames=None):
         
-        colnames = adata.var_names.values if colnames is None else colnames
-        rownames = adata.obs_names.values
+        rownames = adata.var['gene_ids'].values if colnames is None else colnames
+        colnames = adata.obs_names.values
         
         print('Saving output(s)...')
         os.makedirs(self.file_path, exist_ok=True)
@@ -177,7 +177,7 @@ class ZINBAutoencoder():
 
         if mode in ('latent', 'full'):
             print('Saving latent representations...')
-            self.write_text_matrix(adata.obsm['X_compressed'],os.path.join(self.file_path, 'latent.tsv'), rownames=rownames, transpose=False)
+            self.write_text_matrix(adata.obsm['X_compressed'],os.path.join(self.file_path, 'latent.tsv'), rownames=colnames, transpose=False)
 
     def load_weights(self, filename):
         self.model.load_weights(filename)

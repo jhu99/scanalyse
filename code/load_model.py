@@ -9,9 +9,9 @@ from keras import backend as K
 from sklearn.model_selection import train_test_split
 from model import ZINBAutoencoder
 from getAnnData import getAnnData, getAnnData_10x_h5, getAnnData_10x_mtx, pre_process_input_data
+from train import train
 
-
-def load_weight(input_file, weight_file, hidden_size, filtered, gene_file,output_path, mode, format_type="10x_h5"):
+def load_weight(input_file, weight_file_1, weight_file_2, optimizer, hidden_size, filtered, gene_file,output_path, mode, format_type="10x_h5"):
     adata = pre_process_input_data(gene_file,input_file,filtered,format_type)
     adata.raw = adata.copy()
 
@@ -44,7 +44,9 @@ def load_weight(input_file, weight_file, hidden_size, filtered, gene_file,output
                           debug=False,
                           file_path=output_path)
     net.build()
-    net.load_weights(weight_file)
+    net.load_weights(weight_file_1)
+    
+    losses = train(adata, net, optimizer=optimizer, weight_file=weight_file_2, output_dir=output_path)
     net.predict(adata, mode=mode, return_info=True)
     net.write(adata, mode= mode)
     #net.write(adata, mode='full')
