@@ -91,7 +91,7 @@ done
 			#csv_files_t="${folder}/maskingData/csv/${filename}_masking_${j}_${i}_t.csv"
 			#result_path="${folder}/maskingData/"
 			#log_files="${folder}/maskingData/log/${filename}_masking_${j}_${i}_log.csv"
-			#../bin/maskingDataTest ${file} ${j} ${h5_files} ${log_files} $i
+			#../bin/maskingDataTest ${file} ${j} ${h5_files} ${log_files} $[i*j+100]
 			#../bin/write2CSVTest ${h5_files} ${csv_files} "original"
 			#../bin/convert_csv_row_to_clumn ${csv_files} ${csv_files_t} &
 			##python3.6 ./main.py -t prediction -i ${h5_files} -o ${result} -g ../result/ica_all/input_gene_g1.csv -l $l -w xx -f 10x_h5
