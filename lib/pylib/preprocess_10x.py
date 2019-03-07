@@ -24,6 +24,33 @@ def getAnnData(input_file):
 		dtype=X.dtype.name,
 		filemode=True)
 	return adata
+
+def getNormAnnData(input_file,normalize_type):
+    h5 = h5py.File(input_file,'r')
+    data = h5['/GRCh38/data']
+    indices = h5['/GRCh38/indices']
+    barcodes = h5['/GRCh38/barcodes']
+    indptr = h5['/GRCh38/indptr']
+    genes = h5['/GRCh38/genes']
+    gene_names = h5['/GRCh38/gene_names']
+    shape = h5['/GRCh38/shape']
+    if normalize_type == "rank":
+        rank_zero = h5['/GRCh38/rank_zero']
+    
+    X = csr_matrix((data,indices,indptr),shape=(shape.value[1],shape.value[0]),dtype='float32')
+
+    if  normalize_type == "rank":
+        for i in range(shape.value[0]):
+            for j in range(shape.value[1]):
+                if X[i][j] == 0:
+                    X[i][j] = rank_zero[i]
+
+    adata = AnnData(X,
+		   obs=pd.DataFrame(index=barcodes.value),
+		   var=pd.DataFrame(index=genes.value),
+		   dtype=X.dtype.name,
+		   filemode=True)
+    return adata
  
 def getAnnData_10x_h5(input_file):
 	adata = sc.read_10x_h5(input_file,"GRCh38")
