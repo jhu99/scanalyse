@@ -40,8 +40,8 @@ def getNormAnnData(input_file,normalize_type):
     X = csr_matrix((data,indices,indptr),shape=(shape.value[1],shape.value[0]),dtype='float32')
 
     if  normalize_type == "rank":
-        for i in range(shape.value[0]):
-            for j in range(shape.value[1]):
+        for i in range(shape.value[1]):
+            for j in range(shape.value[0]):
                 if X[i][j] == 0:
                     X[i][j] = rank_zero[i]
 
