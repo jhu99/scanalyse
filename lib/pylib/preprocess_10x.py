@@ -42,7 +42,7 @@ def getNormAnnData(input_file,normalize_type):
     if  normalize_type == "rank":
         for i in range(shape.value[1]):
             for j in range(shape.value[0]):
-                if X[i][j] == 0:
+                if abs(X[i][j] - 0) < 1e-5:
                     X[i][j] = rank_zero[i]
 
     adata = AnnData(X,
