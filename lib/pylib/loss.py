@@ -21,6 +21,23 @@ def mse_loss(y_true, y_pred):
 
     return _reduce_mean(ret)
 
+def poisson_loss(y_true, y_pred):
+    y_pred = tf.cast(y_pred, tf.float32)
+    y_true = tf.cast(y_true, tf.float32)
+
+    # we can use the Possion PMF from TensorFlow as well
+    # dist = tf.contrib.distributions
+    # return -tf.reduce_mean(dist.Poisson(y_pred).log_pmf(y_true))
+
+    nelem = _nelem(y_true)
+    y_true = _nan2zero(y_true)
+
+    # last term can be avoided since it doesn't depend on y_pred
+    # however keeping it gives a nice lower bound to zero
+    ret = y_pred - y_true*tf.log(y_pred+1e-10) + tf.lgamma(y_true+1.0)
+
+    return tf.divide(tf.reduce_sum(ret), nelem)
+
 class NB(object):
     def __init__(self, theta=None, masking=False, scope='nbinom_loss/',
                  scale_factor=1.0, debug=False):
