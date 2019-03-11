@@ -14,6 +14,11 @@ void SparseMatrix::set_log_data(double * log_normalize_data)
 	this->log_normalize_data = log_normalize_data;
 }
 
+void SparseMatrix::set_size_factor(int * size_factor)
+{
+	this->size_factor = size_factor;
+}
+
 char** SparseMatrix::get_barcodes()
 {
 	return barcodes;
@@ -1224,6 +1229,15 @@ void SparseMatrix::write_norm_data(string write_path, string norm_type, int chun
 		status = H5Dwrite(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rank_zero);
 		cout << "zero_value writed" << endl;
 	}
+	if (norm_type == "log")
+	{
+		dims[0] = cell_count;
+		dataspace_id = H5Screate_simple(rank, dims, NULL);
+		dataset_id = H5Dcreate2(file_id, "/GRCh38/size_factor", H5T_STD_I32LE,
+			dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		status = H5Dwrite(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, size_factor);
+		cout << "size_factor writed" << endl;
+	}
 	H5Fclose(file_id);
 }
 
@@ -1258,7 +1272,7 @@ void SparseMatrix::maskingData(int mask_probability, string write_path, string l
 		for(int j = 0;j<mask_cnt;j++){
 			//if(flag)ofn<<",";
 			//else flag=true;
-			ofn << i*gene_count+mask_column[j]+1 << "\n";
+			ofn << i * gene_count + mask_column[j] + 1 << "\n";
 		}
 	}
 	ofn.close();
