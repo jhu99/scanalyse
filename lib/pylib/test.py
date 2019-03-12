@@ -1,6 +1,8 @@
 import sys
 from preprocess_10x import getNormAnnData
 import AE
+import warnings
+warnings.filterwarnings("ignore")
 
 if sys.argv[2] == "log":
 	adata,size_factor = getNormAnnData(sys.argv[1],sys.argv[2])
