@@ -29,6 +29,7 @@ private:
 	double *qqNormedData;
 	double *qqNormedZero;
 	long *zeroPosPerCell;
+	int *size_factor;
 	unordered_map<int, string> numToCell;
 	unordered_map<string, int> cellToNum;
 	int gene_count;
@@ -43,6 +44,7 @@ private:
 	long long cellIndex;
 	int dataIndex;
 	int geneNamesIndex;
+
 public:
 	SparseMatrix() {
 	}
@@ -69,6 +71,7 @@ public:
 	}
 	void set_rank(unsigned short *rank);
 	void set_log_data(double *log_normalize_data);
+	void set_size_factor(int *size_factor);
 	char** get_barcodes();
 	char** get_genes();
 	char** get_gene_names();

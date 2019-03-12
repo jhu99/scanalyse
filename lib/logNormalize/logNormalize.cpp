@@ -25,6 +25,12 @@ double * logNormalize::get_normalize_data()
 	return normalize_data;
 }
 
+int * logNormalize::get_size_factor()
+{
+	return size_factor;
+}
+
+
 void logNormalize::cacuSizeFactor(int thread_index)
 {
 	int start = cell_count / thread_count * thread_index;

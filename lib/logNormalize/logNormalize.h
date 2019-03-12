@@ -1,6 +1,5 @@
 #include"SparseMatrix/SparseMatrix.h"
 #include <iostream>
-#include <cmath>
 #include <algorithm>
 #include <stdio.h>
 #include <gsl/gsl_statistics.h>
@@ -25,6 +24,7 @@ public:
 	~logNormalize();
 	double* get_log_data();
 	double *get_normalize_data();
+	int* get_size_factor();
 	void cacuSizeFactor(int thread_index);
 	void logData(int thread_index);
 	void scaleData(int thread_index);

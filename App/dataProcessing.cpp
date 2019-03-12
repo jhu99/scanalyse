@@ -91,6 +91,7 @@ int main(int argc, const char **argv)
 		log.logNormalizeData(option.thread_count);
 		cout << "end normalize--------------" << endl;
 		filt_sm.set_log_data(log.get_log_data());
+		filt_sm.set_size_factor(log.get_size_factor());
 		cout << "start write to h5 file-----------------" << endl;
 		filt_sm.write_norm_data(option.write_path, "log", 500, "s");
 		cout << "end write to h5 file-----------------" << endl;
