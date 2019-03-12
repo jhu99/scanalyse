@@ -61,7 +61,7 @@ def getAnnData_10x_mtx(input_file):
 	return adata
 
 ## reorder the variables in a desired list
-def pre_process_input_data(adata,input_file,format_type="10x_mtx"):
+def pre_process_input_data(adata,gene_file,format_type="10x_mtx", mode="test"):
 	rownames = adata.obs_names.values
 	colnames = adata.var['gene_ids'].values
 	X2=pd.DataFrame(adata.X.todense(), index=rownames, columns=colnames)
@@ -72,7 +72,7 @@ def pre_process_input_data(adata,input_file,format_type="10x_mtx"):
 	left_ind = gene_input.index.difference(common_ind)
 	X3=X2[common_ind]
 	for ind in left_ind:
-		X3.insert(0,ind,0)
+		X3.insert(0,ind,0.0001)
 	X3=X3.reindex(columns=gene_input.index.values)
 	X=sci.sparse.csr_matrix(X3,dtype='float32')
 	adata = AnnData(X,
@@ -80,6 +80,13 @@ def pre_process_input_data(adata,input_file,format_type="10x_mtx"):
 				var=pd.DataFrame(index=gene_input.index.values),
 				dtype=X.dtype.name,
 				filemode=True)
+	if mode=="test":
+		sc.pp.normalize_per_cell(adata)
+		# used for loss evaluation
+		adata.obs['size_factors'] = adata.obs.n_counts/ np.median(adata.obs.n_counts)
+		sc.pp.log1p(adata)
+		sc.pp.scale(adata, zero_center=False)
+		
 	return adata
 
 def filter_genes(adata,ntg=None,min_counts=None,min_percentage=None,flavor=None,method="HVG"):
@@ -114,6 +121,8 @@ def read_10x_data(input_file,format_type='10x_h5',backed=None):
 		adata = sc.read_10x_mtx(input_file)
 	elif format_type=='10x_h5ad':
 		adata = sc.read_h5ad(input_file,backed=backed)
+	elif format_type=="10x_csv":
+		adata = sc.read_csv(input_file)
 	else:
 		raise ValueError('`format` needs to be \'10x_h5\' or \'10x_mtx\'')
 	
