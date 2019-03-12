@@ -3,6 +3,7 @@ from keras.models import Model, load_model
 from keras.regularizers import l1_l2
 from keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from keras import backend as K
+import csv
 
 import tensorflow as tf
 import pandas as pd
@@ -105,11 +106,28 @@ class ZIP_AutoEncoder:
 		else:
 			raise ValueError("mode Error")
 		return adata
+
+	def predict_middle(self, adata, mode='latent'):
+
+		dense1_layer_model = Model(inputs=self.model.input,
+								   outputs=self.model.get_layer('center_layer').output)
+
+		dense1_output = dense1_layer_model.predict({'counts':adata.X}, batch_size=128)
+		return dense1_output
+
 	def write(self, adata):
 		filename = './result/ica_all/latent.csv'
 		colnames = None
 		rownames = adata.obs_names
 		pd.DataFrame(adata.obsm['X_m'], index=rownames, columns=colnames).to_csv(filename,sep=',',index=(rownames is not None), header=(colnames is not None), float_format='%.4f')
+
+	def write_middle(self,result,write_path):
+		print(result.shape)
+		file_path=write_path
+		with open(file_path, "w", newline='') as f:
+			writer = csv.writer(f)
+			writer.writerows(result)
+			f.close()
 	
 class ZINB_AutoEncoder:
 	def __init__(self):
@@ -172,12 +190,28 @@ class ZINB_AutoEncoder:
 		else:
 			raise ValueError("mode Error")
 		return adata
+
+	def predict_middle(self, adata,size_factors, mode='latent'):
+
+		dense1_layer_model = Model(inputs=self.model.input,
+								   outputs=self.model.get_layer('center_layer').output)
+
+		dense1_output = dense1_layer_model.predict({'counts':adata.X,'size_factors':size_factors}, batch_size=128)
+		return dense1_output
+
 	def write(self, adata):
 		filename = './result/ica_all/latent.csv'
 		colnames = None
 		rownames = adata.obs_names
 		pd.DataFrame(adata.obsm['X_m'], index=rownames, columns=colnames).to_csv(filename,sep=',',index=(rownames is not None), header=(colnames is not None), float_format='%.4f')
-		
+
+	def write_middle(self,result,write_path):
+		print(result.shape)
+		file_path=write_path
+		with open(file_path, "w", newline='') as f:
+			writer = csv.writer(f)
+			writer.writerows(result)
+			f.close()
 		
 def train_zinb_model(adata,size_factors):
 	# Input and output data
@@ -222,5 +256,23 @@ def prediction_zip(adata):
 	net.model.summary()
 	net.predict(adata)
 	net.write(adata)
+
+def prediction_zinb_middle(adata,size_factors,write_path):
+	setSession()
+	net = ZINB_AutoEncoder()
+	net.build(adata.n_vars)
+	net.model.load_weights("./result/ica_all/weights_best.h5")
+	net.model.summary()
+	result=net.predict_middle(adata, size_factors)
+	net.write_middle(result,write_path)
+
+def prediction_zip_middle(adata,write_path):
+	setSession()
+	net = ZIP_AutoEncoder()
+	net.build(adata.n_vars)
+	net.model.load_weights("./result/ica_all/weights_best.h5")
+	net.model.summary()
+	result=net.predict_middle(adata)
+	net.write_middle(result,write_path)
 
 
