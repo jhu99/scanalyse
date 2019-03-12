@@ -376,7 +376,7 @@ void SparseMatrix::cacuRankZero()
 	rank_zero = new int[cell_count];
 	for (int i = 0; i < cell_count; i++)
 	{
-		rank_zero[i] = (indptr[i + 1] - indptr[i]) / 2;
+		rank_zero[i] = (gene_count - (indptr[i + 1] - indptr[i])) / 2;
 	}
 }
 
