@@ -6,6 +6,8 @@ from keras import backend as K
 
 import tensorflow as tf
 import pandas as pd
+import csv
+import numpy as np
 
 import sys
 sys.path.insert(0,'./lib/pylib/')
@@ -107,11 +109,12 @@ class ZINB_AutoEncoder:
 		else:
 			raise ValueError("mode Error")
 		return adata
-	def write(self, adata):
-		filename = './result/ica_all/latent.csv'
+		
+	def write(self, adata, filepath):
+		#filename = './result/ica_all/latent.csv'
 		colnames = None
 		rownames = adata.obs_names
-		pd.DataFrame(adata.obsm['X_m'], index=rownames, columns=colnames).to_csv(filename,sep=',',index=(rownames is not None), header=(colnames is not None), float_format='%.4f')
+		pd.DataFrame(adata.obsm['X_m'], index=rownames, columns=colnames).to_csv(filepath,sep=',',index=(rownames is not None), header=(colnames is not None), float_format='%.4f')
 		
 		
 def train_zinb_model(adata):
@@ -127,13 +130,28 @@ def train_zinb_model(adata):
 	losses = net.model.fit(input_data, output_label, callbacks=net.callbacks, epochs=30, batch_size=128, shuffle=True, validation_split=0.1, verbose=2)
 	net.model.save("./result/ica_all/model_best.h5")
 	
-def prediction(adata):
+def prediction(adata, filepath):
 	setSession()
 	net = ZINB_AutoEncoder()
 	net.build(adata.n_vars)
 	net.model.load_weights("./result/ica_all/weights_best.h5")
 	net.model.summary()
 	net.predict(adata)
-	net.write(adata)
+	net.write(adata, filepath)
 
-
+def plotCluster(adata,h5adfile,umapfile,tsnefile):
+	import scanpy as sc
+	import matplotlib.pyplot as pl
+	sc.pp.neighbors(adata)
+	sc.tl.louvain(adata)
+	sc.tl.leiden(adata)
+	sc.tl.umap(adata)
+	sc.tl.tsne(adata,n_pcs=20)
+	adata.write(h5adfile,compression='gzip')
+	sc.pl.umap(adata,color=['louvain','leiden'],show=False)
+	pl.savefig(umapfile)
+	pl.close()
+	sc.pl.tsne(adata,color=['louvain','leiden'],show=False)
+	pl.savefig(tsnefile)
+	pl.close()
+	return adata
