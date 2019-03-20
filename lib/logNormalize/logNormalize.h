@@ -3,8 +3,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <gsl/gsl_statistics.h>
-#include <thread>
-#include <math.h>
+#include <thread> 
 #include <mutex>
 
 class logNormalize
