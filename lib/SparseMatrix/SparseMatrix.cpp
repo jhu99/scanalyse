@@ -865,10 +865,11 @@ void SparseMatrix::read_10x_mtx(string read_path)
 	readTsvFile(read_path);
 }
 
-void SparseMatrix::mergeDate(std::vector<std::string> paths) {
+void SparseMatrix::mergeDate(std::vector<std::string> paths,bool log,string log_path) {
 	data_count = 0;
 	cell_count = 0;
-	gene_count = 0;
+	gene_count = 0; 
+	int path_len = 0;
 	SparseMatrix *sm = new SparseMatrix[paths.size()];
 	for (int i = 0; i < paths.size(); i++) {
 		sm[i].readHDF5File(paths[i], "original");
@@ -877,6 +878,7 @@ void SparseMatrix::mergeDate(std::vector<std::string> paths) {
 		gene_count = sm[i].get_gene_count();
 		str_genes_length = sm[i].get_str_genes_length();
 		str_barcodes_len = sm[i].get_str_barcodes_len();
+		path_len = max(path_len,(int)paths[i].size());
 	}
 	cout << "data_num" << data_count << endl;
 	cout << "barcodes_num" << cell_count << endl;
@@ -926,6 +928,41 @@ void SparseMatrix::mergeDate(std::vector<std::string> paths) {
 		strcpy(gene_names[geneNamesIndex], sm[0].get_gene_names()[j]);
 	}
 	cout << "merge finish" << endl;
+
+	if(log){
+		char** cell_type;
+		cell_type = new char *[cell_count];
+		for (int i = 0; i < cell_count; i++) {
+			cell_type[i] = new char[path_len];
+		}
+		int k = 0;
+		string type;
+		for(int i = 0;i < paths.size(); i++) {
+			std::string::size_type nPos1 = std::string::npos;
+			nPos1 = paths[i].find_last_of("/");
+			if(nPos1 !=-1) {
+    				type = paths[i].substr(nPos1+1, paths[i].size()-nPos1-4);
+			}
+
+			for(int j = 0;j < sm[i].get_cell_count();j++,k++){
+				strcpy(cell_type[k], type.c_str());
+			}		
+		}
+		ofstream ofn(log_path);
+		bool flag = 0;
+		for(long long i = 0;i < cellIndex;i++){
+			if(flag){
+				ofn<<"\n"<<barcodes[i]<<","<<cell_type[i];
+			}
+			else{
+				ofn<<barcodes[i]<<","<<cell_type[i];
+				flag = 1;
+			}
+			
+		}
+		ofn.close();
+		cout<<"log finish"<<endl;
+	}
 
 }
 

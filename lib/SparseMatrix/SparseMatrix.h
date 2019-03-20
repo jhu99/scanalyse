@@ -13,6 +13,7 @@
 #include <sstream>
 #include <vector>
 #include <time.h> 
+#include <algorithm>
 
 using namespace std;
 class SparseMatrix
@@ -101,7 +102,7 @@ public:
 	void readTsvFile(string read_path);
 	void read_10x_h5(string read_path);
 	void read_10x_mtx(string read_path);
-	void mergeDate(vector<string> paths);
+	void mergeDate(vector<string> paths,bool log=false,string log_path="");
 	void h5Compressed(string aimFilePath, string method, int chunk, int rank);
 	void write_norm_data(string write_path, string norm_type, int chunk, string method);
 	void maskingData(int mask_probability, string write_path, string log_path,int seed = 2019, string write_type = "h5");
