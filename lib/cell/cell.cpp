@@ -86,7 +86,7 @@ template <class T> void Cells<T>::readFile(string path) {
 	int i = 0;
 	if (getline(inFile, lineStr)) {
 		stringstream ss(lineStr);
-		if (type.compare("cell per row") == 0)
+		if (type.compare("cell_per_row") == 0)
 		{
 			while (getline(ss, str, separator)) {
 				//str = str.substr(1, str.size() - 2);
