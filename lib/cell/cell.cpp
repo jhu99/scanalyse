@@ -86,7 +86,7 @@ template <class T> void Cells<T>::readFile(string path) {
 	int i = 0;
 	if (getline(inFile, lineStr)) {
 		stringstream ss(lineStr);
-		if (type == "cell_per_row")
+		if (type.compare("cell per row") == 0)
 		{
 			while (getline(ss, str, separator)) {
 				//str = str.substr(1, str.size() - 2);
@@ -175,19 +175,22 @@ template <class T> void Cells<T>::write2CSV(string write_path)
 {
 	ofstream outFile;
 	outFile.open(write_path, ios::out);
-	for (int i = 0; i < row; i++)
+	for (int i = 0; i < row - 1; i++)
 	{
 		outFile << numToCell[i] << ",";
 	}
+	outFile << numToCell[i];
 	outFile << "\n";
+
 	for (int i = 0; i < col; i++)
 	{
 		outFile << numToGene[i] << ",";
-		for (int j = 0; j<row; j++)
+		for (int j = 0; j<row - 1; j++)
 		{
-			outFile << cell[i][j] ;
+			outFile << cell[i][j];
 			outFile << ",";
 		}
+		outFile << cell[i][j];
 		outFile << "\n";
 	}
 	outFile.close();
