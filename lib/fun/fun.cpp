@@ -1,6 +1,7 @@
 #include"fun.h"
+//#include"cell.cpp"
 
-typedef float dataType;
+typedef int dataType;
 
 using namespace std;
 using namespace Scanalyse;
@@ -11,7 +12,7 @@ void Fun::read(string filePath)
 
 	//read all csv file  
 	string format = ".csv";
-	Fun fun;
+ 	Fun fun;
 	fun = Fun();
 	fun.GetAllFiles(filePath, files);
 
@@ -28,14 +29,30 @@ void Fun::read(string filePath)
 	int j = 0;
 	while(j<size)
 	{
-		cout << "end read";
-		Cells<dataType> paraCells(rowCount[j], columnCount[j]);
+		cout << "start read";
+		Cells<int> paraCells(rowCount[j], columnCount[j]," ");
 		paraCells.readFile(files[j]);
 		cellList.push_back(paraCells);
 		j++;
+		cout << "end read";
 	}
 	
 }
+
+void Scanalyse::Fun::transfer_matrix(string file_path,string write_path,string type)
+{
+	cout << "start cacu" << endl;
+	int row_num = CaculateRow(file_path);
+	int col_num = CaculateColumn(file_path);
+	cout << "start read" << endl;
+	Cells<int> cell(row_num, col_num,type);
+	cell.readFile(file_path);
+	cout << "start write" << endl;
+	cell.write2CSV(write_path);
+	cout << "finish write" << endl;
+}
+
+
 
 int Fun::CaculateRow(string path)
 {
@@ -72,7 +89,7 @@ int Fun::CaculateColumn(string path)
 void Fun::GetAllFiles(string path, vector<string>& files)
 {
 #ifdef WINDOWS
-	long   hFile = 0;
+	long  hFile = 0;
 	//file information    
 	struct _finddata_t fileinfo;
 	string p;
@@ -181,6 +198,7 @@ void Fun::CreatAllGeneMap()
 	long i = 0;
 	Cells<dataType> paraCell;
 	string paraGene;
+	cout << "start create all gene map" << endl;
 	for (int iter = 0; iter <cellList.size(); ++iter) {
 		paraCell = cellList[iter];
 		paraGeneToNum = paraCell.getGeneToNum();
@@ -271,7 +289,7 @@ void Fun::initMergeMatrix()
 		mergeMatrix[i] = new dataType[mergeColumnCount];
 	}
 	typedef std::numeric_limits<float> Info;
-    double const NAN_f = Info::quiet_NaN();
+	double const NAN_f = Info::quiet_NaN();
 	for (long i = 0; i < allGeneToNum.size(); i++)
 	{
 		for (long j = 0; j < mergeColumnCount; j++)
@@ -300,7 +318,7 @@ void Scanalyse::Fun::outToCsvFile(string outPath)
 		for (long j = 0; j < mergeColumnCount; j++)
 		{
 				ofn << mergeMatrix[i][j];
-					ofn<<"," ;
+				ofn<<"," ;
 		}
 		ofn << "\n";
 	}
@@ -348,11 +366,12 @@ void Fun::mergeMatrixs()
 		cout << endl;
 	}
 	*/
-	cout << allGeneToNum.size() << endl;
-	cout << mergeColumnCount << endl;
+	cout <<"gene count:"<<allGeneToNum.size() << endl;
+	cout << "cell count:"<<mergeColumnCount << endl;
 	cout << "end merge" << endl;
 	for (int iter = 0; iter < cellList.size(); ++iter)
 	{
 		cellList[iter].releaseMemory();
 	}
+	cout << "end release" << endl;
 }

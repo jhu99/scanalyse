@@ -23,7 +23,7 @@
 #endif // WINDOWS
 
 using namespace std;
-typedef float dataType;
+typedef int dataType;
 
 namespace Scanalyse
 {
@@ -49,6 +49,7 @@ namespace Scanalyse
 		dataType **mergeMatrix;
 
 		void read(string filePath);
+		void transfer_matrix(string file_path,string write_path,string type);
 		int CaculateRow(string path);
 		int CaculateColumn(string path);
 		void GetAllFiles(string path, vector<string>& files);

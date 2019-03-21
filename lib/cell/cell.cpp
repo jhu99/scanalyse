@@ -7,20 +7,13 @@ template <class T> Cells<T>::Cells() {
 
 }
 
-template <class T> Cells<T>::Cells(int n, int p,string type) {
-	this->n = n;
-	this->p = p;
-	if(type=="original"){
-		cell = new T *[n];
-		for (int i = 0; i < n; i++) {
-			cell[i] = new T[p];
-		}
-	}
-	else{
-		cell = new T *[p];
-		for (int i = 0; i < p; i++) {
-			cell[i] = new T[n];
-		}
+template <class T> Cells<T>::Cells(int row, int col,string type) {
+	this->row = row;
+	this->col = col;
+	this->type = type;
+	cell = new T *[col];
+	for (int i = 0; i < col; i++) {
+		cell[i] = new T[row];
 	}
 }
 
@@ -75,7 +68,7 @@ template <class T> unordered_map<int, string> Cells<T>::getNumToGene() {
 
 
 
-template <class T> void Cells<T>::readFile(string path, string type) {
+template <class T> void Cells<T>::readFile(string path) {
 	ifstream inFile(path, ios::in);
 	string lineStr;
 	string geneName;
@@ -91,45 +84,41 @@ template <class T> void Cells<T>::readFile(string path, string type) {
 		separator = '\t';
 	}
 	int i = 0;
-	if(type=="original"){
-		if (getline(inFile, lineStr)) {
-			stringstream ss(lineStr);
+	if (getline(inFile, lineStr)) {
+		stringstream ss(lineStr);
+		if (type == "cell per row")
+		{
 			while (getline(ss, str, separator)) {
-				//cout<<str<<endl;
 				//str = str.substr(1, str.size() - 2);
 				if (i > 0) {
-					//cout<<str<<endl;
+
 					geneToNum[str] = i - 1;
 					numToGene[i - 1] = str;
 				}
 				i++;
 			}
-		}
 
-		i = 0;
-		while (getline(inFile, lineStr)) {
-			stringstream ss(lineStr);
-			int flag = 0, j = 0;
-			while (getline(ss, str, separator)) {
-				
-				if (flag == 0) {
-					cellToNum[str] = i;
-					numToCell[i] = str;
-					flag = 1;
+			i = 0;
+			while (getline(inFile, lineStr)) {
+				stringstream ss(lineStr);
+				int flag = 0, j = 0;
+				while (getline(ss, str, separator)) {
+					if (flag == 0) {
+						//str = str.substr(1, str.size() - 2);
+						cellToNum[str] = i;
+						numToCell[i] = str;
+						flag = 1;
+					}
+					else {
+						cell[j][i] = (T)atof(str.c_str());
+						j++;
+					}
 				}
-				else {
-					
-					cell[i][j] = (T)atof(str.c_str());
-					j++;
-				}
+				i++;
 			}
-			i++;
 		}
-	}
-	else{
-		
-		if (getline(inFile, lineStr)) {
-			stringstream ss(lineStr);
+		else
+		{
 			while (getline(ss, str, separator)) {
 				//str = str.substr(1, str.size() - 2);
 				if (i > 0) {
@@ -138,27 +127,28 @@ template <class T> void Cells<T>::readFile(string path, string type) {
 				}
 				i++;
 			}
-		}
-
-		i = 0;
-		while (getline(inFile, lineStr)) {
-			stringstream ss(lineStr);
-			int flag = 0, j = 0;
-			while (getline(ss, str, separator)) {
-				if (flag == 0) {
-					//str = str.substr(1, str.size() - 2);
-					geneToNum[str] = i;
-					numToGene[i] = str;
-					flag = 1;
+			i = 0;
+			while (getline(inFile, lineStr)) {
+				stringstream ss(lineStr);
+				int flag = 0, j = 0;
+				while (getline(ss, str, separator)) {
+					if (flag == 0) {
+						//str = str.substr(1, str.size() - 2);
+						geneToNum[str] = i;
+						numToGene[i] = str;
+						flag = 1;
+					}
+					else {
+						cell[j][i] = (T)atof(str.c_str());
+						j++;
+					}
 				}
-				else {
-					cell[j][i] = (T)atof(str.c_str());
-					j++;
-				}
+				i++;
 			}
-			i++;
 		}
+		
 	}
+	inFile.close();
 }
 
 template <class T> void Cells<T>::findCell(string cellName) {
@@ -181,39 +171,32 @@ template <class T> void Cells<T>::findCellAndGene(string cellName, string geneNa
 	cout << cell[geneToNum[cellName]][cellToNum[geneName]] << endl;
 }
 
+template <class T> void Cells<T>::write2CSV(string write_path)
+{
+	ofstream outFile;
+	outFile.open(write_path, ios::out);
+	for (int i = 0; i < row; i++)
+	{
+		outFile << numToCell[i] << ",";
+	}
+	outFile << "\n";
+	for (int i = 0; i < col; i++)
+	{
+		outFile << numToGene[i] << ",";
+		for (int j = 0; j<row; j++)
+		{
+			outFile << cell[i][j] ;
+			outFile << ",";
+		}
+		outFile << "\n";
+	}
+	outFile.close();
+}
+
 template <class T> void Cells<T>::releaseMemory() {
-	for (int i = 0; i < p; i++) {
+	for (int i = 0; i < col; i++) {
 		delete[] cell[i];
 
 	}
 	delete[] cell;
-}
-
-template <class T> void Cells<T>::maskCheck(string path){
-	ifstream inFile(path, ios::in);
-	string lineStr;
-	string geneName;
-	string str;
-	string suffixName;
-	char separator;
-	bool flag = true;
-	int i, j;
-	if (getline(inFile, lineStr)) {
-		stringstream ss(lineStr);
-		while (getline(ss, str, ',')) {
-			int x = atoi(str.c_str());
-			i = x/numToGene.size();
-			j = x%numToGene.size();
-			if(cell[i][j]){
-				
-				
-			}
-			else {
-				cout<<"Wrong"<<endl;
-				cout<<i<<" "<<j<<endl;
-				flag = false;
-			}
-		}
-	}
-	if(flag)cout<<"OK"<<endl;
 }
