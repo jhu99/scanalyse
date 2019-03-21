@@ -179,7 +179,7 @@ template <class T> void Cells<T>::write2CSV(string write_path)
 	{
 		outFile << numToCell[i] << ",";
 	}
-	outFile << numToCell[i];
+	outFile << numToCell[row-1];
 	outFile << "\n";
 
 	for (int i = 0; i < col; i++)
@@ -190,7 +190,7 @@ template <class T> void Cells<T>::write2CSV(string write_path)
 			outFile << cell[i][j];
 			outFile << ",";
 		}
-		outFile << cell[i][j];
+		outFile << cell[i][row-1];
 		outFile << "\n";
 	}
 	outFile.close();
