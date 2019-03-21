@@ -88,11 +88,8 @@ template <class T> void Cells<T>::readFile(string path) {
 	if (getline(inFile, lineStr)) {
 		stringstream ss(lineStr);
 		if (type.compare("cell_per_row") == 0)
-<<<<<<< HEAD
 		{			
-=======
-		{
->>>>>>> 80bd718217f67e0a105bc879bb5ac9d915e8031c
+			
 			while (getline(ss, str, separator)) {
 				//str = str.substr(1, str.size() - 2);
 				if (i > 0) {
@@ -185,13 +182,8 @@ template <class T> void Cells<T>::write2CSV(string write_path)
 	{
 		outFile << numToCell[i] << ",";
 	}
-<<<<<<< HEAD
-	outFile << numToCell[i];
-	
-=======
 	outFile << numToCell[row-1];
 	outFile << "\n";
->>>>>>> 80bd718217f67e0a105bc879bb5ac9d915e8031c
 
 	for (i = 0; i < col; i++)
 	{
@@ -202,11 +194,8 @@ template <class T> void Cells<T>::write2CSV(string write_path)
 			outFile << ",";			
 			outFile << cell[i][j];
 		}
-<<<<<<< HEAD
-=======
 		outFile << cell[i][row-1];
 		outFile << "\n";
->>>>>>> 80bd718217f67e0a105bc879bb5ac9d915e8031c
 	}
 	outFile.close();
 }
