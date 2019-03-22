@@ -178,12 +178,10 @@ template <class T> void Cells<T>::write2CSV(string write_path)
 	ofstream outFile;
 	outFile.open(write_path, ios::out);
 	int i,j;
-	for (i = 0; i < row - 1; i++)
+	for (i = 0; i < row; i++)
 	{
-		outFile << numToCell[i] << ",";
+		outFile << "," << numToCell[i];
 	}
-	outFile << numToCell[row-1];
-	outFile << "\n";
 
 	for (i = 0; i < col; i++)
 	{
@@ -194,8 +192,6 @@ template <class T> void Cells<T>::write2CSV(string write_path)
 			outFile << ",";			
 			outFile << cell[i][j];
 		}
-		outFile << cell[i][row-1];
-		outFile << "\n";
 	}
 	outFile.close();
 }
