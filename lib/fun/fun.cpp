@@ -64,7 +64,7 @@ int Fun::CaculateRow(string path)
 	{
 		row++;
 	}
-	return row;
+	return row-1;
 }
 
 int Fun::CaculateColumn(string path)
