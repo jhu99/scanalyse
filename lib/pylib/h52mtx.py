@@ -26,26 +26,30 @@ class MatrixCSR():
         self.coo = csr_m.tocoo()
         print(self.coo.col[0])
         print(self.barcodes[0])
+        print(self.genes[0])
 
     def write2mtx(self, write_path):
         barcodes_path = write_path+'barcodes.tsv'
         file = open(barcodes_path, 'w')
+        print(str(self.barcodes[0],'utf-8'))
         for i in range(self.shape[1]):
-            file.write(str(self.barcodes[i]))
+            file.write(str(self.barcodes[i],'utf-8'))
             file.write('\n')
         file.close()
         print("barcodes writed")
 
         genes_path=write_path+'genes.tsv'
         file = open(genes_path, 'w')
+        print(self.gene_names[0])
+        print(str(self.gene_names[0],encoding ="utf8"))
         for i in range(self.shape[0]):
-            file.write(str(self.genes[i]))
-            file.write(' ')
-            file.write(str(self.gene_names[i]))
+            file.write(str(self.genes[i],'utf-8'))
+            file.write('\t')
+            file.write(str(self.gene_names[i],'utf-8'))
             file.write('\n')
         file.close()
         print("genes writed")
-
+        print(self.shape[0])
         data_path=write_path+'matrix.mtx'
         file = open(data_path, 'w')
         file.write('%%MatrixMarket matrix coordinate real general\n')
