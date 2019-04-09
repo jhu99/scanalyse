@@ -1,0 +1,231 @@
+>B cells
+expressed: CD19,PTPRC
+
+>Immature B cells
+expressed: CD19,PTPRC,MME
+subtype of: B cells
+
+>Pre-B cell CD20-
+expressed: CD19,PTPRC,MME
+not expressed: MS4A1
+subtype of: Immature B cells
+
+>Immature B cells CD20+
+expressed: CD19,PTPRC,MME,MS4A1
+subtype of: Immature B cells
+
+>Translational B cells
+expressed: CD19,PTPRC,MME,MS4A1
+not expressed: CD27
+subtype of: Immature B cells CD20+
+
+>Mature B cells
+expressed: CD19,PTPRC,MS4A1
+not expressed: MME
+subtype of: B cells
+
+>Naive Mature B cells
+expressed: CD19,PTPRC,MS4A1,CR2
+not expressed: MME,CD27
+subtype of: Mature B cells
+
+>Exhausted/Tissue-like Memory
+expressed: CD19,PTPRC,MS4A1
+not expressed: MME,CD27,CR2
+subtype of: Mature B cells
+
+>Memory Bcells
+expressed: CD19,PTPRC,MS4A1,CD27
+not expressed: MME
+subtype of: Mature B cells
+
+>Activated Mature
+expressed: CD19,PTPRC,MS4A1,CD27
+not expressed: MME,CD21
+subtype of: Memory Bcells
+
+>Resting Memory
+expressed: CD19,PTPRC,MS4A1,CD27,CD21
+not expressed: MME
+subtype of: Memory Bcells
+
+>CD20- CD10-
+expressed: PTPRC,CD19
+not expressed: MME,MS4A1
+subtype of: B cells
+
+>Plasmablast
+expressed: PTPRC,CD19,CD27,CD38
+not expressed: MME,MS4A1
+subtype of: CD20- CD10-
+
+>Plasma Cell
+expressed: PTPRC,CD19,CD27,CD38,SDC1
+not expressed: MME,MS4A1
+subtype of: Plasmablast
+
+>pDC
+expressed: PTPRC,IL3RA,HLA-DRB1
+not expressed: ITGB2
+
+>cDC
+expressed: PTPRC,ITGB2,HLA-DRB1
+not expressed: CD3G,CD14,FCGR3A,CD19
+
+>cDC1
+expressed: PTPRC,ITGB2,THBD,HLA-DRB1
+not expressed: CD3G,CD14,FCGR3A,CD19
+subtype of: cDC
+
+>CD1c+ DC
+expressed: PTPRC,ITGB2,CD1C,HLA-DRB1
+not expressed: CD3G,CD14,FCGR3A,CD19,THBD
+subtype of: cDC
+
+>cDC2
+expressed: PTPRC,IL3RA,HLA-DRB1
+not expressed: CD3G,CD14,FCGR3A,CD19,THBD,CD1C
+subtype of: cDC
+
+>HSPC
+expressed: PTPRC,CD34
+
+>Monoblast/myeloblast/promyelocyte
+expressed: PTPRC,HLA-DRB1,KIT
+not expressed: CD3G,CD14,FCGR3A,CD19
+
+>Monocytes
+expressed: PTPRC,CD33,ANPEP,ITGAM,HLA-DRB1,FCGR1A
+not expressed: CD3G,CD19,NCAM1
+
+>CD14+ Monocytes
+expressed: PTPRC,CD33,ANPEP,ITGAM,HLA-DRB1,FCGR1A,CD14
+not expressed: CD3G,CD19,NCAM1
+subtype of: Monocytes
+
+>Classical Monocytes
+expressed: PTPRC,CD33,ANPEP,ITGAM,HLA-DRB1,FCGR1A
+not expressed: CD3G,CD19,NCAM1,FCGR3A
+subtype of: Monocytes
+
+>Intermediate Monocytes
+expressed: PTPRC,CD3G,CD19,NCAM1,CD33,ANPEP,ITGAM,FCGR1A,FCGR3A
+not expressed: CD3G,CD19,NCAM1
+subtype of: Monocytes
+
+>NK cells
+expressed: PTPRC,NCAM1,CD7
+not expressed: CD3G
+
+>Immunoregulatory NK
+expressed: PTPRC,NCAM1,CD7,NCAM1
+not expressed: CD3G,FCGR3A
+subtype of: NK cells
+
+>Cytotoxic NK
+expressed: PTPRC,NCAM1,CD7,FCGR3A
+not expressed: CD3G
+subtype of: NK cells
+
+>CD3+
+expressed: PTPRC,CD3G
+
+>CD8+
+expressed: CD3G,CD8A
+not expressed: CD14,CD19
+subtype of: CD3+
+
+>CD8+ CCR7+
+expressed: CD3G,CD8A,CCR7
+not expressed: CD14,CD19
+subtype of: CD8+
+
+>CD8+ Naive
+expressed: CD3G,CD8A,CCR7,PTPRC
+not expressed: CD14,CD19
+subtype of: CD8+ CCR7+
+
+>CD8+ CM
+expressed: CD3G,CD8A,CCR7
+not expressed: CD14,CD19,PTPRC
+subtype of: CD8+ CCR7+
+
+>CD8+ CCR7-
+expressed: CD3G,CD8A
+not expressed: CD14,CD19,CCR7
+subtype of: CD8+
+
+>CD8+ TEMRA
+expressed: CD3G,CD8A,PTPRC
+not expressed: CD14,CD19,CCR7
+subtype of: CD8+ CCR7-
+
+>CD8+ EM
+expressed: CD3G,CD8A
+not expressed: CD14,CD19,CCR7,PTPRC
+subtype of: CD8+ CCR7-
+
+>CD8+ EM CD69+
+expressed: CD3G,CD8A,CD69
+not expressed: CD14,CD19,CCR7,PTPRC
+subtype of: CD8+ EM
+
+>CD8+ EM CD69+ CD103+
+expressed: CD3G,CD8A,CD69,ITGAE
+not expressed: CD14,CD19,CCR7,PTPRC
+subtype of: CD8+ EM CD69+
+
+>CD4+
+expressed: CD3G,CD4
+not expressed: CD14,CD19
+subtype of: CD3+
+
+>CD4+ CCR7+
+expressed: CD3G,CD4,CCR7
+not expressed: CD14,CD19
+subtype of: CD4+
+
+>CD4+ Naive
+expressed: CD3G,CD4,CCR7,PTPRC
+not expressed: CD14,CD19
+subtype of: CD4+ CCR7+
+
+>CD4+ CM
+expressed: CD3G,CD4,CCR7
+not expressed: CD14,CD19,PTPRC
+subtype of: CD4+ CCR7+
+
+>CD4+ CCR7-
+expressed: CD3G,CD4
+not expressed: CD14,CD19,CCR7
+subtype of: CD4+
+
+>CD4+ TEMRA
+expressed: CD3G,CD4,PTPRC
+not expressed: CD14,CD19,CCR7
+subtype of: CD4+ CCR7-
+
+>CD4+ EM
+expressed: CD3G,CD4
+not expressed: CD14,CD19,CCR7,PTPRC
+subtype of: CD4+ CCR7-
+
+>CD4+ EM CD69+
+expressed: CD3G,CD4,CD69
+not expressed: CD14,CD19,CCR7,PTPRC
+subtype of: CD4+ EM
+
+>CD4+ EM CD69+ CD103+
+expressed: CD3G,CD4,CD69,ITGAE
+not expressed: CD14,CD19,CCR7,PTPRC
+subtype of: CD4+ EM CD69+
+
+>DPT
+expressed: CD3G,CD4,CD8A
+not expressed: CD14,CD19
+subtype of: CD3+
+
+>DNT
+expressed: CD3G
+not expressed: CD14,CD19,CD4,CD8A
+subtype of: CD3+
