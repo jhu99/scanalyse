@@ -49,15 +49,15 @@ def setSession():
 	K.set_session(sess)
 	
 class ZINB_AutoEncoder:
-	def __init__(self):
+	def __init__(self,filepath):
 		self.model = None
 		self.loss = None
 		self.encoder_model = None
 		callbacks = []
-		checkpointer = ModelCheckpoint(filepath='./result/ica_all/weights_best.h5', verbose=1, save_best_only=True)
+		checkpointer = ModelCheckpoint(filepath=filepath+"weights_best.h5", verbose=1, save_best_only=True)
 		reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=2, min_lr=0.001)
-		early_stop = EarlyStopping(monitor='val_loss', patience=4)
-		tensor_board = TensorBoard(log_dir='./result/ica_all/logs')
+		early_stop = EarlyStopping(monitor='val_loss', patience=5)
+		tensor_board = TensorBoard(log_dir=filepath+'logs/')
 		callbacks.append(checkpointer)
 		callbacks.append(reduce_lr)
 		callbacks.append(early_stop)
@@ -111,47 +111,55 @@ class ZINB_AutoEncoder:
 		return adata
 		
 	def write(self, adata, filepath):
-		#filename = './result/ica_all/latent.csv'
 		colnames = None
 		rownames = adata.obs_names
-		pd.DataFrame(adata.obsm['X_m'], index=rownames, columns=colnames).to_csv(filepath,sep=',',index=(rownames is not None), header=(colnames is not None), float_format='%.4f')
+		pd.DataFrame(adata.obsm['X_m'], index=rownames, columns=colnames).to_csv(filepath+"projection.csv",sep=',',index=(rownames is not None), header=(colnames is not None), float_format='%.4f')
 		
 		
-def train_zinb_model(adata):
+def train_zinb_model(adata, filepath):
 	# Input and output data
 	input_data={'counts':adata.X,'size_factors':adata.obs.size_factors}
 	output_label=adata.raw.X
 	
 	# build and train the model
-	net = ZINB_AutoEncoder()
+	net = ZINB_AutoEncoder(filepath=filepath)
 	net.build(input_size=adata.n_vars)
 	net.compile()
 	net.model.summary()
-	losses = net.model.fit(input_data, output_label, callbacks=net.callbacks, epochs=30, batch_size=128, shuffle=True, validation_split=0.1, verbose=2)
-	net.model.save("./result/ica_all/model_best.h5")
+	losses = net.model.fit(input_data, output_label, callbacks=net.callbacks, epochs=300, batch_size=128, shuffle=True, validation_split=0.1, verbose=2)
 	
 def prediction(adata, filepath):
 	setSession()
-	net = ZINB_AutoEncoder()
+	net = ZINB_AutoEncoder(filepath)
 	net.build(adata.n_vars)
-	net.model.load_weights("./result/ica_all/weights_best.h5")
+	net.model.load_weights(filepath+'weights_best.h5')
 	net.model.summary()
 	net.predict(adata)
 	net.write(adata, filepath)
 
-def plotCluster(adata,h5adfile,umapfile,tsnefile):
+def plotCluster(adata,filepath,dm_reduction=True):
 	import scanpy as sc
 	import matplotlib.pyplot as pl
-	sc.pp.neighbors(adata)
-	sc.tl.louvain(adata)
-	sc.tl.leiden(adata)
-	sc.tl.umap(adata)
-	sc.tl.tsne(adata,n_pcs=20)
-	adata.write(h5adfile,compression='gzip')
-	sc.pl.umap(adata,color=['louvain','leiden'],show=False)
-	pl.savefig(umapfile)
+	if dm_reduction:
+		sc.pp.neighbors(adata)
+		sc.tl.louvain(adata)
+		sc.tl.leiden(adata)
+		sc.tl.paga(adata)
+		sc.pl.paga(adata, plot=False)
+		sc.tl.umap(adata,init_pos='paga',min_dist=0.1)
+		sc.tl.tsne(adata,n_pcs=20)
+		adata.write(filepath+"ica_clusters.h5ad",compression='gzip')
+		
+	sc.pl.umap(adata,color=['louvain'],show=False)
+	#pl.title("Visualization of ~700K HCA immune cells via UMAP")
+	pl.title("")
+	pl.legend(loc=3,fontsize=6,mode="expand",bbox_to_anchor=(0.0, 1.01, 1, 0.2),ncol=17)
+	pl.savefig(filepath+"ica_umap_louvain.png")
 	pl.close()
-	sc.pl.tsne(adata,color=['louvain','leiden'],show=False)
-	pl.savefig(tsnefile)
+	sc.pl.tsne(adata,color=['louvain'],show=False)
+	#pl.title("Visualization of ~700K HCA immune cells via t-SNE")
+	pl.title("")
+	pl.legend(loc=3,fontsize=6,mode="expand",bbox_to_anchor=(0.0, 1.01, 1, 0.2),ncol=17)
+	pl.savefig(filepath+"ica_tse_louvain.png")
 	pl.close()
-	return adata
+	adata.write(filepath+"ica_clusters.h5ad",compression='gzip')
