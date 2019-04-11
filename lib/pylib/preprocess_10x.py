@@ -138,6 +138,16 @@ def read_10x_data(input_file,format_type='10x_h5',backed=None):
 	adata.var_names_make_unique()
 	return adata
 
+def filter_basic(adata):
+	sc.pp.filter_genes(adata,min_counts=500)
+	sc.pp.filter_cells(adata,min_genes=200)
+	mito_genes = adata.var_names.str.startswith('MT-')
+	adata.obs['percent_mito'] = np.sum(adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1
+	adata.obs['n_counts'] = adata.X.sum(axis=1).A1
+	adata = adata[adata.obs['n_genes'] < 2500, :]
+	adata = adata[adata.obs['percent_mito'] < 0.2, :]
+	return adata
+	
 def recipe_zheng(adata,n_top_genes=1000):
 	
 	sc.pp.filter_genes(adata,min_counts=1)
