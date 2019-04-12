@@ -19,4 +19,5 @@ marker_check <- check_markers(pbmc_cds, marker_file_path,
                               db=org.Hs.eg.db,
                               cds_gene_id_type = "ENSEMBL",
                               marker_file_gene_id_type = "SYMBOL")
-write.csv(marker_check,Argvs[8])
+df=marker_check[which(marker_check$ambiguity>0.5),]
+write.csv(df,Argvs[8])
