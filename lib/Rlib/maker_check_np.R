@@ -26,6 +26,8 @@ marker_check <- check_markers(ica_bm_cds, marker_file_path,
 															marker_file_gene_id_type = "SYMBOL")
 save(ica_bm_cds,file = paste0(path,"garnett_cds.Rdata"))
 write.table(marker_check,file = paste0(path,"ica_bone_marker_check.txt"))
+df=marker_check[which(marker_check$ambiguity>0.5),]
+write.table(df,file = paste0(path,"ica_bone_marker_check_remove.tsv"))
 
 for(i in 0:10)
 {
@@ -39,11 +41,17 @@ for(i in 0:10)
 	print(t)
 	marker_check_sub = marker_check[t,]
 	browser()
-	pdf(paste0("./result/ica_bm_qc1/marker_r",i,".pdf"))
-	plot_markers(marker_check_sub)
-	dev.off()
+	# pdf(paste0(path,"marker-",i,".pdf"))
+	# plot_markers(marker_check_sub)
+	# dev.off()
 }
-df=marker_check[which(marker_check$ambiguity>0.5),]
-write.table(marker_check,file = paste0(path,"ica_bone_marker_check.txt"))
-write.table(df,file = paste0(path,"ica_bone_marker_check_remove.tsv"))
-save(ica_bm_cds,file = paste0(path,"garnett_cds.Rdata"))
+# pdf(paste0(path,"marker-",i,".pdf"))
+# plot_markers(marker_check_sub)
+# dev.off()
+
+
+# revise marker files after plot_markers
+##################################
+# train classifier based on the revised marker file in the next step.
+
+
