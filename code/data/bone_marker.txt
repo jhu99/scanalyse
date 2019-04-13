@@ -1,7 +1,7 @@
 >B cells
 expressed: CD19,PTPRC
 
->Immature B cells
+>Immature B cells	
 expressed: MME
 subtype of: B cells
 
@@ -36,11 +36,11 @@ expressed: CD27
 subtype of: Mature B cells
 
 >Activated Mature
-not expressed: CD21
+not expressed: CR2
 subtype of: Memory Bcells
 
 >Resting Memory
-expressed: CD21
+expressed: CR2
 subtype of: Memory Bcells
 
 >CD20- CD10-
