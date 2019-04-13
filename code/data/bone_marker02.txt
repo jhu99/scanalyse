@@ -1,7 +1,7 @@
 >B cells
 expressed: CD19
 
->Immature B cells
+>Immature B cells	
 expressed: MME
 subtype of: B cells
 
@@ -22,7 +22,6 @@ not expressed: MME
 subtype of: B cells
 
 >Naive Mature B cells
-expressed: CR2
 not expressed: CD27
 subtype of: Mature B cells
 
@@ -35,11 +34,11 @@ expressed: CD27
 subtype of: Mature B cells
 
 >Activated Mature
-not expressed: CD21
+not expressed: CR2
 subtype of: Memory B cells
 
 >Resting Memory
-expressed: CD21
+expressed: CR2
 subtype of: Memory B cells
 
 >CD20- CD10-
@@ -51,12 +50,11 @@ expressed: CD27,CD38
 subtype of: CD20- CD10-
 
 >Plasma Cell
-expressed: CD38,SDC1
-not expressed: MME,MS4A1
+expressed: SDC1
 subtype of: Plasmablast
 
 >pDC
-expressed: PTPRC,IL3RA
+expressed: IL3RA
 not expressed: ITGB2
 
 >cDC
@@ -76,16 +74,9 @@ subtype of: cDC
 not expressed: THBD,CD1C
 subtype of: cDC
 
->Monoblast/myeloblast/promyelocyte
-not expressed: CD3G,CD14,FCGR3A,CD19
-
 >Monocytes
-expressed: CD33,ANPEP,ITGAM,FCGR1A
+expressed: CD33,ANPEP,ITGAM,HLA-DRB1,FCGR1A
 not expressed: CD3G,CD19,NCAM1
-
->Classical Monocytes
-not expressed: FCGR3A
-subtype of: Monocytes
 
 >Intermediate Monocytes
 expressed: CD14 FCGR3A
@@ -180,5 +171,6 @@ subtype of: CD4+ EM
 expressed: ITGAE
 subtype of: CD4+ EM CD69+
 
->DNT
-not expressed: CD14,CD19,CD4,CD8A
+>DPT
+expressed: CD8A
+subtype of: CD4+
