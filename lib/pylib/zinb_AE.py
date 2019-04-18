@@ -56,7 +56,7 @@ class ZINB_AutoEncoder:
 		callbacks = []
 		checkpointer = ModelCheckpoint(filepath=filepath+"weights_best.h5", verbose=1, save_best_only=True)
 		reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=2, min_lr=0.001)
-		early_stop = EarlyStopping(monitor='val_loss', patience=5)
+		early_stop = EarlyStopping(monitor='val_loss', patience=10)
 		tensor_board = TensorBoard(log_dir=filepath+'logs/')
 		callbacks.append(checkpointer)
 		callbacks.append(reduce_lr)
@@ -143,7 +143,6 @@ def plotCluster(adata,filepath,dm_reduction=True):
 	if dm_reduction:
 		sc.pp.neighbors(adata)
 		sc.tl.louvain(adata)
-		sc.tl.leiden(adata)
 		sc.tl.paga(adata)
 		sc.pl.paga(adata, plot=False)
 		sc.tl.umap(adata,init_pos='paga',min_dist=0.1)
@@ -160,6 +159,7 @@ def plotCluster(adata,filepath,dm_reduction=True):
 	#pl.title("Visualization of ~700K HCA immune cells via t-SNE")
 	pl.title("")
 	pl.legend(loc=3,fontsize=6,mode="expand",bbox_to_anchor=(0.0, 1.01, 1, 0.2),ncol=17)
-	pl.savefig(filepath+"ica_tse_louvain.png")
+	pl.savefig(filepath+"ica_tsne_louvain.png")
 	pl.close()
 	adata.write(filepath+"ica_clusters.h5ad",compression='gzip')
+	

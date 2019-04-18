@@ -144,9 +144,12 @@ def filter_basic(adata):
 	mito_genes = adata.var_names.str.startswith('MT-')
 	adata.obs['percent_mito'] = np.sum(adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1
 	adata.obs['n_counts'] = adata.X.sum(axis=1).A1
-	adata = adata[adata.obs['n_genes'] < 2500, :]
-	adata = adata[adata.obs['percent_mito'] < 0.2, :]
 	return adata
+	
+def add_annotation(adata,f):
+	ann = pd.read_csv(f,sep='\t',header=0)
+	adata.obs = adata.obs[['louvain','leiden']]
+	# adata.obs = adata.obs.join(ann,lsuffix='_l',rsuffix='_r')
 	
 def recipe_zheng(adata,n_top_genes=1000):
 	
@@ -157,9 +160,9 @@ def recipe_zheng(adata,n_top_genes=1000):
 	adata.obs['n_counts'] = adata.X.sum(axis=1).A1
 	sc.pl.violin(adata, ['n_genes', 'n_counts', 'percent_mito'],jitter=0.4, multi_panel=True,show=False,save="_quality_control.png")
 	adata = adata[adata.obs['n_genes'] < 2500, :]
-	adata = adata[adata.obs['percent_mito'] < 0.2, :]
+	adata = adata[adata.obs['percent_mito'] < 0.05, :]
 
-	sc.pp.normalize_per_cell(adata,key_n_counts='n_counts_all',counts_per_cell_after=10e4)
+	sc.pp.normalize_per_cell(adata,key_n_counts='n_counts_all',counts_per_cell_after=1e6)
 	filter_result = sc.pp.filter_genes_dispersion(adata.X, flavor='cell_ranger', n_top_genes=n_top_genes, log=False)
 	
 	marker_genes = ['IL7R', 'CD79A', 'MS4A1', 'CD8A', 'CD8B', 'LYZ', 'CD14', 'LGALS3', 'S100A8', 'GNLY', 'NKG7', 'KLRB1','FCGR3A', 'MS4A7', 'FCER1A', 'CST3', 'PPBP', "CD3D", "SELL", "S100A4", "CD8A", "GNLY", "MS4A1", "FCGR3A", "HSP90AB1", "CCR7"]
@@ -167,9 +170,9 @@ def recipe_zheng(adata,n_top_genes=1000):
 	gene_list = gene_list.union(marker_genes)
 	gene_list = gene_list.union(pd.read_csv("./data/marker_genes.csv").x)
 	adata = adata[:,gene_list]
-	sc.pp.normalize_per_cell(adata,counts_per_cell_after=10e6)
+	sc.pp.normalize_per_cell(adata,counts_per_cell_after=1e6)
 	# used for loss evaluation
-	adata.obs['size_factors'] = adata.obs.n_counts_all / 10e6
+	adata.obs['size_factors'] = (adata.obs.n_counts_all / 1e6)*(adata.obs.n_counts/1e6)
 	sc.pp.log1p(adata)
 	sc.pp.scale(adata)
 	return adata

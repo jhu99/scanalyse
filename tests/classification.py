@@ -10,17 +10,20 @@ import os
 sns.set(style='white', rc={'figure.figsize':(8,6), 'figure.dpi':150})
 # Read projection after louvain and leiden clusters
 method="t_test"
-path="./result/ica_bm_qc1/"
+# path="./result/ica_bm_qc4/"
+path=sys.argv[1]
 cluster_type="louvain"
-num_clusters=26
+
 h5adfile_after_cluster=path+"ica_markers_"+method+".h5ad"
 adata = prep.read_10x_data(h5adfile_after_cluster,"10x_h5ad")
+num_clusters=len(adata.obs[cluster_type].astype('category').cat.categories)
 
-# result = adata.uns['rank_genes_groups']
-# groups = result['names'].dtype.names
-# df = pd.DataFrame(
-# 	{group + '_' + key[:1]: result[key][group]
-# 	for group in groups for key in ['names', 'pvals']}).head(5)
+result = adata.uns['rank_genes_groups']
+groups = result['names'].dtype.names
+df = pd.DataFrame(
+	{group + '_' + key[:1]: result[key][group]
+	for group in groups for key in ['names', 'pvals']}).head(10)
+df.to_csv(path+"ica_markers_t_test_top10.csv")
 
 top_ranked_genes=pd.DataFrame(adata.uns['rank_genes_groups']['names'][range(1)])
 gene_index = pd.Index(top_ranked_genes.values.flatten()).drop_duplicates(keep='first')
@@ -31,7 +34,7 @@ gene_index=pd.Index(gene_index).intersection(adata.var_names)
 ofile="_ica_louvain_marker_"+method+".png"
 gs = sc.pl.matrixplot(adata, gene_index, groupby='louvain', dendrogram=True, show=False, save=ofile)
 filename="matrixplot"+ofile
-os.rename("./figures/"+filename,"./result/ica_bm_qc1/"+filename)
+os.rename("./figures/"+filename,path+filename)
 
 obs=adata.obs
 cells_in_cluster=[]
@@ -50,13 +53,9 @@ ofile="_plot_ica_louvain_marker_"+method+".png"
 pl.subplot()
 sc.pl.heatmap(adata,gene_index, use_raw=False, swap_axes=True, show=False, show_gene_labels=True, save=ofile, groupby='louvain', dendrogram=True)
 filename="heatmap"+ofile
-os.rename("./figures/"+filename,"./result/ica_bm_qc1/"+filename)
-# # The 5 top ranked genes per cluster 0,1,...,26
-# pd.DataFrame(adata.uns['rank_genes_groups']['names']).head(5)
-# # The  5 top ranked genes and their pvalues
-# result = adata.uns['rank_genes_groups']
-# groups = result['names'].dtype.names
-# pd.DataFrame({group + '_' + key[:1]: result[key][group] for group in groups for key in ['names', 'pvals']}).head(5)
+os.rename("./figures/"+filename,path+filename)
+
+# 
 # # Differential expression by comparing to the rest gronps
 # sc.pl.rank_genes_groups_violin(adata, groups='0', n_genes=8)
 # sc.pl.violin(adata, ['CST3', 'NKG7', 'PPBP'], groupby='louvain')
