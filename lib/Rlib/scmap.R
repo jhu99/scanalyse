@@ -5,7 +5,7 @@ Argvs<- commandArgs()
 print(Argvs[6])
 print(Argvs[7])
 #input
-test<-read.csv(Argvs[6],header = T,sep=",",row.names=1”)
+test<-read.csv(Argvs[6],header = T,sep=",",row.names=1)
 types<-read.table(Argvs[7],header = T,sep=',')
 sce <- SingleCellExperiment(assays = list(normcounts = as.matrix(test)), colData = types)
 logcounts(sce) <- log2(normcounts(sce) + 1)
@@ -28,7 +28,7 @@ scmapCluster_results <- scmapCluster(
     yan = metadata(sce)$scmap_cluster_index
   )
 )
-
+print("finish cluster")
 #Results
 plot(
   getSankey(
@@ -37,3 +37,4 @@ plot(
     plot_height = 400
   )
 )
+print("finish plot")
