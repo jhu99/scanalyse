@@ -10,7 +10,7 @@ print(c(path,respath))
 X <- as.matrix(readMM(paste0(path,"matrix.mtx")))
 Xm <- scale(X,center = FALSE,scale = colSums(X)/1e6 )
 fData <- read.table(paste0(path,"genes.tsv"),sep="\t",stringsAsFactors = FALSE, row.names = 1, col.names = c("gene symbol","ensembl"))
-pData <- read.table(paste0(path,"barcodes.tsv"),sep="\t",stringsAsFactors = FALSE, row.names = 1, col.names = c("barcode","louvain","test"))
+pData <- read.table(paste0(path,"barcodes.tsv"),sep="\t",stringsAsFactors = FALSE, row.names = 1, col.names = c("barcode","louvain"))
 pData["test"] <- sample(c(TRUE,FALSE),dim(pData)[1],replace = TRUE,prob = c(0.1,0.9))
 # Index scmap-cluster
 bm <- SingleCellExperiment(assays = list(normcounts=Xm), colData=pData, rowData=fData)
