@@ -96,6 +96,19 @@ int main(int argc, const char **argv)
 		filt_sm.write_norm_data(option.write_path, "log", 500, "s");
 		cout << "end write to h5 file-----------------" << endl;
 	}
+	else if (option.normalize_type == "qqnorm")
+	{
+		cout << "start normalize--------------" << endl;
+		rankNormalize rn(filt_sm);
+		rn.ranks(option.thread_count);
+		filt_sm.cacuRankZero();
+		filt_sm.set_rank(rn.getRank());
+		filt_sm.qqNormedData2HDF5Format();
+		cout << "end normalize--------------" << endl;
+		cout << "start write to h5 file-----------------" << endl;
+		filt_sm.write_norm_data(option.write_path, "qqnorm", 500, "s");
+		cout << "end write to h5 file-----------------" << endl;
+	}
 	else if (option.normalize_type == "none")
 	{
 		cout << "start write to h5 file-----------------" << endl;
