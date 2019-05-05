@@ -876,6 +876,7 @@ void SparseMatrix::mergeDate(std::vector<std::string> paths,bool log,string log_
 		cell_count += sm[i].get_cell_count();
 		gene_count = sm[i].get_gene_count();
 		str_genes_length = sm[i].get_str_genes_length();
+		str_gene_names_len = sm[i].get_str_gene_names_len();
 		str_barcodes_len = sm[i].get_str_barcodes_len();
 		path_len = max(path_len,(int)paths[i].size());
 	}
