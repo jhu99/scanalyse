@@ -1288,9 +1288,9 @@ void SparseMatrix::write_norm_data(string write_path, string norm_type, int chun
 	{
 		dims[0] = cell_count;
 		dataspace_id = H5Screate_simple(rank, dims, NULL);
-		dataset_id = H5Dcreate2(file_id, "/GRCh38/zero_value", H5T_STD_I32LE,
+		dataset_id = H5Dcreate2(file_id, "/GRCh38/zero_value", H5T_IEEE_F64LE,
 			dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-		status = H5Dwrite(dataset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, qqNormedZero);
+		status = H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, qqNormedZero);
 		cout << "zero_value writed" << endl;
 	}
 	H5Fclose(file_id);
