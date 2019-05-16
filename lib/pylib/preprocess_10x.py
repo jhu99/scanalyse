@@ -6,6 +6,12 @@ import anndata
 from anndata import h5py, logging
 from anndata import AnnData
 import pandas as pd
+import matplotlib
+import matplotlib.pyplot as pl
+import seaborn as sns
+
+matplotlib.use('Agg')
+sns.set(style='white', rc={'figure.figsize':(8,6), 'figure.dpi':150})
 
 def getAnnData(input_file):
 	h5 = h5py.File(input_file,'r')
@@ -136,6 +142,7 @@ def read_10x_data(input_file,format_type='10x_h5',backed=None):
 		raise ValueError('`format` needs to be \'10x_h5\' or \'10x_mtx\'')
 	
 	adata.var_names_make_unique()
+	adata.obs_names_make_unique()
 	return adata
 
 def filter_basic(adata):
@@ -151,30 +158,32 @@ def add_annotation(adata,f):
 	adata.obs = adata.obs[['louvain','leiden']]
 	# adata.obs = adata.obs.join(ann,lsuffix='_l',rsuffix='_r')
 	
-def recipe_zheng(adata,n_top_genes=1000):
-	
-	sc.pp.filter_genes(adata,min_counts=1)
-	sc.pp.filter_cells(adata,min_genes=200)
-	mito_genes = adata.var_names.str.startswith('MT-')
-	adata.obs['percent_mito'] = np.sum(adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1
-	adata.obs['n_counts'] = adata.X.sum(axis=1).A1
-	sc.pl.violin(adata, ['n_genes', 'n_counts', 'percent_mito'],jitter=0.4, multi_panel=True,show=False,save="_quality_control.png")
-	adata = adata[adata.obs['n_genes'] < 2500, :]
-	adata = adata[adata.obs['percent_mito'] < 0.05, :]
-
-	sc.pp.normalize_per_cell(adata,key_n_counts='n_counts_all',counts_per_cell_after=1e6)
-	filter_result = sc.pp.filter_genes_dispersion(adata.X, flavor='cell_ranger', n_top_genes=n_top_genes, log=False)
-	
-	marker_genes = ['IL7R', 'CD79A', 'MS4A1', 'CD8A', 'CD8B', 'LYZ', 'CD14', 'LGALS3', 'S100A8', 'GNLY', 'NKG7', 'KLRB1','FCGR3A', 'MS4A7', 'FCER1A', 'CST3', 'PPBP', "CD3D", "SELL", "S100A4", "CD8A", "GNLY", "MS4A1", "FCGR3A", "HSP90AB1", "CCR7"]
-	gene_list = adata.var_names[filter_result.gene_subset]
-	gene_list = gene_list.union(marker_genes)
-	gene_list = gene_list.union(pd.read_csv("./data/marker_genes.csv").x)
+def recipe_zheng(adata,n_top_genes=1000, filter_disp_genes=True, path=None):
+	if filter_disp_genes:
+		sc.pp.filter_genes(adata,min_counts=1)
+		sc.pp.filter_cells(adata,min_genes=200)
+		mito_genes = adata.var_names.str.startswith('MT-')
+		adata.obs['percent_mito'] = np.sum(adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1
+		adata.obs['n_counts'] = adata.X.sum(axis=1).A1
+		adata = adata[adata.obs['n_genes'] < 2500, :]
+		adata = adata[adata.obs['percent_mito'] < 0.05, :]
+		sc.pp.normalize_per_cell(adata,key_n_counts='n_counts_all',counts_per_cell_after=1e6)
+		filter_result = sc.pp.filter_genes_dispersion(adata.X, flavor='cell_ranger', n_top_genes=n_top_genes, log=False)
+		gene_list = adata.var_names[filter_result.gene_subset]
+		gene_list = gene_list.union(pd.read_csv("./data/marker_genes.csv").x)
+	else:
+		gene_list=pd.read_csv(path+"genelist.csv",index_col=0).index
 	adata = adata[:,gene_list]
 	sc.pp.normalize_per_cell(adata,counts_per_cell_after=1e6)
 	# used for loss evaluation
-	adata.obs['size_factors'] = (adata.obs.n_counts_all / 1e6)*(adata.obs.n_counts/1e6)
+	if filter_disp_genes:
+		adata.obs['size_factors'] = (adata.obs.n_counts_all / 1e6)*(adata.obs.n_counts/1e6)
+	else:
+		adata.obs['size_factors'] = adata.obs.n_counts/1e6
 	sc.pp.log1p(adata)
-	sc.pp.scale(adata)
+	# sc.pp.scale(adata)
+	if filter_disp_genes:
+		adata.var.to_csv(path+'genelist.csv')
 	return adata
 
 def recipe_seurat(adata, log=True):
@@ -186,5 +195,46 @@ def write2mtx(adata, path):
 	gn.to_csv(path+"genes.tsv",sep="\t",index=True,header=False)
 	bc.to_csv(path+"barcodes.tsv",sep="\t",index=True,header=False)
 	sci.io.mmwrite(path+"matrix.mtx", adata.X.transpose().astype(int))
+	
+def normalization(adata,path,filter_disp_genes=True):
+	adataraw=adata.copy()
+	adata=recipe_zheng(adata,path=path,filter_disp_genes=filter_disp_genes)
+	cell_idx=adata.obs_names
+	gene_idx=adata.var_names
+	adata_subset = adataraw[:,gene_idx]
+	adata_subset = adata_subset[cell_idx,:]
+	adata.raw=adata_subset.copy()
+	return adata
+	
+def nn_embedding(adata,path):
+	sc.pp.neighbors(adata)
+	sc.tl.louvain(adata)
+	sc.tl.paga(adata)
+	sc.pl.paga(adata, plot=False)
+	sc.tl.umap(adata,init_pos="paga",min_dist=0.1)
+	sc.tl.tsne(adata, n_jobs=12)
+	adata.write(path+"ica_clusters.h5ad",compression='gzip')
+	
+def plotEmbedding(adata,path,color_col="louvain",ncol=10):
+	sc.pl.umap(adata,color=color_col,show=False)
+	pl.title("")
+	pl.legend(loc=3,fontsize=6,mode="expand",bbox_to_anchor=(0.0, 1.01, 1, 0.2),ncol=ncol)
+	pl.savefig(path+color_col+"_umap.png")
+	pl.close()
+	sc.pl.tsne(adata,color=color_col,show=False)
+	pl.title("")
+	pl.legend(loc=3,fontsize=6,mode="expand",bbox_to_anchor=(0.0, 1.01, 1, 0.2),ncol=ncol)
+	pl.savefig(path+color_col+"_tsne.png")
+	pl.close()
 
-
+def plotTest(adata,path,t=None):
+	if t is None:
+		for t in range(10):
+			adatat=adata[adata.obs['test']==t,:]
+			tpath=path+"plot"+str(t)
+			plotEmbedding(adatat,path=tpath,color_col='test')
+	else:
+		adatat=adata[adata.obs['test']==t,:]
+		tpath=path+"plot"+str(t)
+		plotEmbedding(adatat,path=tpath,color_col='test')
+		
