@@ -102,14 +102,10 @@ class ZINB_AutoEncoder:
 	def compile(self):
 		self.model.compile(optimizer='adam', loss=self.loss)
 		
-	def predict(self, adata, mode='latent'):
+	def predict(self, adata):
 		self.encoder_model = Model(inputs=self.model.input, outputs=self.model.get_layer('activation_cl').output)
-		if mode == 'latent':
-			adata.obsm['X_m'] = self.encoder_model.predict({'counts':adata.X,'size_factors':adata.obs.size_factors}, batch_size=128)
-		else:
-			raise ValueError("mode Error")
-		return adata
-		
+		adata.obsm['X_m'] = self.encoder_model.predict({'counts':adata.X,'size_factors':adata.obs.size_factors}, batch_size=128)
+	
 	def write(self, adata, filepath):
 		colnames = None
 		rownames = adata.obs_names
@@ -128,16 +124,19 @@ def train_zinb_model(adata, filepath):
 	net.model.summary()
 	losses = net.model.fit(input_data, output_label, callbacks=net.callbacks, epochs=300, batch_size=128, shuffle=True, validation_split=0.1, verbose=2)
 	
-def prediction(adata, filepath):
+def prediction(adata, filepath, testlabel=None):
 	setSession()
 	net = ZINB_AutoEncoder(filepath)
 	net.build(adata.n_vars)
 	net.model.load_weights(filepath+'weights_best.h5')
 	net.model.summary()
 	net.predict(adata)
-	net.write(adata, filepath)
+	if testlabel is None:
+		net.write(adata, filepath)
+	else:
+		net.write(adata, filepath+testlabel)
 
-def plotCluster(adata,filepath,dm_reduction=True):
+def plotCluster(adata,filepath,dm_reduction=True,color_col="louvain"):
 	import scanpy as sc
 	import matplotlib.pyplot as pl
 	if dm_reduction:
@@ -146,20 +145,18 @@ def plotCluster(adata,filepath,dm_reduction=True):
 		sc.tl.paga(adata)
 		sc.pl.paga(adata, plot=False)
 		sc.tl.umap(adata,init_pos='paga',min_dist=0.1)
-		sc.tl.tsne(adata,n_pcs=20)
+		sc.tl.tsne(adata)
 		adata.write(filepath+"ica_clusters.h5ad",compression='gzip')
 		
-	sc.pl.umap(adata,color=['louvain'],show=False)
-	#pl.title("Visualization of ~700K HCA immune cells via UMAP")
+	sc.pl.umap(adata,color=color_col,show=False)
 	pl.title("")
 	pl.legend(loc=3,fontsize=6,mode="expand",bbox_to_anchor=(0.0, 1.01, 1, 0.2),ncol=17)
-	pl.savefig(filepath+"ica_umap_louvain.png")
+	pl.savefig(filepath+color_col+"_umap.png")
 	pl.close()
-	sc.pl.tsne(adata,color=['louvain'],show=False)
-	#pl.title("Visualization of ~700K HCA immune cells via t-SNE")
+	sc.pl.tsne(adata,color=color_col,show=False)
 	pl.title("")
 	pl.legend(loc=3,fontsize=6,mode="expand",bbox_to_anchor=(0.0, 1.01, 1, 0.2),ncol=17)
-	pl.savefig(filepath+"ica_tsne_louvain.png")
+	pl.savefig(filepath+color_col+"_tsne.png")
 	pl.close()
 	adata.write(filepath+"ica_clusters.h5ad",compression='gzip')
 	
