@@ -1,31 +1,46 @@
 from scipy.stats import norm
 from scipy.stats import rankdata
-
-def cacu_theory_quantiles(a):
-    size=a.shape[1]
+import numpy as np
+def cacu_theory_quantiles(a,size):
     if size > 10:
         for i in range(size):
-             a[0,i] = (a[0,i]-0.5) / size
+             a[i] = (a[i]-0.5) / size
     else:
         for i in range(size):
-            a[0, i] = (a[0, i]-0.375) / (size+0.25)
+            a[i] = (a[i]-0.375) / (size+0.25)
     for i in range(size):
-        a[0,i] = norm.ppf(a[0,i])
-    return a
+        a[i] = norm.ppf(a[i])
 
-def rank(X):
+def rank(X, method):
     for i in range(X.shape[0]):
-        X[i]=rankdata(X[i], method='max')
-    return X
+        X[i] = rankdata(X[i], method=method)
 
-def qqnorm(X, cacuby):
-    if cacuby=='row':
-        X=rank(X)
+def qqnorm(X, method='max', replace=True, axis=0):
+    if replace==False:
+        Y=np.zeros(X.shape,dtype=float)
         for i in range(X.shape[0]):
-            X[i,:]=cacu_theory_quantiles(X[i,:])
+            for j in range(X.shape[1]):
+                Y[i,j] = X[i,j]
+        if axis == 0:
+            rank(Y, method)
+        if axis == 1:
+            Y = Y.T
+            rank(Y, method)
+        size = Y.shape[1]
+        for i in range(Y.shape[0]):
+            cacu_theory_quantiles(Y[i],size)
+        if axis == 1:
+            Y = Y.T
+        return Y
     else:
-        X=X.T
-        X=rank(X)
+        if axis == 0:
+            rank(X, method)
+        if axis == 1:
+            X = X.T
+            rank(X, method)
+        size = X.shape[1]
         for i in range(X.shape[0]):
-            X[i,:] = cacu_theory_quantiles(X[i])
-    return  X
+            cacu_theory_quantiles(X[i], size)
+        if axis == 1:
+            X = X.T
+        return X
